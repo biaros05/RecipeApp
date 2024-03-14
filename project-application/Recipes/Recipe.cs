@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+namespace recipes;
+using users;
 
 public class Recipe{
     private int Id {get;}

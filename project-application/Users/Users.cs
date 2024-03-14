@@ -1,5 +1,6 @@
 using System.Collections.Generic;
-
+namespace users;
+using recipes;
 public class Users 
 {
     private User ActiveUser {get; set;}
@@ -10,7 +11,10 @@ public class Users
     /// (interacts with data layer to retrieve list of users to perform authentication)
     /// update ActiveUser
     /// </summary>
-    public bool AuthenticateUser(string username, string password){}
+    public bool AuthenticateUser(string username, string password)
+    {
+        throw new NotImplementedException();
+    }
 
     /// <summary>
     /// retrieve list of users from db, remove active user from list, sned back new list to data layer
