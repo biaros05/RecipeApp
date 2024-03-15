@@ -1,6 +1,6 @@
 # Recipes for College Students on a Budget
 ## Persona
-Our persona is Chad, a 19 year old college student who cant write english essays. He has limited kitchen applicances and absolutely no time or skills devoted to cooking. He is also broke, and has 3 roomates who have basic cookig skills. However, with their schedules, they do not have time to cook any meals and have trouble finding recipes that can be done in a limited amount of time. This website will be targeted to people like Chad and his unfortunate roomates. So, on our website, we will dedicate a tab to quick recipes under 30 minutes, and each recipe will also include a difficulty rating.
+Our persona is Chad, a 19 year old college student who cant write English essays. He has limited kitchen appliances and absolutely no time or skills devoted to cooking. He is also broke and has 3 roommates who have basic cooking skills. However, with their schedules, they do not have time to cook any meals and have trouble finding recipes that can be done in a limited amount of time. This website will be targeted to people like Chad and his unfortunate roommates. So, on our website, we will dedicate a tab to quick recipes under 30 minutes, and each recipe will also include a difficulty rating. Our application will have a very simple but nice layout that is easy on the eyes and not too overbearing in terms of information. We will highlight what is most important to college students, and they will also have quick access to searching recipes with certain tags (to sort out ingredients). With the difficulty rating (which will be a culmination of ratings from other students like Chad), they will be able to decide whether a recipe is fit for them or not. Lastly, the quick tab to short recipes under 30 minutes will also help out these students, who are too busy with their studies to worry about overnight marination or 5-hour crockpots!
 
 ## Agreements
 What will you do to ensure your code is readable? For example, will you share your code frequently
@@ -23,6 +23,6 @@ How will you ensure your stand alone classes can be tested?
 We will make sure each class has a specific functionality and serves a purpose, and that they have methods that perform a specific, useful task that return values or manipulate the object.
 
 ## Extra Features:
-1. **including a difficulty rating for each of the recipes (as a rating system that the people who try the recipe can set)
+1. including a difficulty rating for each of the recipes (as a rating system that the people who try the recipe can set)
 2. We will implement the budget system
-4. unit conversions between grams, liters, quantity
+4. unit conversions between units for Mass and Volume.
