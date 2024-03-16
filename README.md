@@ -26,3 +26,14 @@ We will make sure each class has a specific functionality and serves a purpose, 
 1. including a difficulty rating for each of the recipes (as a rating system that the people who try the recipe can set)
 2. We will implement the budget system
 4. unit conversions between units for Mass and Volume.
+
+## Design Choices
+For this project, we have the basic objects we need. Here is a brief overview of how we will handle each category:
+
+For the recipes, we have our basic recipe object which contains all functionalities for a single recipe. We then have a class Recipes, and this will represent the actions such as deleting a recipe and creating a recipe, in which we need to modify the list of recipes and not just a single one. This is where we include our functionalities for filtering as well.
+
+In line with recipes, we have an Ingredient struct which will represent a single ingredient and contain its cost per unit as well as unit of measurement. The Measurement class will take care of converting the measurements from one unit to another (provided they are both of the same Units category). The logic behind this is to choose a common base unit to convert to and from!
+
+For users, we have our basic user class which contains all the actions involving a single user. We then have a Users class, which contains an active user (the currently logged in user) and the actions that will affect the list of users in the database (authenticate user, in which you need to sift through all the usernames and then match the password, and deleting an account, in which the user will remove themselves from the list.) Linked to this we have a Password class which will manage hashing the password and validating whether two passwords match.
+
+Lastly, we have our IFilterBy, an interface for filtering our recipes. This interface will be implemented for each different sort we will need for this application. An IFilterBy List field will be contained in the Recipes class to keep track of how the user will want to filter their recipes (provided they give several filters).
