@@ -5,7 +5,6 @@ public class FilterByKeyword : IFilterBy
 {
     // in name or description
     private string Keyword;
-    // filters
     public List<Recipe> FilterRecipes(List<Recipe> recipes)
     {
         throw new NotImplementedException();

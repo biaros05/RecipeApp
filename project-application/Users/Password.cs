@@ -1,3 +1,4 @@
+// this class represents a password in its entirety and will take care of password logic
 internal class Password
 {
     private string HashedPassword {get; set;}

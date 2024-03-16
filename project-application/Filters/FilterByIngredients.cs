@@ -4,7 +4,6 @@ using recipes;
 public class FilterByIngredients : IFilterBy 
 {
     private List<Ingredient> Ingredients;
-    // filters
     public List<Recipe> FilterRecipes(List<Recipe> recipes)
     {
         throw new NotImplementedException();

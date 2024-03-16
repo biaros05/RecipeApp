@@ -19,7 +19,11 @@ public class User
 
     // performs the correct logic to update these fields and send changes to DB
     public void UpdateFields(string newPassword, string newDescription, string newImage){}
+    
+    // removes profile picture provided one exists
     public void RemoveProfilePicture(){}
+
+    // removes description provided one exists
     public void RemoveDescription(){}
 
     // take recipe, retrieve the list of recipes for user, add that recipe, send back to data layer

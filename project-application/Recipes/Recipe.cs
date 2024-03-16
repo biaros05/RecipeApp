@@ -23,9 +23,12 @@ public class Recipe
     private List<int> Difficulties {get; set;} // all the difficulties given by users OUT OF 10
     public double DifficultyRating {get; set;} // sum of Difficulties and get average
     private List<string> Tags {get; set;}
+
     // add rating to recipe and send information to database
     public void RateRecipe(int rating){}
+    
     public void RateDifficulty(int rating){}
+
     // will take all parameters for a recipe and send this new information to the database (VALDATE THE USER IS THE OWNER)
     public void UpdateDescription(
     string description, int preptimeMins, int cooktimeMins, 

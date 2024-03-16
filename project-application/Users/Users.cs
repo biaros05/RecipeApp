@@ -3,23 +3,21 @@ namespace users;
 using recipes;
 public class Users 
 {
+    // currently logged on user
     public User ActiveUser {get; set;}
-    // adds a new account
+    
+    // adds a new account (validates the input) --> should it take a user or params to create a new user individually?
     public void CreateAccount(User newUser){}
 
-    /// <summary>
-    /// make sure the user exists in the database, and the hashed password matches 
-    /// the hashed password of the username 
-    /// (interacts with data layer to retrieve list of users to perform authentication)
-    /// update ActiveUser
-    /// </summary>
+    // make sure the user exists in the database, and the hashed password matches 
+    // the hashed password of the username 
+    // (interacts with data layer to retrieve list of users to perform authentication)
+    // update ActiveUser
     public bool AuthenticateUser(string username, string password)
     {
         throw new NotImplementedException();
     }
 
-    /// <summary>
-    /// retrieve list of users from db, remove active user from list, sned back new list to data layer
-    /// </summary>
+    // retrieve list of users from db, remove active user from list, sned back new list to data layer
     public void DeleteAccount(){}
 }
