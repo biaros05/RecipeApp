@@ -4,11 +4,10 @@ namespace users;
 using recipes;
 public class User
 {
-    private string Username {get; set;}
-    private string? Image {get;}
-    private string? Description {get; set;}
-    private string HashedPassword {get; set;}
-    private byte[] Salt {get; set;}
+    public string Username {get; set;}
+    public string? Image {get;}
+    public string? Description {get; set;}
+    private Password Password {get; set;}
     
     public override bool Equals(Object o)
     {
@@ -18,8 +17,10 @@ public class User
     // this constructor sets the username, hashes password and saves it
     public User(string username, string password){}
 
-    // hashes password, saves, and sends to data layer
-    public void UpdatePassword(string newPassword, string newDescription, string newImage){}
+    // performs the correct logic to update these fields and send changes to DB
+    public void UpdateFields(string newPassword, string newDescription, string newImage){}
+    public void RemoveProfilePicture(){}
+    public void RemoveDescription(){}
 
     // take recipe, retrieve the list of recipes for user, add that recipe, send back to data layer
     public void AddToFavourites(Recipe recipe){}
@@ -28,18 +29,13 @@ public class User
     public void RemoveFromFavourites(Recipe recipe){}
 
     // interacts with data layer to retrieve the recipes by that user
-    private List<Recipe> GetRecipesCreated()
+    public List<Recipe> GetRecipesCreated()
     {
         throw new NotImplementedException();
     }
 
     // interacts with data layer to retrieve the favourites for that user
-    private List<Recipe> GetFavourites()
-    {
-        throw new NotImplementedException();
-    }
-    // implements algo for hashing
-    private string HashPassword()
+    public List<Recipe> GetFavourites()
     {
         throw new NotImplementedException();
     }

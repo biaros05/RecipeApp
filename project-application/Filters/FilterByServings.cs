@@ -1,4 +1,4 @@
-namespace sorting;
+namespace filtering;
 using recipes;
 
 public class FilterByServings : IFilterBy 

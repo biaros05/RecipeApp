@@ -1,11 +1,11 @@
-namespace sorting;
+namespace filtering;
 using recipes;
-using users;
 
-public class FilterByOwner : IFilterBy 
+public class FilterByTime : IFilterBy 
 {
     // in name or description
-    private User Owner;
+    private int MinTimeMins;
+    private int MaxTimeMins;
     // filters
     public List<Recipe> FilterRecipes(List<Recipe> recipes)
     {

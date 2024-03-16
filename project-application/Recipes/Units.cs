@@ -1,5 +1,5 @@
 namespace recipes;
-enum Units {
+public enum Units {
     Volume,
     Mass,
     Quantity

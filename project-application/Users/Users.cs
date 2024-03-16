@@ -3,7 +3,9 @@ namespace users;
 using recipes;
 public class Users 
 {
-    private User ActiveUser {get; set;}
+    public User ActiveUser {get; set;}
+    // adds a new account
+    public void CreateAccount(User newUser){}
 
     /// <summary>
     /// make sure the user exists in the database, and the hashed password matches 

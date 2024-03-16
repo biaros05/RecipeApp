@@ -1,10 +1,11 @@
-namespace sorting;
+namespace filtering;
 using recipes;
-// this class will filter by keyword
-public class FilterByKeyword : IFilterBy 
+using users;
+
+public class FilterByOwner : IFilterBy 
 {
     // in name or description
-    private string Keyword;
+    private User Owner;
     // filters
     public List<Recipe> FilterRecipes(List<Recipe> recipes)
     {

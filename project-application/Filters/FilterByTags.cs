@@ -1,8 +1,9 @@
-namespace sorting;
+namespace filtering;
 using recipes;
-public class FilterByRating : IFilterBy 
+
+public class FilterByTags : IFilterBy 
 {
-    private int Rating;
+    private List<string> Tags;
     // filters
     public List<Recipe> FilterRecipes(List<Recipe> recipes)
     {

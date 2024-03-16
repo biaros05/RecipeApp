@@ -2,7 +2,7 @@ namespace recipes;
 using recipes;
 using System;
 
-class Measurement {
+public class Measurement {
     public Measurement(double ratioToBase, double ratioFromBase, Units unit){}
     // this will convert the measurement to base unit, and the base from the given measurement
     // make sure the enums are the same
@@ -15,11 +15,11 @@ class Measurement {
     {
         throw new NotImplementedException();
     }
-    private double ConvertFromBase(double quantity) // quantity * first ratio
+    private double ConvertFromBase(double quantity) // quantity * second ratio
     {
         throw new NotImplementedException();
     }
     // type of unit
-    private Units Unit {get; set;}
+    public Units Unit {get; set;}
 
 }

@@ -2,26 +2,40 @@ using System.Collections.Generic;
 namespace recipes;
 using users;
 
-public class Recipe{
+public class Recipe
+{
     private int Id {get;}
-    private string Name{get; set;}
-    private User Owner {get;}
-    private string? Description {get; set;}
-    private int PrepTimeMins {get; set;}
-    private int CookTimeMins {get; set;}
+    public string Name{get; set;}
+    public User Owner {get;}
+    public string? Description {get; set;}
+    public int PrepTimeMins {get; set;}
+    public int CookTimeMins {get; set;}
 
-    // get returns the CookTIme + PrepTime
-    private int TotalTimeMins{get;}
+    // get returns the CookTime + PrepTime
+    public int TotalTimeMins{get;}
 
-    private int NumberOfServings {get; set;}
-    private List<string> Instructions {get; set;}
-    private List<Ingredient> Ingredients{get; set;}
-    private int[] Ratings {get; set;}
-    public double Rating{get; set;} // sum of Ratings and get average
+    public int NumberOfServings {get; set;}
+    public List<string> Instructions {get; set;}
+    // contains the ingredient and its quantity for specified unit 
+    public Dictionary<Ingredient, double> Ingredients{get; set;} 
+    private List<int> Ratings {get; set;} // all the ratings given by users OUT OF FIVE STARS
+    public double Rating {get; set;} // sum of Ratings and get average
+    private List<int> Difficulties {get; set;} // all the difficulties given by users OUT OF 10
+    public double DifficultyRating {get; set;} // sum of Difficulties and get average
     private List<string> Tags {get; set;}
-    // update rating accordingly
+    // add rating to recipe and send information to database
     public void RateRecipe(int rating){}
-    public void UpdateDescription(string description, int preptimeMins, int cooktimeMins, int servings, List<Ingredient> ingredients, List<string> tags){}
+    public void RateDifficulty(int rating){}
+    // will take all parameters for a recipe and send this new information to the database (VALDATE THE USER IS THE OWNER)
+    public void UpdateDescription(
+    string description, int preptimeMins, int cooktimeMins, 
+    int servings, List<Ingredient> ingredients, List<string> tags, User owner){}
+
+    // this method will take into account the ingredients and calculate the budget for a given recipe
+    public double GetRecipeBudget()
+    {
+        throw new NotImplementedException();
+    }
 
 
 }

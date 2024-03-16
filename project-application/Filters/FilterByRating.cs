@@ -1,11 +1,8 @@
-namespace sorting;
+namespace filtering;
 using recipes;
-
-public class FilterByTime : IFilterBy 
+public class FilterByRating : IFilterBy 
 {
-    // in name or description
-    private int MinTimeMins;
-    private int MaxTimeMins;
+    private int Rating;
     // filters
     public List<Recipe> FilterRecipes(List<Recipe> recipes)
     {
