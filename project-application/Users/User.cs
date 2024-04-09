@@ -4,18 +4,38 @@ namespace users;
 using recipes;
 public class User
 {
+//store salt(from pwd to user)
+//store img as a array of bytes
+//add user id only visible in db(private)
+
+
+//ignore salt just take in the user and pwd
+
+
+    private int id{get;set;}
     public string Username {get; set;}
-    public string? Image {get;}
+    public byte[]? Image {get;}
     public string? Description {get; set;}
-    private Password Password {get; set;}
-    
+    //private Password Password {get; set;}
+    private string Password{get;set;}
+    private byte[] Salt {get; set;}
+
+    public Users allUsers;
+
     public override bool Equals(Object o)
     {
         throw new NotImplementedException();
     }
 
     // this constructor sets the username, hashes password and saves it
-    public User(string username, string password){}
+    public User(string username, string password){
+        if((password.Length>50 || password.Length<5) || allUsers.findUser(username) )
+        {
+           throw new Exception("smt g"); 
+        }
+        this.Username=username;
+        this.Password=password;
+    }
 
     // performs the correct logic to update these fields and send changes to DB
     public void UpdateFields(string newPassword, string newDescription, string newImage){}

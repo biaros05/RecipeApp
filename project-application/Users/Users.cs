@@ -20,4 +20,12 @@ public class Users
 
     // retrieve list of users from db, remove active user from list, sned back new list to data layer
     public void DeleteAccount(){}
+
+    //a list that contains all the users
+    public string[] ArrayOfUsers{get;}
+
+    public bool findUser(string username)
+    {
+        return ArrayOfUsers.Contains(username);
+    }
 }

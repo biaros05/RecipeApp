@@ -2,7 +2,7 @@
 internal class Password
 {
     private string HashedPassword {get; set;}
-    private byte[] Salt {get; set;}
+    
     public Password(string password)
     {
 
