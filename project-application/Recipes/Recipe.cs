@@ -101,58 +101,66 @@ public class Recipe
     public List<string> Instructions {get;} = new();
     // contains the ingredient and its quantity for specified unit 
     public Dictionary<Ingredient, double> Ingredients{get;} = new();
-    private List<double> Ratings {get;} = new(); // all the ratings given by users OUT OF FIVE STARS
+    private readonly List<double> _ratings = new(); // all the ratings given by users OUT OF FIVE STARS
 
-    private double _rating;
     public double Rating {
         get
         {
             int totalRating = 0;
-            foreach ( int rating in this.Ratings)
+            foreach ( int r in this._ratings)
             {
-                totalRating += rating;
+                totalRating += r;
             } 
-            this._rating = totalRating / Ratings.Count;
-            return this._rating;
-        }
-        set
-        {
-            if (value < 1 || value > 5)
-            {
-                throw new ArgumentException("Rating must be between 1 and 5 stars");
-            }
-            this.Ratings.Add(value);
+            double rating = totalRating / _ratings.Count;
+            return Math.Round(rating, 2);
         }
     } // sum of Ratings and get average.
-    private List<int> Difficulties {get;} = new(); // all the difficulties given by users OUT OF 10
-    private int _difficulty;
+    private readonly List<int> _difficulties = new(); // all the difficulties given by users OUT OF 10
     public int DifficultyRating {
         get
         {
             int difficulty = 0;
-            foreach (int d in this.Difficulties)
+            foreach (int d in this._difficulties)
             {
                 difficulty += d;
             }
-            double averageDiff = difficulty / this.Difficulties.Count;
+            double averageDiff = difficulty / this._difficulties.Count;
             return (int) Math.Round(averageDiff, 0);
-        }
-        set
-        {
-            if (value < 1 || value > 3)
-            {
-                throw new ArgumentException("Rating must be between 0 and 5 stars");
-            }
-            this.Difficulties.Add(value);
         }
     } // sum of Difficulties and get average
 
-    public List<string> Tags {get; set;}
+
+    public List<string> Tags {get;}
 
     // add rating to recipe and send information to database
-    public void RateRecipe(int rating){}
+    public void RateRecipe(int rating)
+    {
+        if (rating < 1 || rating > 5)
+        {
+            throw new ArgumentException("Rating must be between 1 and 5 stars");
+        }
+        this._ratings.Add(rating);
+    }
+
+    public string Budget {get;}
     
-    public void RateDifficulty(int rating){}
+    public void RateDifficulty(int rating)
+    {
+        if (rating < 1 || rating > 3)
+        {
+            throw new ArgumentException("Rating must be between 1 and 5 stars");
+        }
+        this._difficulties.Add(rating);
+    }
+
+    // this method will add a tag to the list of tags
+    public void AddTag(string tag)
+    {
+        if (tag == "")
+        {
+            throw new ArgumentException("Your tag must have a value");
+        }
+    }
 
     // will take all parameters for a recipe and send this new information to the database (VALDATE THE USER IS THE OWNER)
     public void UpdateDescription(
@@ -163,6 +171,15 @@ public class Recipe
     public double GetRecipeBudget()
     {
         throw new NotImplementedException();
+    }
+
+    public Recipe(int budget)
+    {
+        if (budget < 1 || budget > 3)
+        {
+            throw new ArgumentException("Budget rating must be 1, 2, or 3");
+        }
+        this.Budget = new string('$', budget);
     }
 
 
