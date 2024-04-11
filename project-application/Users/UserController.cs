@@ -1,10 +1,14 @@
 using System.Collections.Generic;
 namespace users;
+
+using System.Net;
 using recipes;
-public class Users 
+public class UserController
 {
     // currently logged on user
-    public User ActiveUser {get; set;}
+    public static User ActiveUser {get; set;}
+    public static List<User> AllUsers{get;} = new();
+
     
     // adds a new account (validates the input) --> should it take a user or params to create a new user individually?
     public void CreateAccount(User newUser){}
