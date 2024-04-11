@@ -17,10 +17,9 @@ public class User
     public byte[]? Image {get;}
     public string? Description {get; set;}
     //private Password Password {get; set;}
-    private string Password{get;set;}
+    private Password Password{get;set;}
     private byte[] Salt {get; set;}
 
-    public Users allUsers;
 
     public override bool Equals(Object o)
     {
@@ -28,7 +27,8 @@ public class User
     }
 
     // this constructor sets the username, hashes password and saves it
-    public User(string username, string password){
+    public User(string username, Password password){
+        //fix all users shit
         if((password.Length>50 || password.Length<5) || allUsers.findUser(username) )
         {
            throw new Exception("smt g"); 
