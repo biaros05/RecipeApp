@@ -160,21 +160,43 @@ public class Recipe
         {
             throw new ArgumentException("Your tag must have a value");
         }
+        if (this.Tags.Contains(tag))
+        {
+            throw new ArgumentException("This tag has already been added for this recipe.");
+        }
+        this.Tags.Add(tag);
     }
 
     // will take all parameters for a recipe and send this new information to the database (VALDATE THE USER IS THE OWNER)
     public void UpdateDescription(
     string description, int preptimeMins, int cooktimeMins, 
-    int servings, List<Ingredient> ingredients, List<string> tags, User owner){}
-
-    // this method will take into account the ingredients and calculate the budget for a given recipe
-    public double GetRecipeBudget()
+    int servings, List<Ingredient> ingredients, List<string> tags, User owner)
     {
-        throw new NotImplementedException();
+        
     }
 
-    public Recipe(int budget)
+    public Recipe(int id, string name, User owner, string description, int prepTimeMins, int cookTimeMins, int numberOfServings, List<String> instructions, Dictionary<Ingredient, double> ingredients, List<string> tags, int budget)
     {
+        // validate if it already exists???
+        this.Id = id;
+        // validate if user exists???
+        this.Owner = owner;
+        this.Name = name;
+
+        this.Description = description.Equals("") ? this.Name : description;
+        this.PrepTimeMins = prepTimeMins;
+        this.CookTimeMins = cookTimeMins;
+        this.NumberOfServings = numberOfServings;
+
+        if (instructions.Count == 0 || ingredients.Count == 0)
+        {
+            throw new ArgumentException("there must be a minimum of one ingredient and one instruction on each recipe");
+        }
+
+        this.Instructions = instructions;
+        this.Ingredients = ingredients;
+        this.Tags = tags;
+
         if (budget < 1 || budget > 3)
         {
             throw new ArgumentException("Budget rating must be 1, 2, or 3");
