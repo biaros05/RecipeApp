@@ -28,11 +28,16 @@ public class Recipes
         {
             throw new ArgumentException("This recipe does not exist in the database");
         }
+        this.AllRecipes.Remove(recipe);
     }
     
-    public List<Recipes> FilterBy()
+    public List<Recipe> FilterBy()
     {
-        throw new NotImplementedException();
+        foreach (IFilterBy filter in this.Filters)
+        {
+            filter.FilterRecipes(this.AllRecipes);
+        }
+        return this.AllRecipes;
     }
     
 }
