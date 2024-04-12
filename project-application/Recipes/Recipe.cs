@@ -131,6 +131,7 @@ public class Recipe
 
 
     public List<string> Tags {get;}
+    public string Budget {get;}
 
     // add rating to recipe and send information to database
     public void RateRecipe(int rating)
@@ -141,43 +142,64 @@ public class Recipe
         }
         this._ratings.Add(rating);
     }
-
-    public string Budget {get;}
     
     public void RateDifficulty(int rating)
     {
-        if (rating < 1 || rating > 3)
+        if (rating < 1 || rating > 10)
         {
-            throw new ArgumentException("Rating must be between 1 and 5 stars");
+            throw new ArgumentException("Rating must be between 1 and 10 stars");
         }
         this._difficulties.Add(rating);
     }
 
-    // this method will add a tag to the list of tags
+    // this method will add a tag to the list of tags if it does not already exist
     public void AddTag(string tag)
     {
         if (tag == "")
         {
             throw new ArgumentException("Your tag must have a value");
         }
-        if (this.Tags.Contains(tag))
+        if (!this.Tags.Contains(tag))
         {
-            throw new ArgumentException("This tag has already been added for this recipe.");
+            this.Tags.Add(tag);
         }
-        this.Tags.Add(tag);
+        
     }
 
     // will take all parameters for a recipe and send this new information to the database (VALDATE THE USER IS THE OWNER)
-    public void UpdateDescription(
-    string description, int preptimeMins, int cooktimeMins, 
-    int servings, List<Ingredient> ingredients, List<string> tags, User owner)
+    public void UpdateRecipe(
+    string description, int preptimeMins, int cooktimeMins,
+    Dictionary<Ingredient, double> ingredients, List<string> tags)
     {
-        
+        this.Description = description;
+        this.PrepTimeMins = preptimeMins;
+        this.CookTimeMins = cooktimeMins;
+
+        UpdateIngredients(ingredients);
+
+        foreach (string t in tags)
+        {
+            AddTag(t);
+        }
+
+    }
+
+    // helper method that updates the list of ingredients in the recipe and also updates them in 
+    // the system if they do not already exist
+    private void UpdateIngredients(Dictionary<Ingredient, double> ingredients)
+    {
+        foreach ((Ingredient i, double quantity) in ingredients)
+        {
+            if (!this.Ingredients.Contains(new KeyValuePair<Ingredient, double>(i, quantity)))
+            {
+                RecipeController.AddIngredient(i);
+                this.Ingredients.Add(i, quantity);
+            }
+        }
     }
 
     public override bool Equals(object? obj)
     {
-
         if (obj == null || !(obj is Recipe))
         {
             return false;
@@ -192,11 +214,11 @@ public class Recipe
         this.Id = id;
         // validate if user exists???
         this.Owner = owner;
-        this._name = name;
+        this.Name = name;
 
-        this._description = description.Equals("") ? this.Name : description;
-        this._prepTimeMins = prepTimeMins;
-        this._cookTimeMins = cookTimeMins;
+        this.Description = description.Equals("") ? this.Name : description;
+        this.PrepTimeMins = prepTimeMins;
+        this.CookTimeMins = cookTimeMins;
         this.NumberOfServings = numberOfServings;
 
         if (instructions.Count == 0 || ingredients.Count == 0)
@@ -205,7 +227,7 @@ public class Recipe
         }
 
         this.Instructions = instructions;
-        this.Ingredients = ingredients;
+        UpdateIngredients(ingredients);
         this.Tags = tags;
 
         if (budget < 1 || budget > 3)
