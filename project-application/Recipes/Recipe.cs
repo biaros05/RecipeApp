@@ -175,17 +175,28 @@ public class Recipe
         
     }
 
+    public override bool Equals(object? obj)
+    {
+
+        if (obj == null || !(obj is Recipe))
+        {
+            return false;
+        }
+
+        return ((Recipe)obj).Id == this.Id;
+    }
+
     public Recipe(int id, string name, User owner, string description, int prepTimeMins, int cookTimeMins, int numberOfServings, List<String> instructions, Dictionary<Ingredient, double> ingredients, List<string> tags, int budget)
     {
         // validate if it already exists???
         this.Id = id;
         // validate if user exists???
         this.Owner = owner;
-        this.Name = name;
+        this._name = name;
 
-        this.Description = description.Equals("") ? this.Name : description;
-        this.PrepTimeMins = prepTimeMins;
-        this.CookTimeMins = cookTimeMins;
+        this._description = description.Equals("") ? this.Name : description;
+        this._prepTimeMins = prepTimeMins;
+        this._cookTimeMins = cookTimeMins;
         this.NumberOfServings = numberOfServings;
 
         if (instructions.Count == 0 || ingredients.Count == 0)
@@ -203,6 +214,5 @@ public class Recipe
         }
         this.Budget = new string('$', budget);
     }
-
 
 }

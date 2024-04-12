@@ -3,6 +3,11 @@ namespace project_application_test;
 [TestClass]
 public class MeasurementsTests
 {
+    [TestMethod]
+    public void Constructor_Creates_ReturnsTrue()
+    {
+        
+    }
     // convert from measurement to base unit
     // convert from base unit to measurement
     // convert from measurment to another measurement

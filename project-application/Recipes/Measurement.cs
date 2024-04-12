@@ -5,12 +5,24 @@ using System;
 public class Measurement {
     private readonly double _ratioToBase;
     private readonly double _ratioFromBase;
-    private Units unit;
+
+    // type of unit
+    public Units Unit {get;}
     public Measurement(Units unit, double ratioToBase=0, double ratioFromBase=0)
     {
         this.Unit = unit;
         this._ratioToBase = ratioToBase;
         this._ratioFromBase = ratioFromBase;
+    }
+
+
+    public override bool Equals(object? obj)
+    {
+        if (obj == null || !(obj is Measurement))
+        {
+            return false;
+        }
+        return ((Measurement)obj).Unit == this.Unit;
     }
     
     // this will convert the measurement to base unit, and then from this, will convert 
@@ -21,6 +33,10 @@ public class Measurement {
         if (toUnit.Unit != this.Unit)
         {
             throw new ArgumentException("These measurements do not match");
+        }
+        if (quantity < 0)
+        {
+            throw new ArgumentException("Quantity cannot be negative");
         }
         double baseQuantity = this.ConvertToBase(quantity);
         double convertedQuantity = toUnit.ConvertFromBase(baseQuantity);
@@ -36,7 +52,5 @@ public class Measurement {
     {
         return quantity * this._ratioFromBase;
     }
-    // type of unit
-    public Units Unit {get; set;}
 
 }

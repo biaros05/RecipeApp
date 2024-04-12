@@ -10,6 +10,7 @@ public class RecipeController
     public List<IFilterBy> Filters {get;} = new();
 
     public static List<Recipe> AllRecipes{get;} = new();
+    public static List<Ingredient> Ingredients {get;} = new();
 
     // gets list of recipes from db, adds recipe, sends back list to db
     public void CreateRecipe(Recipe recipe, User owner)
@@ -23,6 +24,15 @@ public class RecipeController
 
         AllRecipes.Add(recipe);
     }
+
+    public void AddIngredient(Ingredient ingredient)
+    {
+        if (!Ingredients.Contains(ingredient))
+        {
+            Ingredients.Add(ingredient);
+        }
+    }
+
     // get list of recipes, and remove particular recipe (VALIDATE THE USER TRYING TO DELETE)
     public void DeleteRecipe(Recipe recipe)
     {
