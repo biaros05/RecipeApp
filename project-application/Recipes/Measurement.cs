@@ -11,8 +11,8 @@ public class Measurement {
     public Measurement(Units unit, double ratioToBase=0, double ratioFromBase=0)
     {
         this.Unit = unit;
-        this._ratioToBase = ratioToBase;
-        this._ratioFromBase = ratioFromBase;
+        this._ratioToBase = unit == Units.Quantity ? 0 : ratioToBase;
+        this._ratioFromBase = unit == Units.Quantity ? 0 : ratioFromBase;
     }
 
 
@@ -40,17 +40,17 @@ public class Measurement {
         }
         double baseQuantity = this.ConvertToBase(quantity);
         double convertedQuantity = toUnit.ConvertFromBase(baseQuantity);
-        return convertedQuantity;
+        return Math.Round(convertedQuantity, 2);
 
     }
 
     private double ConvertToBase(double quantity) // quantity * first ratio
     {
-        return quantity * this._ratioToBase;
+        return this.Unit == Units.Quantity ? quantity : quantity * this._ratioToBase;
     }
     private double ConvertFromBase(double quantity) // quantity * second ratio
     {
-        return quantity * this._ratioFromBase;
+        return this.Unit == Units.Quantity ? quantity : quantity * this._ratioFromBase;
     }
 
 }

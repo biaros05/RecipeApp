@@ -4,14 +4,13 @@ namespace recipes;
 public struct Ingredient
 {
     // initializes ingredient with proper data validation
-    public Ingredient(string name, Measurement measurement){
+    public Ingredient(string name, Units unit){
         // MAKE SURE IT DOES NOT ALREADY EXIST
         this.Name = name;
-        this.Measurement = measurement;
+        this.Unit = unit;
     }
     public string Name {get; set;}
-    public Measurement Measurement {get; set;}
-    // cost per unit for the base unit we will choose (hopefully this logic will work) 
+    public Units Unit {get; set;}
 
     public override bool Equals(object? obj)
     {
@@ -20,6 +19,6 @@ public struct Ingredient
             return false;
         }   
         return ((Ingredient)obj).Name.ToLower() == this.Name.ToLower() &&
-                ((Ingredient)obj).Measurement == this.Measurement;
+                ((Ingredient)obj).Unit == this.Unit;
     }
 }
