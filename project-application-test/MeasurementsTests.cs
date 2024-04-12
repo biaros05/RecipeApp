@@ -5,6 +5,8 @@ namespace project_application_test;
 [TestClass]
 public class MeasurementsTests
 {
+
+    // this method checks the equals method for measurements
     [TestMethod]
     public void EqualsMethod_QuantityEqual_ReturnsTrue()
     {
@@ -14,7 +16,7 @@ public class MeasurementsTests
         Assert.AreEqual(m, m2);
     }
 
-
+    // this method checks the equals method for measurements for non-equal units
     [TestMethod]
     public void EqualsMethod_UnitNotEqual_ReturnsFalse()
     {
@@ -24,6 +26,7 @@ public class MeasurementsTests
         Assert.AreNotEqual(m, m2);
     }
 
+    // this method tests that the ConvertTo method retuns the same quantity for the Quantity unit
     [TestMethod]
     public void ConvertTo_QuantityUnit_ReturnsSameQuantity()
     {
@@ -35,6 +38,7 @@ public class MeasurementsTests
         Assert.AreEqual(9, newQuantity);
     }
 
+    // this method tests that the ConvertTo method converts properly given correct inputs (Mass)
     [TestMethod]
     public void ConvertTo_MassUnit_ReturnsConverted()
     {
@@ -46,6 +50,7 @@ public class MeasurementsTests
         Assert.AreEqual(9.53, newQuantity);
     }
 
+    // this method tests that the ConvertTo method throws an exception if the units do not match
     [TestMethod]
     public void ConvertTo_UnitDontMatch_ThrowsException()
     {
@@ -57,6 +62,7 @@ public class MeasurementsTests
         Assert.ThrowsException<ArgumentException>(act, "Units do not match");
     }
 
+    // this method tests that the ConvertTo method throws an exception if the quantity is given an invalid value
     [TestMethod]
     public void ConvertTo_NegativeQuantity_ThrowsException()
     {
@@ -67,12 +73,5 @@ public class MeasurementsTests
 
         Assert.ThrowsException<ArgumentException>(act, "Quantity cannot be negative");
     }
-
-
-    // convert from measurement to base unit
-    // convert from base unit to measurement
-    // convert from measurment to another measurement
-    // convert from measurment to another measurement if measurements enums dont match
-    // convert from measurment to another measurement if quantity null
 
 }
