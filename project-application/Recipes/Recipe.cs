@@ -89,11 +89,11 @@ public class Recipe
     }
 
     // get returns the CookTime + PrepTime
-    public int TotalTimeMins{
+    public double TotalTimeMins{
         get
         {
             double value = (this.PrepTimeMins + this.CookTimeMins) / 60.0;
-            return (int) Math.Round(value, 0);
+            return (double) Math.Round(value, 1);
         }
     }
 
@@ -111,7 +111,7 @@ public class Recipe
             {
                 totalRating += r;
             } 
-            double rating = totalRating / _ratings.Count;
+            double rating = totalRating / (double)_ratings.Count;
             return Math.Round(rating, 2);
         }
     } // sum of Ratings and get average.
@@ -138,7 +138,7 @@ public class Recipe
     {
         if (rating < 1 || rating > 5)
         {
-            throw new ArgumentException("Rating must be between 1 and 5 stars");
+            throw new ArgumentOutOfRangeException("Rating must be between 1 and 5 stars");
         }
         this._ratings.Add(rating);
     }
@@ -147,7 +147,7 @@ public class Recipe
     {
         if (rating < 1 || rating > 10)
         {
-            throw new ArgumentException("Rating must be between 1 and 10 stars");
+            throw new ArgumentOutOfRangeException("Rating must be between 1 and 10 stars");
         }
         this._difficulties.Add(rating);
     }
