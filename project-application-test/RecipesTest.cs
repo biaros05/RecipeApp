@@ -1,4 +1,7 @@
 namespace project_application_test;
+
+using System.Runtime.InteropServices;
+using System.Threading.Tasks.Dataflow;
 using recipes;
 using users;
 
@@ -145,7 +148,7 @@ public class RecipesTest
 
             Action act = () => recipe.PrepTimeMins = 2400;
 
-            Assert.ThrowsException<ArgumentException>(act, "PrepTime cannot be greater than 4 hours");
+            Assert.ThrowsException<ArgumentOutOfRangeException>(act, "PrepTime cannot be greater than 4 hours");
         }
 
         [TestMethod]
@@ -159,7 +162,7 @@ public class RecipesTest
 
             Action act = () => recipe.PrepTimeMins = -100;
 
-            Assert.ThrowsException<ArgumentException>(act, "PrepTime cannot be negative");
+            Assert.ThrowsException<ArgumentOutOfRangeException>(act, "PrepTime cannot be negative");
         }
 
         // TESTS FOR COOKTIMEMINS PROPERTY
@@ -188,7 +191,7 @@ public class RecipesTest
 
             Action act = () => recipe.CookTimeMins = 2400;
 
-            Assert.ThrowsException<ArgumentException>(act, "PrepTime cannot be greater than 4 hours");
+            Assert.ThrowsException<ArgumentOutOfRangeException>(act, "PrepTime cannot be greater than 4 hours");
         }
 
         [TestMethod]
@@ -202,7 +205,7 @@ public class RecipesTest
 
             Action act = () => recipe.CookTimeMins = -100;
 
-            Assert.ThrowsException<ArgumentException>(act, "PrepTime cannot be negative");
+            Assert.ThrowsException<ArgumentOutOfRangeException>(act, "PrepTime cannot be negative");
         }
 
         // TEST TOTALTIMEMINS PROPERTY
@@ -277,8 +280,253 @@ public class RecipesTest
 
             Action act = () => recipe.RateRecipe(6);
 
-            Assert.ThrowsException<ArgumentOutOfRangeException>(act, "Rating cannot be less than 1");
+            Assert.ThrowsException<ArgumentOutOfRangeException>(act, "Rating cannot be greater than 5");
         }
+
+        // TESTING FOR DIFFICULTY AND RATE DIFFICULTY
+        [TestMethod]
+        public void RateDifficulty_AddValidRating_ReturnsTrue()
+        {
+            Ingredient i = new("egg", Units.Quantity);
+            Dictionary<Ingredient, double> dict = new();
+            dict.Add(i, 20);
+            Recipe recipe = new(1, "Test Recipe", new User("Bianca", "Rossetti"), "Test Description", 30, 60, 4,
+                new List<string> { "Step 1", "Step 2" }, dict, new List<string> { "Tag1", "Tag2" }, 2);
+
+            recipe.RateDifficulty(4);
+
+            Assert.AreEqual(4, recipe.DifficultyRating);
+        }
+
+        [TestMethod]
+        public void RateDifficulty_AddSeveralRatings_ReturnsTrue()
+        {
+            Ingredient i = new("egg", Units.Quantity);
+            Dictionary<Ingredient, double> dict = new();
+            dict.Add(i, 20);
+            Recipe recipe = new(1, "Test Recipe", new User("Bianca", "Rossetti"), "Test Description", 30, 60, 4,
+                new List<string> { "Step 1", "Step 2" }, dict, new List<string> { "Tag1", "Tag2" }, 2);
+
+            recipe.RateDifficulty(4);
+            recipe.RateDifficulty(10);
+            recipe.RateDifficulty(8);
+            recipe.RateDifficulty(5);
+
+            Assert.AreEqual(7, recipe.DifficultyRating);
+        }
+
+        [TestMethod]
+        public void RateDifficulty_RateLessThan1_ThrowsArgumentException()
+        {
+            Ingredient i = new("egg", Units.Quantity);
+            Dictionary<Ingredient, double> dict = new();
+            dict.Add(i, 20);
+            Recipe recipe = new(1, "Test Recipe", new User("Bianca", "Rossetti"), "Test Description", 30, 60, 4,
+                new List<string> { "Step 1", "Step 2" }, dict, new List<string> { "Tag1", "Tag2" }, 2);
+
+            Action act = () => recipe.RateDifficulty(-4);
+
+            Assert.ThrowsException<ArgumentOutOfRangeException>(act, "Difficulty rating cannot be less than 1");
+        }
+
+        [TestMethod]
+        public void RateDifficulty_GreaterThan10_ThrowsArgumentException()
+        {
+            Ingredient i = new("egg", Units.Quantity);
+            Dictionary<Ingredient, double> dict = new();
+            dict.Add(i, 20);
+            Recipe recipe = new(1, "Test Recipe", new User("Bianca", "Rossetti"), "Test Description", 30, 60, 4,
+                new List<string> { "Step 1", "Step 2" }, dict, new List<string> { "Tag1", "Tag2" }, 2);
+
+            Action act = () => recipe.RateDifficulty(11);
+
+            Assert.ThrowsException<ArgumentOutOfRangeException>(act, "Rating cannot be greater than 10");
+        }
+
+        // TESTS FOR ADDTAG METHOD
+        [TestMethod]
+        public void AddTag_CorrectTag_ReturnsTrue()
+        {
+            Ingredient i = new("egg", Units.Quantity);
+            Dictionary<Ingredient, double> dict = new();
+            dict.Add(i, 20);
+            Recipe recipe = new(1, "Test Recipe", new User("Bianca", "Rossetti"), "Test Description", 30, 60, 4,
+                new List<string> { "Step 1", "Step 2" }, dict, new List<string> { "Tag1", "Tag2" }, 2);
+            List<string> correctTags = new(){"Tag1", "Tag2", "school lunch"};
+
+            recipe.AddTag("school lunch");
+
+            CollectionAssert.AreEqual(correctTags, recipe.Tags);
+        }
+
+        [TestMethod]
+        public void AddTag_ExistingTag_DoesNotAddTag()
+        {
+            Ingredient i = new("egg", Units.Quantity);
+            Dictionary<Ingredient, double> dict = new();
+            dict.Add(i, 20);
+            Recipe recipe = new(1, "Test Recipe", new User("Bianca", "Rossetti"), "Test Description", 30, 60, 4,
+                new List<string> { "Step 1", "Step 2" }, dict, new List<string> { "Tag1", "Tag2" }, 2);
+            List<string> correctTags = new(){"Tag1", "Tag2"};
+
+            recipe.AddTag("Tag1");
+
+            CollectionAssert.AreEqual(correctTags, recipe.Tags);
+        }
+
+        [TestMethod]
+        public void AddTag_EmptyTag_ThrowsArgumentException()
+        {
+            Ingredient i = new("egg", Units.Quantity);
+            Dictionary<Ingredient, double> dict = new();
+            dict.Add(i, 20);
+            Recipe recipe = new(1, "Test Recipe", new User("Bianca", "Rossetti"), "Test Description", 30, 60, 4,
+                new List<string> { "Step 1", "Step 2" }, dict, new List<string> { "Tag1", "Tag2" }, 2);
+            List<string> correctTags = new(){"Tag1", "Tag2"};
+
+            Action act = () => recipe.AddTag("");
+
+            Assert.ThrowsException<ArgumentException>(act, "Cannot add empty tag");
+        }
+
+        // TESTING UPDATERECIPE METHOD
+        [TestMethod]
+        public void UpdateRecipe_CorrectParameters_UpdatesRecipesCorrectly()
+        {
+            Ingredient i = new("egg", Units.Quantity);
+            Dictionary<Ingredient, double> dict = new();
+            dict.Add(i, 20);
+            Recipe recipe = new(1, "Test Recipe", new User("Bianca", "Rossetti"), "Test Description", 30, 60, 4,
+                new List<string> { "Step 1", "Step 2" }, dict, new List<string> { "Tag1", "Tag2" }, 2);
+            
+            string newDescription = "Updated Description";
+            int newPrepTime = 45;
+            int newCookTime = 75;
+            Dictionary<Ingredient, double> newIngredients = new();
+            newIngredients.Add(new Ingredient("flour", Units.Mass), 300);
+            newIngredients.Add(new Ingredient("egg", Units.Quantity), 4);
+            List<string> newTags = new List<string> {"NewTag1", "NewTag2"};
+
+            recipe.UpdateRecipe(newDescription, newPrepTime, newCookTime, newIngredients, newTags);
+        
+            Assert.AreEqual(newDescription, recipe.Description);
+            Assert.AreEqual(newPrepTime, recipe.PrepTimeMins);
+            Assert.AreEqual(newCookTime, recipe.CookTimeMins);
+            CollectionAssert.AreEquivalent(newIngredients, recipe.Ingredients);
+            CollectionAssert.AreEquivalent(newTags, recipe.Tags);
+        }
+
+        [TestMethod]
+        public void UpdateRecipe_EmptyDescription_UpdatesRecipesCorrectly()
+        {
+            Ingredient i = new("egg", Units.Quantity);
+            Dictionary<Ingredient, double> dict = new();
+            dict.Add(i, 20);
+            Recipe recipe = new(1, "Test Recipe", new User("Bianca", "Rossetti"), "Test Description", 30, 60, 4,
+                new List<string> { "Step 1", "Step 2" }, dict, new List<string> { "Tag1", "Tag2" }, 2);
+            
+            string newDescription = "";
+            int newPrepTime = 45;
+            int newCookTime = 75;
+            Dictionary<Ingredient, double> newIngredients = new();
+            newIngredients.Add(new Ingredient("flour", Units.Quantity), 300);
+            List<string> newTags = new List<string> {"NewTag1", "NewTag2"};
+
+            recipe.UpdateRecipe(newDescription, newPrepTime, newCookTime, newIngredients, newTags);
+        
+            Assert.AreEqual("Test Recipe", recipe.Description);
+            Assert.AreEqual(newPrepTime, recipe.PrepTimeMins);
+            Assert.AreEqual(newCookTime, recipe.CookTimeMins);
+            CollectionAssert.AreEquivalent(newIngredients, recipe.Ingredients);
+            CollectionAssert.AreEquivalent(newTags, recipe.Tags);
+        }
+
+        [TestMethod]
+        public void UpdateRecipe_NegativePrepTime_ThrowsException()
+        {
+            Ingredient i = new("egg", Units.Quantity);
+            Dictionary<Ingredient, double> dict = new();
+            dict.Add(i, 20);
+            Recipe recipe = new(1, "Test Recipe", new User("Bianca", "Rossetti"), "Test Description", 30, 60, 4,
+                new List<string> { "Step 1", "Step 2" }, dict, new List<string> { "Tag1", "Tag2" }, 2);
+            
+            string newDescription = "Description";
+            int newPrepTime = -12;
+            int newCookTime = 75;
+            Dictionary<Ingredient, double> newIngredients = new();
+            newIngredients.Add(new Ingredient("flour", Units.Quantity), 300);
+            List<string> newTags = new List<string> {"NewTag1", "NewTag2"};
+
+            Action act = () => recipe.UpdateRecipe(newDescription, newPrepTime, newCookTime, newIngredients, newTags);
+        
+            Assert.ThrowsException<ArgumentOutOfRangeException>(act, "Prep time cannot be negative");
+        }
+
+        [TestMethod]
+        public void UpdateRecipe_PrepTimeTooLarge_ThrowsException()
+        {
+            Ingredient i = new("egg", Units.Quantity);
+            Dictionary<Ingredient, double> dict = new();
+            dict.Add(i, 20);
+            Recipe recipe = new(1, "Test Recipe", new User("Bianca", "Rossetti"), "Test Description", 30, 60, 4,
+                new List<string> { "Step 1", "Step 2" }, dict, new List<string> { "Tag1", "Tag2" }, 2);
+            
+            string newDescription = "Description";
+            int newPrepTime = 500;
+            int newCookTime = 75;
+            Dictionary<Ingredient, double> newIngredients = new();
+            newIngredients.Add(new Ingredient("flour", Units.Quantity), 300);
+            List<string> newTags = new List<string> {"NewTag1", "NewTag2"};
+
+            Action act = () => recipe.UpdateRecipe(newDescription, newPrepTime, newCookTime, newIngredients, newTags);
+        
+            Assert.ThrowsException<ArgumentOutOfRangeException>(act, "Prep time cannot be greather than 4 hours");
+        }
+
+        [TestMethod]
+        public void UpdateRecipe_CookTimeTooLarge_ThrowsException()
+        {
+            Ingredient i = new("egg", Units.Quantity);
+            Dictionary<Ingredient, double> dict = new();
+            dict.Add(i, 20);
+            Recipe recipe = new(1, "Test Recipe", new User("Bianca", "Rossetti"), "Test Description", 30, 60, 4,
+                new List<string> { "Step 1", "Step 2" }, dict, new List<string> { "Tag1", "Tag2" }, 2);
+            
+            string newDescription = "Description";
+            int newPrepTime = 30;
+            int newCookTime = 750;
+            Dictionary<Ingredient, double> newIngredients = new();
+            newIngredients.Add(new Ingredient("flour", Units.Quantity), 300);
+            List<string> newTags = new List<string> {"NewTag1", "NewTag2"};
+
+            Action act = () => recipe.UpdateRecipe(newDescription, newPrepTime, newCookTime, newIngredients, newTags);
+        
+            Assert.ThrowsException<ArgumentOutOfRangeException>(act, "Cook time cannot be greater than 4 hours");
+        }
+
+        [TestMethod]
+        public void UpdateRecipe_CookTimeNegative_ThrowsException()
+        {
+            Ingredient i = new("egg", Units.Quantity);
+            Dictionary<Ingredient, double> dict = new();
+            dict.Add(i, 20);
+            Recipe recipe = new(1, "Test Recipe", new User("Bianca", "Rossetti"), "Test Description", 30, 60, 4,
+                new List<string> { "Step 1", "Step 2" }, dict, new List<string> { "Tag1", "Tag2" }, 2);
+            
+            string newDescription = "Description";
+            int newPrepTime = 30;
+            int newCookTime = -10;
+            Dictionary<Ingredient, double> newIngredients = new();
+            newIngredients.Add(new Ingredient("flour", Units.Quantity), 300);
+            List<string> newTags = new List<string> {"NewTag1", "NewTag2"};
+
+            Action act = () => recipe.UpdateRecipe(newDescription, newPrepTime, newCookTime, newIngredients, newTags);
+        
+            Assert.ThrowsException<ArgumentOutOfRangeException>(act, "Cook time cannot be negative");
+        }
+
+
+
 
     // test delete recipe
     // test delete recipe if recipe does not exits
