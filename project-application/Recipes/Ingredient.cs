@@ -21,4 +21,14 @@ public struct Ingredient
         return ((Ingredient)obj).Name.ToLower() == this.Name.ToLower() &&
                 ((Ingredient)obj).Unit == this.Unit;
     }
+
+    public override int GetHashCode()
+    {
+        int hash = 17;//prime num
+        unchecked {
+            hash = hash * 31 + this.Unit.GetHashCode();
+            hash = hash * 31 + this.Name.GetHashCode();
+            return hash;
+        }
+    }
 }

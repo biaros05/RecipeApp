@@ -15,7 +15,6 @@ public class Measurement {
         this._ratioFromBase = unit == Units.Quantity ? 0 : ratioFromBase;
     }
 
-
     public override bool Equals(object? obj)
     {
         if (obj == null || !(obj is Measurement))
@@ -53,4 +52,8 @@ public class Measurement {
         return this.Unit == Units.Quantity ? quantity : quantity * this._ratioFromBase;
     }
 
+    public override int GetHashCode()
+    {
+        return this.Unit.GetHashCode();
+    }
 }
