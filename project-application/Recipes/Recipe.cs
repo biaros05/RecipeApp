@@ -1,21 +1,22 @@
 using System.Collections.Generic;
 namespace recipes;
 
+using System.Diagnostics.Metrics;
 using System.Timers;
 using users;
 
 public class Recipe
 {
     private int Id {get;}
-    private string _name;
-    public string Name{
+    private string? _name;
+    public string? Name{
         get
         {
             return this._name;
         } 
         set
         {
-            if (value == null)
+            if (string.IsNullOrEmpty(value))
             {
                 throw new ArgumentNullException("The recipe must have a name");
             }
@@ -31,15 +32,15 @@ public class Recipe
         }
     }
     public User Owner {get;}
-    private string _description;
-    public string Description {
+    private string? _description;
+    public string? Description {
         get
         {
             return this._description;
         }
         set
         {
-            if (value == null || value.Equals(""))
+            if (string.IsNullOrEmpty(value))
             {
                 this._description = this.Name;
             }
@@ -60,7 +61,7 @@ public class Recipe
         {
             if (value > 240 || value < 0)
             {
-                throw new ArgumentException("The prep time must be less than 4 hours and more than 0 minutes.");
+                throw new ArgumentOutOfRangeException("The prep time must be less than 4 hours and more than 0 minutes.");
             }
             else 
             {
@@ -79,7 +80,7 @@ public class Recipe
         {
             if (value > 240 || value < 0)
             {
-                throw new ArgumentException("The cook time must be less than 4 hours and more than 0 minutes.");
+                throw new ArgumentOutOfRangeException("The cook time must be less than 4 hours and more than 0 minutes.");
             }
             else
             {
@@ -100,7 +101,7 @@ public class Recipe
     public int NumberOfServings {get;}
     public List<string> Instructions {get;} = new();
     // contains the ingredient and its quantity for specified unit 
-    public Dictionary<Ingredient, double> Ingredients{get;} = new();
+    public Dictionary<Ingredient, double> Ingredients{get; private set;} = new();
     private readonly List<double> _ratings = new(); // all the ratings given by users OUT OF FIVE STARS
 
     public double Rating {
@@ -124,13 +125,13 @@ public class Recipe
             {
                 difficulty += d;
             }
-            double averageDiff = difficulty / this._difficulties.Count;
+            double averageDiff = difficulty / (double)this._difficulties.Count;
             return (int) Math.Round(averageDiff, 0);
         }
     } // sum of Difficulties and get average
 
 
-    public List<string> Tags {get;}
+    public List<string> Tags {get; private set;}
     public string Budget {get;}
 
     // add rating to recipe and send information to database
@@ -171,16 +172,21 @@ public class Recipe
     string description, int preptimeMins, int cooktimeMins,
     Dictionary<Ingredient, double> ingredients, List<string> tags)
     {
+        if (preptimeMins < 0 || preptimeMins > 240)
+        {
+            throw new ArgumentOutOfRangeException("Prep time cannot be less than 0 or greater than 4 hours");
+        }
+
+        if (cooktimeMins < 0 || cooktimeMins > 240)
+        {
+            throw new ArgumentOutOfRangeException("Cook time cannot be less than 0 or greater than 4 hours");
+        }
+
         this.Description = description;
         this.PrepTimeMins = preptimeMins;
         this.CookTimeMins = cooktimeMins;
-
         UpdateIngredients(ingredients);
-
-        foreach (string t in tags)
-        {
-            AddTag(t);
-        }
+        this.Tags = tags;
 
     }
 
@@ -188,14 +194,17 @@ public class Recipe
     // the system if they do not already exist
     private void UpdateIngredients(Dictionary<Ingredient, double> ingredients)
     {
+        Dictionary<Ingredient, double> newIngredients = new();
         foreach ((Ingredient i, double quantity) in ingredients)
         {
-            if (!this.Ingredients.Contains(new KeyValuePair<Ingredient, double>(i, quantity)))
+            if (!newIngredients.Contains(new KeyValuePair<Ingredient, double>(i, quantity)))
             {
-                RecipeController.AddIngredient(i);
-                this.Ingredients.Add(i, quantity);
+                RecipeController.AddIngredient(i); // should this be here???
+                newIngredients.Add(i, quantity);
             }
         }
+
+        this.Ingredients = newIngredients;
     }
 
     public override bool Equals(object? obj)
@@ -205,7 +214,7 @@ public class Recipe
             return false;
         }
 
-        return ((Recipe)obj).Id == this.Id;
+        return ((Recipe)obj).Id == this.Id && ((Recipe)obj).Name == this.Name;
     }
 
     public Recipe(int id, string name, User owner, string description, int prepTimeMins, int cookTimeMins, int numberOfServings, List<String> instructions, Dictionary<Ingredient, double> ingredients, List<string> tags, int budget)
@@ -237,4 +246,15 @@ public class Recipe
         this.Budget = new string('$', budget);
     }
 
+    // gethashcode essential for equality. i have calculated the hash code by name and Id 
+    // because those are my attributes of equality for recipe object
+    public override int GetHashCode()
+    {
+        int hash = 17;//prime num
+        unchecked {
+            hash = hash * 31 + this.Id.GetHashCode();
+            hash = hash * 31 + (Name?.GetHashCode() ?? 0);
+            return hash;
+        }
+    }
 }
