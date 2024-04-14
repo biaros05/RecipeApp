@@ -429,8 +429,9 @@ public class RecipesTest
             int newPrepTime = 45;
             int newCookTime = 75;
             Dictionary<Ingredient, double> newIngredients = new();
-            newIngredients.Add(new Ingredient("flour", Units.Quantity), 300);
+            newIngredients.Add(new Ingredient("flour", Units.Mass), 300);
             List<string> newTags = new List<string> {"NewTag1", "NewTag2"};
+            List<Ingredient> ingredients = new(){new("egg", Units.Quantity), new Ingredient("flour", Units.Mass)};
 
             recipe.UpdateRecipe(newDescription, newPrepTime, newCookTime, newIngredients, newTags);
         
@@ -439,6 +440,8 @@ public class RecipesTest
             Assert.AreEqual(newCookTime, recipe.CookTimeMins);
             CollectionAssert.AreEquivalent(newIngredients, recipe.Ingredients);
             CollectionAssert.AreEquivalent(newTags, recipe.Tags);
+            // checking the main ingredients controller was updated correctly
+            CollectionAssert.AreEquivalent(ingredients, RecipeController.Ingredients);
         }
 
         [TestMethod]
@@ -525,42 +528,117 @@ public class RecipesTest
             Assert.ThrowsException<ArgumentOutOfRangeException>(act, "Cook time cannot be negative");
         }
 
+        // CONSTRUCTOR TESTS:
+        [TestMethod]
+        public void Constructor_ValidParams_InitializesCorrectly()
+        {
+            int id = 1;
+            string name = "Test Recipe";
+            User owner = new User("Bianca", "Rossetti");
+            string newDescription = "Test Description";
+            int newPrepTime = 30;
+            int newCookTime = 60;
+            int numServings = 4;
+            List<string> instructions = new List<string>{"Step 1", "Step 2"};
+            Dictionary<Ingredient, double> newIngredients = new();
+            newIngredients.Add(new Ingredient("flour", Units.Quantity), 300);
+            List<string> newTags = new List<string> {"Tag1", "Tag2"};
+            int budget = 2;
 
+            Recipe recipe = new(id, name, owner, newDescription, newPrepTime, newCookTime, numServings, instructions, newIngredients, newTags, budget);
+            
+            Assert.AreEqual(name, recipe.Name);
+            Assert.AreEqual(owner, recipe.Owner);
+            Assert.AreEqual(newDescription, recipe.Description);
+            Assert.AreEqual(newPrepTime, recipe.PrepTimeMins);
+            Assert.AreEqual(newCookTime, recipe.CookTimeMins);
+            Assert.AreEqual(numServings, recipe.NumberOfServings);
+            CollectionAssert.AreEqual(instructions, recipe.Instructions);
+            CollectionAssert.AreEqual(newIngredients, recipe.Ingredients);
+            CollectionAssert.AreEqual(newTags, recipe.Tags);
+            Assert.AreEqual("$$", recipe.Budget);
+        }
 
+        [TestMethod]
+        public void Constructor_EmptyInstructions_ThrowsException()
+        {
+            int id = 1;
+            string name = "Test Recipe";
+            User owner = new User("Bianca", "Rossetti");
+            string newDescription = "Test Description";
+            int newPrepTime = 30;
+            int newCookTime = 60;
+            int numServings = 4;
+            List<string> instructions = new List<string>();
+            Dictionary<Ingredient, double> newIngredients = new();
+            newIngredients.Add(new Ingredient("flour", Units.Quantity), 300);
+            List<string> newTags = new List<string> {"Tag1", "Tag2"};
+            int budget = 2;
 
-    // test delete recipe
-    // test delete recipe if recipe does not exits
-    // test delete recipe if the user is not the owner
-    // test create recipe
-    // test create recipe if recipe already exists
-    // test update description 
-    // test update preptimeMins
-    // test update preptimeMins if the time is less than the requirement
-    // tes update cooktimeMins
-    // tes update cooktimeMins if the time is less than the requirement
-    // test update servings
-    // test update servings if servings negative
-    // test update ingredients
-    // test update ingredients if ingredient doesnt exist (?) --> need to add it first?
-    // test update tags
-    // test update description if null
-    // test update preptimeMins if null
-    // tes update cooktimeMins if null
-    // test update servings if null
-    // test update ingredients if null
-    // test update tags if null
-    // test update rating if null
-    // test UpdateDescription if the user isnt the owner
-    // test RateRecipe if the rating is less than 0
-    // test RateRecipe if the rating is more than 5
-    // test RateRecipe if the rating is null
-    // test RateRecipe
-    // test UpdateDescription 
-    // test UpdateDescription --> one new test for every field that could be invalid
-    // this method will take into account the ingredients and calculate the budget for a given recipe
-    // test GetRecipeBudgetX
-    // test GetRecipeBudget if there are no ingredients(?)
-    // test RateDifficulty
-    // test RateDifficulty if difficulty does not meet requirements (<0 or >3)
-    
+            Action act = () => new Recipe(id, name, owner, newDescription, newPrepTime, newCookTime, numServings, instructions, newIngredients, newTags, budget);
+            
+            Assert.ThrowsException<ArgumentException>(act, "must contain instructions");
+        }
+
+        [TestMethod]
+        public void Constructor_EmptyIngredients_ThrowsException()
+        {
+            int id = 1;
+            string name = "Test Recipe";
+            User owner = new User("Bianca", "Rossetti");
+            string newDescription = "Test Description";
+            int newPrepTime = 30;
+            int newCookTime = 60;
+            int numServings = 4;
+            List<string> instructions = new List<string>{"Step 1", "Step 2"};
+            Dictionary<Ingredient, double> newIngredients = new();
+            List<string> newTags = new List<string> {"Tag1", "Tag2"};
+            int budget = 2;
+
+            Action act = () => new Recipe(id, name, owner, newDescription, newPrepTime, newCookTime, numServings, instructions, newIngredients, newTags, budget);
+            
+            Assert.ThrowsException<ArgumentException>(act, "must contain ingredients");
+        }
+
+        [TestMethod]
+        public void Constructor_InvalidBudgetOver3_ThrowsException()
+        {
+            int id = 1;
+            string name = "Test Recipe";
+            User owner = new User("Bianca", "Rossetti");
+            string newDescription = "Test Description";
+            int newPrepTime = 30;
+            int newCookTime = 60;
+            int numServings = 4;
+            List<string> instructions = new List<string>{"Step 1", "Step 2"};
+            Dictionary<Ingredient, double> newIngredients = new();
+            newIngredients.Add(new Ingredient("flour", Units.Quantity), 300);
+            List<string> newTags = new List<string> {"Tag1", "Tag2"};
+            int budget = 4;
+
+            Action act = () => new Recipe(id, name, owner, newDescription, newPrepTime, newCookTime, numServings, instructions, newIngredients, newTags, budget);
+            
+            Assert.ThrowsException<ArgumentException>(act, "budget cannot be greater than 3");
+        }
+
+        [TestMethod]
+        public void Constructor_InvalidBudgetLessThan1_ThrowsException()
+        {
+            int id = 1;
+            string name = "Test Recipe";
+            User owner = new User("Bianca", "Rossetti");
+            string newDescription = "Test Description";
+            int newPrepTime = 30;
+            int newCookTime = 60;
+            int numServings = 4;
+            List<string> instructions = new List<string>{"Step 1", "Step 2"};
+            Dictionary<Ingredient, double> newIngredients = new();
+            newIngredients.Add(new Ingredient("flour", Units.Quantity), 300);
+            List<string> newTags = new List<string> {"Tag1", "Tag2"};
+            int budget = 0;
+
+            Action act = () => new Recipe(id, name, owner, newDescription, newPrepTime, newCookTime, numServings, instructions, newIngredients, newTags, budget);
+            
+            Assert.ThrowsException<ArgumentException>(act, "budget cannot be greater than 3");
+        }
 }
