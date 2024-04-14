@@ -64,5 +64,23 @@ public class RecipeController
         }
         return filtered;
     }
+
+    public static void AddFilter(IFilterBy filter)
+    {
+        if (Filters.Contains(filter))
+        {
+            throw new ArgumentException("this filter already exists");
+        }
+        Filters.Add(filter);
+    }
+
+    public static void RemoveFilter(IFilterBy filter)
+    {
+        if (!Filters.Contains(filter))
+        {
+            throw new ArgumentException("this filter hasnt been applied yet");
+        }
+        Filters.Remove(filter);
+    }
     
 }
