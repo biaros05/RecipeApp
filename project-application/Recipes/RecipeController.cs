@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 namespace recipes;
 
+using System.Globalization;
 using System.Net;
 using filtering;
 using users;
@@ -43,13 +44,16 @@ public class RecipeController
         AllRecipes.Remove(recipe);
     }
     
+
+    // must clone the recipes!!!!
     public static List<Recipe> FilterBy()
     {
+        List<Recipe> filtered = AllRecipes.ConvertAll(x => new Recipe(x));
         foreach (IFilterBy filter in Filters)
         {
-            filter.FilterRecipes(AllRecipes);
+            filtered = filter.FilterRecipes(filtered);
         }
-        return AllRecipes;
+        return filtered;
     }
     
 }
