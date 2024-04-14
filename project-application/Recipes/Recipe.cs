@@ -214,7 +214,7 @@ public class Recipe
             return false;
         }
 
-        return ((Recipe)obj).Id == this.Id && ((Recipe)obj).Name == this.Name;
+        return ((Recipe)obj).Id == this.Id || ((Recipe)obj).Name == this.Name;
     }
 
     public Recipe(Recipe other)
