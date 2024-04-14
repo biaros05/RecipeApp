@@ -29,10 +29,12 @@ public class RecipeControllerTests
             new List<string> { "Step 1", "Step 2" }, dict, new List<string> { "Tag1", "Tag2" }, 2);
         List<Recipe> expectedList = new(){new(1, "Test Recipe", UserController.ActiveUser, "Test Description", 30, 60, 4,
             new List<string> { "Step 1", "Step 2" }, dict, new List<string> { "Tag1", "Tag2" }, 2)};
+        List<Ingredient> expectedIngredients = new(){i};
 
         RecipeController.CreateRecipe(recipe);
 
         CollectionAssert.AreEqual(expectedList, RecipeController.AllRecipes);
+        CollectionAssert.AreEqual(expectedIngredients, RecipeController.Ingredients);
     }
 
     [TestMethod]
