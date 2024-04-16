@@ -13,6 +13,7 @@ public class User
 
     public bool Login{get; set;}=false;  
 //ignore salt just take in the user and pwd
+//access the properties like explained in clas and ex on stack
     public List<Recipe> UserCreatedRecipies{get;}
     public List<Recipe> UserFavoriteRecipies{get;}
     private string username;
@@ -86,19 +87,10 @@ public class User
 
     // take recipe, retrieve the list of recipes for user, remove that recipe, send back to data layer
     public void RemoveFromFavourites(Recipe recipe){
-        UserFavoriteRecipies.Add(recipe);
+        //am i capable of using remove(obj)???
+        UserFavoriteRecipies.Remove(recipe);
     }
 
     // interacts with data layer to retrieve the recipes by that user
-    public List<Recipe> GetRecipesCreated()
-    {
-        throw new NotImplementedException();
-    }
-
-    // interacts with data layer to retrieve the favourites for that user
-    public List<Recipe> GetFavourites()
-    {
-        throw new NotImplementedException();
-    }
 
 }
