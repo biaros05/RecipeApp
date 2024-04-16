@@ -11,7 +11,6 @@ public class User
 //store img as a array of bytes
 //add user id only visible in db(private)
 
-    public bool Login{get; set;}=false;  
 //ignore salt just take in the user and pwd
 //access the properties like explained in clas and ex on stack
     public List<Recipe> UserCreatedRecipies{get;}
@@ -92,5 +91,4 @@ public class User
     }
 
     // interacts with data layer to retrieve the recipes by that user
-
 }
