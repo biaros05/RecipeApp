@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using System.Reflection;
 namespace users;
+
+using System.Dynamic;
 using recipes;
 
 public class User
@@ -9,11 +11,10 @@ public class User
 //store img as a array of bytes
 //add user id only visible in db(private)
 
-
+    public bool Login{get; set;}=false;  
 //ignore salt just take in the user and pwd
-    private UserController userController;
-    private User[] usersList = userController.ArrayOfUsers;
-//USERlIST CONTAINS THE LIST OF ALL USERS
+    public List<Recipe> UserCreatedRecipies{get;}
+    public List<Recipe> UserFavoriteRecipies{get;}
     private string username;
     private int id{get;set;}
     public string Username
@@ -23,18 +24,17 @@ public class User
             return this.username;
         }
         set{
-            foreach (User oneUser in usersList)
-            {
-                if(value.Equals(oneUser.Username))
-                {
-                    throw new Exception("this username is already in use");
-                }
-            }
-            //or do i need =
-            this.username.Equals(value);
+            // foreach (User oneUser in usersList)
+            // {
+            //     if(value.Equals(oneUser.Username))
+            //     {
+            //         throw new Exception("this username is already in use");
+            //     }
+            // }
+            this.username=value;
         } 
     }
-    public byte[]? Image {get;}
+    public byte[]? Image {get;set;}
     public string? Description {get; set;}
     
     private Password Password;
@@ -57,20 +57,37 @@ public class User
 
     // performs the correct logic to update these fields and send changes to DB
     //shoudnt we be able to update each field seperatley?????
-    public void UpdateFields(string newPassword, string newDescription, string newImage){}
-    
+    public void UpdatePassword(Password newPass)
+    {
+        if(Login)
+        {
+            Password=newPass;
+        }
+    }
+    public void UpdateFields( string newDescription, byte[] newImage){
+        this.Description=newDescription;
+        this.Image=newImage;
+    }
+        
     // removes profile picture provided one exists
-    public void RemoveProfilePicture(){}
+    public void RemoveProfilePicture(){
+        this.Image=null;
+    }
 
     // removes description provided one exists
-    //new, shoudnt it update the desc and if user leave it empy it updates it as empty???
-    public void RemoveDescription(){}
+    public void RemoveDescription(){
+        this.Description=null;
+    }
 
     // take recipe, retrieve the list of recipes for user, add that recipe, send back to data layer
-    public void AddToFavourites(Recipe recipe){}
+    public void AddToFavourites(Recipe recipe){
+        UserFavoriteRecipies.Add(recipe);
+    }
 
     // take recipe, retrieve the list of recipes for user, remove that recipe, send back to data layer
-    public void RemoveFromFavourites(Recipe recipe){}
+    public void RemoveFromFavourites(Recipe recipe){
+        UserFavoriteRecipies.Add(recipe);
+    }
 
     // interacts with data layer to retrieve the recipes by that user
     public List<Recipe> GetRecipesCreated()

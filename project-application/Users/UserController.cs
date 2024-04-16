@@ -26,10 +26,10 @@ public class UserController
     public void DeleteAccount(){}
 
     //a list that contains all the users
-    public string[] ArrayOfUsers{get;}
+    public List<User> ListOfUsers{get;}
 
-    public bool findUser(string username)
-    {
-        return ArrayOfUsers.Contains(username);
-    }
+    // public bool findUser(string username)
+    // {
+    //     return ArrayOfUsers.Contains(username);
+    // }
 }

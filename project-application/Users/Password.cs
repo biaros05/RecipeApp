@@ -1,5 +1,5 @@
 // this class represents a password in its entirety and will take care of password logic
-internal class Password
+public class Password
 {
     //private string HashedPassword {get; set;}
 
@@ -33,4 +33,9 @@ internal class Password
     {
         throw new NotImplementedException();
     }
+
+    // public static implicit operator Password(string v)
+    // {
+    //     throw new NotImplementedException();
+    // }
 }
