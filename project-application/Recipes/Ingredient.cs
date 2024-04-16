@@ -1,12 +1,34 @@
+using System.Diagnostics.CodeAnalysis;
+
 namespace recipes;
 public struct Ingredient
 {
     // initializes ingredient with proper data validation
-    public Ingredient(string name, Measurement measurement, double costPerUnit){
-        throw new NotImplementedException();
+    public Ingredient(string name, Units unit){
+        // MAKE SURE IT DOES NOT ALREADY EXIST
+        this.Name = name;
+        this.Unit = unit;
     }
     public string Name {get; set;}
-    public Measurement Measurement {get; set;}
-    // cost per unit for the base unit we will choose (hopefully this logic will work) 
-    internal double CostPerUnit {get;}
+    public Units Unit {get; set;}
+
+    public override bool Equals(object? obj)
+    {
+        if (obj == null || !(obj is Ingredient))
+        {
+            return false;
+        }   
+        return ((Ingredient)obj).Name.ToLower() == this.Name.ToLower() &&
+                ((Ingredient)obj).Unit == this.Unit;
+    }
+
+    public override int GetHashCode()
+    {
+        int hash = 17;//prime num
+        unchecked {
+            hash = hash * 31 + this.Unit.GetHashCode();
+            hash = hash * 31 + this.Name.GetHashCode();
+            return hash;
+        }
+    }
 }
