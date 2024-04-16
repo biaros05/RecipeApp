@@ -1,4 +1,5 @@
 namespace project_application_test;
+using filtering;
 
 [TestClass]
 public class FilterTests
@@ -8,6 +9,11 @@ public class FilterTests
     //tests for filter by keyword
     //tests for filter by keyword if keyword is null
     //tests for filter by ingredients
+    [TestMethod]
+        public void filterByIngredients()
+        {
+
+        }
     //tests for filter by ingredients if ingredients empty
     //tests for filter by rating
     //tests for filter by rating if rating is null
