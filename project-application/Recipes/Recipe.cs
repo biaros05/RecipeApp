@@ -7,12 +7,12 @@ using users;
 
 public class Recipe
 {
-    private int Id {get;}
+    private int? Id {get;}
     private string? _name;
-    public string? Name{
+    public string Name{
         get
         {
-            return this._name;
+            return this._name!;
         } 
         set
         {
@@ -33,10 +33,10 @@ public class Recipe
     }
     public User Owner {get;}
     private string? _description;
-    public string? Description {
+    public string Description {
         get
         {
-            return this._description;
+            return this._description!;
         }
         set
         {
@@ -199,7 +199,6 @@ public class Recipe
         {
             if (!newIngredients.Contains(new KeyValuePair<Ingredient, double>(i, quantity)))
             {
-                RecipeController.AddIngredient(i); // should this be here???
                 newIngredients.Add(i, quantity);
             }
         }
@@ -218,15 +217,12 @@ public class Recipe
     }
 
     public Recipe(Recipe other)
-    : this(other.Id, other.Name, other.Owner, other.Description, other.PrepTimeMins, other.CookTimeMins, other.NumberOfServings, other.Instructions, other.Ingredients, other.Tags, other.Budget.Length)
+    : this(other.Name, other.Owner, other.Description, other.PrepTimeMins, other.CookTimeMins, other.NumberOfServings, other.Instructions, other.Ingredients, other.Tags, other.Budget.Length)
     {
     }
 
-    public Recipe(int id, string name, User owner, string description, int prepTimeMins, int cookTimeMins, int numberOfServings, List<String> instructions, Dictionary<Ingredient, double> ingredients, List<string> tags, int budget)
+    public Recipe(string name, User owner, string description, int prepTimeMins, int cookTimeMins, int numberOfServings, List<String> instructions, Dictionary<Ingredient, double> ingredients, List<string> tags, int budget)
     {
-        // validate if it already exists???
-        this.Id = id;
-        // validate if user exists???
         this.Owner = owner;
         this.Name = name;
 

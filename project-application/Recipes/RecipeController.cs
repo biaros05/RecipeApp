@@ -10,12 +10,28 @@ namespace recipes;
 public class RecipeController
 {
     // as the user adds a filter, this will accumilate the filters (will NOT add one if already there.)
-    public static List<IFilterBy> Filters {get; internal set;} = new();
-    public static List<Recipe> AllRecipes {get; internal set;} = new();
-    public static List<Ingredient> Ingredients {get; internal set;} = new();
+    public List<IFilterBy> Filters {get;} = new();
+    public List<Recipe> AllRecipes {get;} = new();
+    public List<Ingredient> Ingredients {get;} = new();
+
+    private static RecipeController? _instance;
+    
+    private RecipeController(){}
+
+    public static RecipeController Instance
+    {
+        get
+        {
+            if (_instance == null)
+            {
+                _instance = new RecipeController();
+            }
+            return _instance;
+        }
+    } 
 
     // gets list of recipes from db, adds recipe, sends back list to db
-    public static void CreateRecipe(Recipe recipe)
+    public void CreateRecipe(Recipe recipe)
     {
         if (AllRecipes.Contains(recipe))
         {
@@ -30,7 +46,7 @@ public class RecipeController
         AllRecipes.Add(recipe);
     }
 
-    public static void AddIngredient(Ingredient ingredient)
+    public void AddIngredient(Ingredient ingredient)
     {
         if (!Ingredients.Contains(ingredient))
         {
@@ -39,7 +55,7 @@ public class RecipeController
     }
 
     // get list of recipes, and remove particular recipe (VALIDATE THE USER TRYING TO DELETE)
-    public static void DeleteRecipe(Recipe recipe)
+    public void DeleteRecipe(Recipe recipe)
     {
         if (!AllRecipes.Contains(recipe))
         {
@@ -55,7 +71,7 @@ public class RecipeController
     
 
     // filters all recipes using the filters in the list
-    public static List<Recipe> FilterBy()
+    public List<Recipe> FilterBy()
     {
         List<Recipe> filtered = AllRecipes.ConvertAll(x => new Recipe(x));
         foreach (IFilterBy filter in Filters)
@@ -65,7 +81,7 @@ public class RecipeController
         return filtered;
     }
 
-    public static void AddFilter(IFilterBy filter)
+    public void AddFilter(IFilterBy filter)
     {
         if (Filters.Contains(filter))
         {
@@ -74,7 +90,7 @@ public class RecipeController
         Filters.Add(filter);
     }
 
-    public static void RemoveFilter(IFilterBy filter)
+    public void RemoveFilter(IFilterBy filter)
     {
         if (!Filters.Contains(filter))
         {
