@@ -18,15 +18,13 @@ public struct Ingredient
         {
             return false;
         }   
-        return ((Ingredient)obj).Name.ToLower() == this.Name.ToLower() &&
-                ((Ingredient)obj).Unit == this.Unit;
+        return ((Ingredient)obj).Name.ToLower() == this.Name.ToLower();
     }
 
     public override int GetHashCode()
     {
         int hash = 17;//prime num
         unchecked {
-            hash = hash * 31 + this.Unit.GetHashCode();
             hash = hash * 31 + this.Name.GetHashCode();
             return hash;
         }

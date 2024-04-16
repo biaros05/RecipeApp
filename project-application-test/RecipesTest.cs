@@ -8,6 +8,14 @@ using users;
 [TestClass]
 public class RecipesTest
 {
+    // cleanup static members after every test
+    [TestCleanup]
+    public void TestCleanup()
+    {
+        RecipeController.AllRecipes = new();
+        RecipeController.Filters = new();
+        RecipeController.Ingredients = new();
+    }
     // TESTS FOR NAME PROPERTY
     [TestMethod]
         public void Name_SetValidName_SetsNameCorrectly()
@@ -641,4 +649,37 @@ public class RecipesTest
             
             Assert.ThrowsException<ArgumentException>(act, "budget cannot be greater than 3");
         }
+
+        // COPY CONSTRUCTOR TESTS
+        [TestMethod]
+        public void CopyConstructor_ValidParams_InitializesCorrectly()
+        {
+            int id = 1;
+            string name = "Test Recipe";
+            User owner = new User("Bianca", "Rossetti");
+            string newDescription = "Test Description";
+            int newPrepTime = 30;
+            int newCookTime = 60;
+            int numServings = 4;
+            List<string> instructions = new List<string>{"Step 1", "Step 2"};
+            Dictionary<Ingredient, double> newIngredients = new();
+            newIngredients.Add(new Ingredient("flour", Units.Quantity), 300);
+            List<string> newTags = new List<string> {"Tag1", "Tag2"};
+            int budget = 2;
+            Recipe recipe = new(id, name, owner, newDescription, newPrepTime, newCookTime, numServings, instructions, newIngredients, newTags, budget);
+            
+            Recipe copiedRecipe = new(recipe);
+
+            Assert.AreEqual(name, copiedRecipe.Name);
+            Assert.AreEqual(owner, copiedRecipe.Owner);
+            Assert.AreEqual(newDescription, copiedRecipe.Description);
+            Assert.AreEqual(newPrepTime, copiedRecipe.PrepTimeMins);
+            Assert.AreEqual(newCookTime, copiedRecipe.CookTimeMins);
+            Assert.AreEqual(numServings, copiedRecipe.NumberOfServings);
+            CollectionAssert.AreEqual(instructions, copiedRecipe.Instructions);
+            CollectionAssert.AreEqual(newIngredients, copiedRecipe.Ingredients);
+            CollectionAssert.AreEqual(newTags, copiedRecipe.Tags);
+            Assert.AreEqual("$$", copiedRecipe.Budget);
+        }
+
 }
