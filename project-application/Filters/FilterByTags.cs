@@ -15,7 +15,7 @@ public class FilterByTags : IFilterBy
     public List<Recipe> FilterRecipes(List<Recipe> recipes)
     {
         var filteredRecipes = recipes
-            .Where(recipe => !recipe.Tags.Intersect(Tags).Any());
+            .Where(recipe => recipe.Tags.Intersect(Tags).Any());
         return filteredRecipes.ToList();
     }
 }
