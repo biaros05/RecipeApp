@@ -46,8 +46,8 @@ public class FilterTests
                 new List<string> { "Step 1", "Step 2" }, dict2, new List<string> { "Tag1", "Tag2" }, 2)
             };
 
-        IFilterBy filterByKeyword = new FilterByKeyword("Test");
-        List<Recipe> filteredRecipes = filterByKeyword.FilterRecipes(recipes);
+        IFilterBy filter = new FilterByKeyword("Test");
+        List<Recipe> filteredRecipes = filter.FilterRecipes(recipes);
 
         CollectionAssert.AreEqual(expected, filteredRecipes);
     }
@@ -57,7 +57,7 @@ public class FilterTests
     [ExpectedException(typeof(InvalidOperationException))]
     public void FilterByKeyword_Null_test()
     {
-        IFilterBy filterByKeyword = new FilterByKeyword("");
+        IFilterBy filter = new FilterByKeyword("");
     }
 
     //tests for filter by ingredients
@@ -95,9 +95,9 @@ public class FilterTests
                 new List<string> { "Step 1", "Step 2" }, dict, new List<string> { "Tag1", "Tag2" }, 2)
             };
 
-        // calling filterin
-        IFilterBy filterByIngredient = new FilterByIngredients(lookingForIngredient);
-        List<Recipe> filteredRecipes = filterByIngredient.FilterRecipes(recipes);
+        // calling filtering
+        IFilterBy filter = new FilterByIngredients(lookingForIngredient);
+        List<Recipe> filteredRecipes = filter.FilterRecipes(recipes);
 
 
         CollectionAssert.AreEqual(expectedRecipes, filteredRecipes);
@@ -109,7 +109,7 @@ public class FilterTests
     public void FilterByIngredientsTestEmpty()
     {
         List<Ingredient> lookingForIngredient = new();
-        IFilterBy filterByIngredient = new FilterByIngredients(lookingForIngredient);
+        IFilterBy filter = new FilterByIngredients(lookingForIngredient);
     }
 
     //tests for filter by rating
@@ -117,7 +117,49 @@ public class FilterTests
     //tests for filter by tags
     //tests for filter by tags if tags is empty
     //tests for filter by owner
-    //tests for filter by owner if owner does not have recipe
+    [TestMethod]
+    public void FilterByOwnerTest()
+    {
+        // creating test data
+        Ingredient a = new("Apple", Units.Quantity);
+        Ingredient b = new("Sugar", Units.Mass);
+        Dictionary<Ingredient, double> dict = new()
+            {
+                { a, 20 },
+            };
+        Dictionary<Ingredient, double> dict2 = new()
+            {
+                { b, 20 },
+            };
+        List<Recipe> recipes = new()
+            {
+                new(1, "Test Recipe", new User("Bianca", "Rossetti"), "Test Description", 30, 60, 4,
+                new List<string> { "Step 1", "Step 2" }, dict, new List<string> { "Tag1", "Tag2" }, 2),
+                new(1, "Recipe need 10 characters", new User("Not Bianca", "Rossetti"), "Test Description", 30, 60, 4,
+                new List<string> { "Step 1", "Step 2" }, dict2, new List<string> { "Tag1", "Tag2" }, 2)
+            };
+        
+        // creating expected data
+        List<Recipe> expected = new()
+            {
+                new(1, "Test Recipe", new User("Bianca", "Rossetti"), "Test Description", 30, 60, 4,
+                new List<string> { "Step 1", "Step 2" }, dict, new List<string> { "Tag1", "Tag2" }, 2),
+            };
+        
+        IFilterBy filter = new FilterByOwner(new User("Biance", "Rossetti"));
+        List<Recipe> filteredRecipes = filter.FilterRecipes(recipes);
+
+        CollectionAssert.AreEqual(expected, filteredRecipes);
+    }
+
+    //tests for filter by owner if the owner does not exist
+    [TestMethod]
+    [ExpectedException(typeof(InvalidOperationException))]
+    public void FilterByOwnerTestNull()
+    {
+        IFilterBy filter = new FilterByOwner(null);
+    }
+
     //tests for filter by servings
     //tests for filter by servings if servings is null
 
