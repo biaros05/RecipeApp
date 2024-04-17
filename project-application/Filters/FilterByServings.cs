@@ -14,6 +14,11 @@ public class FilterByServings : IFilterBy
     }
     private int MinServings;
     private int MaxServings;
+    /// <summary>
+    /// Filters a given list of recipes by its serving
+    /// </summary>
+    /// <param name="recipes">a given list of recipes to filter</param>
+    /// <returns>a list of filtered recipes that fit into the minimum and maximum amount of serving</returns>
     public List<Recipe> FilterRecipes(List<Recipe> recipes)
     {
         var filteredRecipes = recipes

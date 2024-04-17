@@ -14,6 +14,11 @@ public class FilterByTime : IFilterBy
     }
     private int MinTimeMins;
     private int MaxTimeMins;
+    /// <summary>
+    /// Filters a given list of recipes using the specified min and max time
+    /// </summary>
+    /// <param name="recipes">A given list of recipes to filter</param>
+    /// <returns>returns a filtered list of recipes that are above the min time and under the max time</returns>
     public List<Recipe> FilterRecipes(List<Recipe> recipes)
     {
         var filteredRecipes = recipes

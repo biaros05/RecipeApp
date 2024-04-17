@@ -115,9 +115,9 @@ public class FilterTests
             };
 
         IFilterBy filter = new FilterByKeyword("Test");
-        List<Recipe> filteredRecipes = filter.FilterRecipes(recipes);
+        List<Recipe> actual = filter.FilterRecipes(recipes);
 
-        CollectionAssert.AreEqual(expected, filteredRecipes);
+        CollectionAssert.AreEqual(expected, actual);
     }
 
     //tests for filter by keyword if keyword is null
@@ -165,10 +165,10 @@ public class FilterTests
 
         // calling filtering
         IFilterBy filter = new FilterByIngredients(lookingForIngredient);
-        List<Recipe> filteredRecipes = filter.FilterRecipes(recipes);
+        List<Recipe> actual = filter.FilterRecipes(recipes);
 
 
-        CollectionAssert.AreEqual(expectedRecipes, filteredRecipes);
+        CollectionAssert.AreEqual(expectedRecipes, actual);
     }
 
     //tests for filter by ingredients if ingredients empty
@@ -325,9 +325,9 @@ public class FilterTests
             };
         
         IFilterBy filter = new FilterByOwner(new User("Biance", "Rossetti"));
-        List<Recipe> filteredRecipes = filter.FilterRecipes(recipes);
+        List<Recipe> actual = filter.FilterRecipes(recipes);
 
-        CollectionAssert.AreEqual(expected, filteredRecipes);
+        CollectionAssert.AreEqual(expected, actual);
     }
 
     //tests for filter by owner if the owner does not exist

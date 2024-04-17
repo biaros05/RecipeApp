@@ -13,6 +13,12 @@ public class FilterByKeyword : IFilterBy
         Keyword = keyword;
     }
     private string Keyword;
+    /// <summary>
+    /// Filteres the given recipes list depending on the keyword specified
+    /// </summary>
+    /// <param name="recipes">given list of recipes</param>
+    /// <returns>returns a list of filtered recipes where the name or description contains the keyword</returns>
+    /// <exception cref="InvalidOperationException">When the given recipe has a null or empty name or description</exception>
     public List<Recipe> FilterRecipes(List<Recipe> recipes)
     {
         var filteredRecipes = recipes

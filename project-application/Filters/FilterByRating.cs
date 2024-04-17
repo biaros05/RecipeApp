@@ -11,6 +11,11 @@ public class FilterByRating : IFilterBy
         Rating = rating;
     }
     private int Rating;
+    /// <summary>
+    /// Filters a given list of recipes depending on the rating given
+    /// </summary>
+    /// <param name="recipes">A given list of recipes to filter</param>
+    /// <returns>A filtered list of recipes that matches the given star rating</returns>
     public List<Recipe> FilterRecipes(List<Recipe> recipes)
     {
         var filteredRecipes = recipes
