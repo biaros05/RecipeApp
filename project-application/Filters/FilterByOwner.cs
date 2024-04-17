@@ -6,8 +6,7 @@ public class FilterByOwner : IFilterBy
 {
     public FilterByOwner(User owner)
     {
-        if (owner == null) throw new ArgumentNullException("owner cannot be null");
-        Owner = owner;
+        Owner = owner ?? throw new InvalidOperationException("owner cannot be null");
     }
     private User Owner;
     public List<Recipe> FilterRecipes(List<Recipe> recipes)
