@@ -9,6 +9,8 @@ public class FilterByServings : IFilterBy
         {
             throw new InvalidOperationException("minimum must be greater than zero and maximum must be greater than minimum");    
         }
+        MinServings = min;
+        MaxServings = max;
     }
     private int MinServings;
     private int MaxServings;
