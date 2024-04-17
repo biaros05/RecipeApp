@@ -1,3 +1,4 @@
+using System.Collections.ObjectModel;
 using filtering;
 using recipes;
 using users;
@@ -6,11 +7,78 @@ namespace project_application_test;
 [TestClass]
 public class FilterTests
 {
+    [TestMethod]
     //tests for filter by time
-    //tests for filter by time if time null
+    public void FilterByTimeTest()
+    {
+        //creating test data
+        Ingredient a = new("Apple", Units.Quantity);
+        Ingredient b = new("Sugar", Units.Mass);
+        Dictionary<Ingredient, double> dict = new()
+            {
+                { a, 20 },
+            };
+        Dictionary<Ingredient, double> dict2 = new()
+            {
+                { b, 20 },
+            };
+        List<Recipe> recipes = new()
+            {
+                new(1, "Test Recipe", new User("Bianca", "Rossetti"), "Test Description", 30, 45, 4,
+                new List<string> { "Step 1", "Step 2" }, dict, new List<string> { "Tag1", "Tag2" }, 2),
+                new(1, "Recipe need 10 characters", new User("Not Bianca", "Rossetti"), "Test Description", 15, 15, 4,
+                new List<string> { "Step 1", "Step 2" }, dict2, new List<string> { "Tag2", "Tag3" }, 2),
+                new(1, "Recipe need 10 characters", new User("Not Bianca", "Rossetti"), "Test Description", 60, 60, 4,
+                new List<string> { "Step 1", "Step 2" }, dict2, new List<string> { "Tag4", "Tag6" }, 2),
+                new(1, "Recipe need 10 characters", new User("Not Bianca", "Rossetti"), "Test Description", 90, 60, 4,
+                new List<string> { "Step 1", "Step 2" }, dict2, new List<string> { "Tag4", "Tag1" }, 2)
+            };
+
+        //create expected data
+        List<Recipe> expected = new()
+            {
+                new(1, "Test Recipe", new User("Bianca", "Rossetti"), "Test Description", 30, 45, 4,
+                new List<string> { "Step 1", "Step 2" }, dict, new List<string> { "Tag1", "Tag2" }, 2),
+                new(1, "Recipe need 10 characters", new User("Not Bianca", "Rossetti"), "Test Description", 60, 60, 4,
+                new List<string> { "Step 1", "Step 2" }, dict2, new List<string> { "Tag4", "Tag6" }, 2)
+            };
+        
+        //filter
+        IFilterBy filter = new FilterByTime(75, 130);
+        List<Recipe> actual = filter.FilterRecipes(recipes);
+
+        //assert
+        CollectionAssert.AreEqual(expected, actual);
+
+    }
+
+    //tests for filter by time if time less or equal to 0
+    [TestMethod]
+    [ExpectedException(typeof(InvalidOperationException))]
+    public void FilterByTimeLessThanZeroTest()
+    {
+        IFilterBy filter = new FilterByTime(0, 120);
+    }
+
+    //tests for filter by time if time is bigger than 420
+    [TestMethod]
+    [ExpectedException(typeof(InvalidOperationException))]
+    public void FilterByTimeMoreThanFourHoursTest()
+    {
+        IFilterBy filter = new FilterByTime(50, 421);
+    }
+
+    //tests if min time is bigger than max time
+    [TestMethod]
+    [ExpectedException(typeof(InvalidOperationException))]
+    public void FilterByTimeMinBiggerThanMaxTest()
+    {
+        IFilterBy filter = new FilterByTime(300, 120);
+    }
+
     //tests for filter by keyword tested name only, description only, both and none
     [TestMethod]
-    public void FilterByKeyword_test()
+    public void FilterByKeywordTest()
     {
         //creating test recipes
         Ingredient a = new("Apple", Units.Quantity);
@@ -168,7 +236,64 @@ public class FilterTests
     }
 
     //tests for filter by tags
+    [TestMethod]
+    public void FilterByTagsTest()
+    {
+        //creating test data
+        Ingredient a = new("Apple", Units.Quantity);
+        Ingredient b = new("Sugar", Units.Mass);
+        Dictionary<Ingredient, double> dict = new()
+            {
+                { a, 20 },
+            };
+        Dictionary<Ingredient, double> dict2 = new()
+            {
+                { b, 20 },
+            };
+        List<Recipe> recipes = new()
+            {
+                new(1, "Test Recipe", new User("Bianca", "Rossetti"), "Test Description", 30, 60, 4,
+                new List<string> { "Step 1", "Step 2" }, dict, new List<string> { "Tag1", "Tag2" }, 2),
+                new(1, "Recipe need 10 characters", new User("Not Bianca", "Rossetti"), "Test Description", 30, 60, 4,
+                new List<string> { "Step 1", "Step 2" }, dict2, new List<string> { "Tag2", "Tag3" }, 2),
+                new(1, "Recipe need 10 characters", new User("Not Bianca", "Rossetti"), "Test Description", 30, 60, 4,
+                new List<string> { "Step 1", "Step 2" }, dict2, new List<string> { "Tag4", "Tag6" }, 2),
+                new(1, "Recipe need 10 characters", new User("Not Bianca", "Rossetti"), "Test Description", 30, 60, 4,
+                new List<string> { "Step 1", "Step 2" }, dict2, new List<string> { "Tag4", "Tag1" }, 2)
+            };
+        
+        //create expected data
+        List<Recipe> expected = new()
+            {
+                new(1, "Test Recipe", new User("Bianca", "Rossetti"), "Test Description", 30, 60, 4,
+                new List<string> { "Step 1", "Step 2" }, dict, new List<string> { "Tag1", "Tag2" }, 2),
+                new(1, "Recipe need 10 characters", new User("Not Bianca", "Rossetti"), "Test Description", 30, 60, 4,
+                new List<string> { "Step 1", "Step 2" }, dict2, new List<string> { "Tag2", "Tag3" }, 2),
+                new(1, "Recipe need 10 characters", new User("Not Bianca", "Rossetti"), "Test Description", 30, 60, 4,
+                new List<string> { "Step 1", "Step 2" }, dict2, new List<string> { "Tag4", "Tag1" }, 2)
+            };
+
+        //filter
+        List<string> tags = new()
+        {
+            new("Tag1"),
+            new("Tag2")
+        };
+        IFilterBy filter = new FilterByTags(tags);
+        List<Recipe> actual = filter.FilterRecipes(recipes);
+
+        //assert
+        CollectionAssert.AreEqual(expected, actual);
+    }
+
     //tests for filter by tags if tags is empty
+    [TestMethod]
+    [ExpectedException(typeof(InvalidOperationException))]
+    public void FilterByTagsNull()
+    {
+        IFilterBy filter = new FilterByTags(new List<string>());
+    }
+
     //tests for filter by owner
     [TestMethod]
     public void FilterByOwnerTest()
