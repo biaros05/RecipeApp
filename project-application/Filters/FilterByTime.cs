@@ -23,7 +23,8 @@ public class FilterByTime : IFilterBy
     {
         var filteredRecipes = recipes
             .Where(recipe => {
-                if (recipe.TotalTimeMins >= MinTimeMins && recipe.TotalTimeMins <= MaxTimeMins)
+                int totalTime = recipe.CookTimeMins + recipe.PrepTimeMins;
+                if (totalTime >= MinTimeMins && totalTime <= MaxTimeMins)
                 {
                     return true;
                 }
