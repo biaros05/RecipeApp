@@ -5,7 +5,7 @@ public class FilterByServings : IFilterBy
 {
     public FilterByServings(int min, int max)
     {
-        if ((min < 0 || max < min))
+        if ((min <= 0 || max < min))
         {
             throw new InvalidOperationException("minimum must be greater than zero and maximum must be greater than minimum");    
         }
