@@ -4,7 +4,7 @@ public class FilterByRating : IFilterBy
 {
     public FilterByRating(int rating)
     {
-        if (rating <= 0 || rating > 5)
+        if (rating <= 0 && rating > 5)
         {
             throw new InvalidOperationException("rating must not be negative or bigger than 5");    
         }
