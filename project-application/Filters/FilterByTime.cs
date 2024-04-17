@@ -5,7 +5,7 @@ public class FilterByTime : IFilterBy
 {
     public FilterByTime(int min, int max)
     {
-        if (min < 0 || max > 420 || max < min)
+        if (min <= 0 || max > 420 || max < min)
         {
             throw new InvalidOperationException("Time must be between 0 and 420 inclusive and minimum must be less or equal to max");    
         }
