@@ -13,6 +13,11 @@ public class FilterByUsername
         Users = users; 
     }
 
+    /// <summary>
+    /// Filters the list of users created in constructor by the given username
+    /// </summary>
+    /// <param name="username">given user name to filter by</param>
+    /// <returns>ONE filtered user object that matches</returns>
     public User FilterUsers(string username)
     {
         var filteredUser = Users
