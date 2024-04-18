@@ -396,4 +396,35 @@ public class FilterTests
         IFilterBy filter = new FilterByServings(4, 2);
     }
 
+    //tests for filtering by user
+    [TestMethod]    
+    public void FilterByUsersTest()
+    {
+        // creating new test data
+        List<User> users = new()
+        {
+            new User("John", "password"),
+            new User("Bob", "password"),
+            new User("Doe", "password")
+        };
+        // filter the users
+        FilterByUsername filter = new FilterByUsername(users);
+        User actual = filter.FilterUsers("John");
+
+        Assert.AreEqual(new User("John", "password"), actual);
+    }
+
+    //test if given user is null (no test for null return handled by UserController)
+    [TestMethod]  
+    [ExpectedException(typeof(InvalidOperationException))]  
+    public void FilterByUsersNullTest()
+    {
+        // creating new test data
+        List<User> users = new(){};
+        // filter the users
+        FilterByUsername filter = new FilterByUsername(users);
+        User actual = filter.FilterUsers("John");
+
+        Assert.AreEqual(new User("John", "password"), actual);
+    }
 }
