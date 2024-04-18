@@ -41,28 +41,31 @@ public class User
     private byte[] Salt {get; set;}
 
 
-    public override bool Equals(Object o)
+    public override bool Equals(object? o)
     {
-        throw new NotImplementedException();
+        if(o == null || !(o is User))
+        {
+            return false;
+        }
+        
+        return ((User)o).Username.Equals(this.Username);
     }
 
     // this constructor sets the username, hashes password and saves it
-    public User(string username, Password password,string description, byte[] salt){
+    //, byte[] salt
+    public User(string username, Password password,string description){
         
         this.Username=username;
         this.Password=password;
         this.Description=description;
-        this.Salt=salt;
+        // this.Salt=salt; need to set salt
     }
 
     // performs the correct logic to update these fields and send changes to DB
     //shoudnt we be able to update each field seperatley?????
     public void UpdatePassword(Password newPass)
     {
-        if(Login)
-        {
-            Password=newPass;
-        }
+        Password=newPass;
     }
     public void UpdateFields( string newDescription, byte[] newImage){
         this.Description=newDescription;
