@@ -14,7 +14,7 @@ public class UserController
     // public void CreateAccount(User newUser){}
     public void CreateAccount(string username, string password,string description)
     {
-        foreach (User user in ListOfUsers)
+        foreach (User user in AllUsers)
         {
             if(user.Username.Equals(username))
             {
@@ -28,7 +28,7 @@ public class UserController
         }
         Password p=new Password(password);
         User user1 = new User(username,p,description);
-        ListOfUsers.Add(user1);
+        AllUsers.Add(user1);
     }
     // make sure the user exists in the database, and the hashed password matches 
     // the hashed password of the username 
@@ -36,14 +36,39 @@ public class UserController
     // update ActiveUser
     public bool AuthenticateUser(string username, string password)
     {
-        throw new NotImplementedException();
+        foreach (User user in AllUsers)
+        {
+            if(user.Username.Equals(username))
+            {
+                if(user.Password.Equals(password))
+                {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     // retrieve list of users from db, remove active user from list, sned back new list to data layer
-    public void DeleteAccount(){}
+    public void DeleteAccount(string username, string password){
+        
+        foreach (User user in AllUsers)
+        {
+            if(user.Username.Equals(username))
+            {
+                if(user.Password.Equals(password)){
+                    AllUsers.Remove(user);
+                    Console.WriteLine("user sucessfully deleted");
+                }
+                
+                Console.WriteLine("user found but password was incorrect");
+            }
+        }
+        Console.WriteLine("user doesn't exist");
+    }
 
     //a list that contains all the users
-    public List<User> ListOfUsers{get;}
+    // public List<User> ListOfUsers{get;}
 
     // public bool findUser(string username)
     // {
