@@ -89,12 +89,14 @@ public class Recipe
         }
     }
 
-    // get returns the CookTime + PrepTime
-    public double TotalTimeMins{
+    // get returns the CookTime + PrepTime and returns proper time formatted string
+    public string TotalTime{
         get
         {
-            double value = (this.PrepTimeMins + this.CookTimeMins) / 60.0;
-            return (double) Math.Round(value, 1);
+            double mins = this.PrepTimeMins + this.CookTimeMins;
+            int hours = (int)Math.Truncate(mins / 60.0);
+            mins = mins % 60;
+            return $"{hours}h{mins}mins";
         }
     }
 
@@ -213,7 +215,7 @@ public class Recipe
             return false;
         }
 
-        return ((Recipe)obj).Id == this.Id || ((Recipe)obj).Name == this.Name;
+        return ((Recipe)obj).Id == this.Id || ((Recipe)obj).Name.Equals(this.Name);
     }
 
     public Recipe(Recipe other)

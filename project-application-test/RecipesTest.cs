@@ -218,9 +218,9 @@ public class RecipesTest
             Recipe recipe = new("Test Recipe", new User("Bianca", "Rossetti"), "Test Description", 30, 60, 4,
                 new List<string> { "Step 1", "Step 2" }, dict, new List<string> { "Tag1", "Tag2" }, 2);
 
-            double totalTime = recipe.TotalTimeMins;
+            string totalTime = recipe.TotalTime;
 
-            Assert.AreEqual(1.5, totalTime);
+            Assert.AreEqual("1h30mins", totalTime);
         }
         
         // TEST FOR RATING & RATERECIPE
@@ -531,7 +531,6 @@ public class RecipesTest
         [TestMethod]
         public void Constructor_ValidParams_InitializesCorrectly()
         {
-            int id = 1;
             string name = "Test Recipe";
             User owner = new User("Bianca", "Rossetti");
             string newDescription = "Test Description";
@@ -561,7 +560,6 @@ public class RecipesTest
         [TestMethod]
         public void Constructor_EmptyInstructions_ThrowsException()
         {
-            int id = 1;
             string name = "Test Recipe";
             User owner = new User("Bianca", "Rossetti");
             string newDescription = "Test Description";
@@ -582,7 +580,6 @@ public class RecipesTest
         [TestMethod]
         public void Constructor_EmptyIngredients_ThrowsException()
         {
-            int id = 1;
             string name = "Test Recipe";
             User owner = new User("Bianca", "Rossetti");
             string newDescription = "Test Description";
@@ -602,7 +599,6 @@ public class RecipesTest
         [TestMethod]
         public void Constructor_InvalidBudgetOver3_ThrowsException()
         {
-            int id = 1;
             string name = "Test Recipe";
             User owner = new User("Bianca", "Rossetti");
             string newDescription = "Test Description";
@@ -623,7 +619,6 @@ public class RecipesTest
         [TestMethod]
         public void Constructor_InvalidBudgetLessThan1_ThrowsException()
         {
-            int id = 1;
             string name = "Test Recipe";
             User owner = new User("Bianca", "Rossetti");
             string newDescription = "Test Description";
@@ -645,7 +640,6 @@ public class RecipesTest
         [TestMethod]
         public void CopyConstructor_ValidParams_InitializesCorrectly()
         {
-            int id = 1;
             string name = "Test Recipe";
             User owner = new User("Bianca", "Rossetti");
             string newDescription = "Test Description";
