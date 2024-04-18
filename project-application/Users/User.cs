@@ -41,8 +41,8 @@ public class User
     public byte[]? Image {get;set;}
     public string? Description {get; set;}
     
-    private Password Password;
-    private byte[] Salt {get; set;}
+    public Password Password;
+    // private byte[] Salt {get; set;}
 
 
     public override bool Equals(object? o)
@@ -57,8 +57,7 @@ public class User
 
     // this constructor sets the username, hashes password and saves it
     //, byte[] salt
-    public User(int id, string username, Password password,string description){
-        this.Id=id;
+    public User( string username, Password password,string description){
         this.Username=username;
         this.Password=password;
         this.Description=description;

@@ -16,19 +16,18 @@ public class UserController
     {
         foreach (User user in AllUsers)
         {
-            if(user.Username.Equals(username))
+            if(user.Username==username)
             {
                 throw new Exception("username already exists");
             }
 
-            if(password.Length<5 || password.Length>50)
-            {
-                throw new Exception("username already exists");
-            }
+            // if(password.Length<5 || password.Length>50)
+            // {
+            //     throw new Exception("username already exists");
+            // }
         }
-        int total=AllUsers.Count+1;
         Password p=new Password(password);
-        User user1 = new User(total,username,p,description);
+        User user1 = new User(username,p,description);
         AllUsers.Add(user1);
     }
     // make sure the user exists in the database, and the hashed password matches 
@@ -41,8 +40,9 @@ public class UserController
         {
             if(user.Username.Equals(username))
             {
-                if(user.Password.Equals(password))
+                if(user.Password.DoPasswordsMatch(password))
                 {
+                    ActiveUser=user;
                     return true;
                 }
             }
@@ -57,10 +57,14 @@ public class UserController
         {
             if(user.Username.Equals(username))
             {
-                if(user.Password.Equals(password)){
+                if(user.Password.DoPasswordsMatch(password)){
                     AllUsers.Remove(user);
                     Console.WriteLine("user sucessfully deleted");
                 }
+                // if(user.Password==password){
+                //     AllUsers.Remove(user);
+                //     Console.WriteLine("user sucessfully deleted");
+                // }
                 
                 Console.WriteLine("user found but password was incorrect");
             }
@@ -76,13 +80,13 @@ public class UserController
     //     return ArrayOfUsers.Contains(username);
     // }
 
-    public override bool Equals(object? o)
-    {
-        if(o == null || !(o is User))
-        {
-            return false;
-        }
+    // public override bool Equals(object? o)
+    // {
+    //     if(o == null || !(o is User))
+    //     {
+    //         return false;
+    //     }
         
-        return ((User)o).Username.Equals(username);
-    }
+    //     return ((User)o).Username.Equals(username);
+    // }
 }

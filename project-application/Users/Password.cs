@@ -7,13 +7,13 @@ namespace users;
 public class Password
 {
     //private string HashedPassword {get; set;}
-
+    // private UserController userController;
     public byte[] Salt = new byte[8];
     
 
     
     
-    public string pass;
+    // public string pass;
 
     private string Hash;
 
@@ -68,9 +68,14 @@ public class Password
         return Salt;
     }
 
-    public bool DoPasswordsMatch(string passwordToVerify)
+    public bool DoPasswordsMatch(string password)
     {
-        throw new NotImplementedException();
+        string enteredHash=HashPassword(this.Salt,password);
+        if (this.Hash==enteredHash)
+        {
+            return true;
+        }
+        return false;
     }
 
     // public static implicit operator Password(string v)
