@@ -1,8 +1,10 @@
 using System.Collections.Generic;
 using System.Reflection;
+using filtering;
 namespace users;
 
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Data;
 using System.Dynamic;
 using recipes;
 
@@ -79,13 +81,34 @@ public class User
         this.Description=description;
         UserCreatedRecipies=new();
         UserFavoriteRecipies=new();
-        // this.Salt=salt; need to set salt
+    }
+
+    public User( string username, Password password){
+        this.Username=username;
+        this.Password=password;
+        this.Description=null;
+        UserCreatedRecipies=new();
+        UserFavoriteRecipies=new();
     }
 
     // performs the correct logic to update these fields and send changes to DB
     //shoudnt we be able to update each field seperatley?????
+    
+    public void UpdateUsername(string newUsername)
+    {
+        if(newUsername.Length<5 || newUsername.Length>25 || newUsername==null)
+        {
+            throw new Exception("username doesnt meet requirements");
+        }
+        Username=newUsername;
+    }
+
     public void UpdatePassword(string newPass)
     {
+        if(newPass.Length<5 || newPass.Length>50)
+        {
+            throw new Exception("password doesnt meet requirements");
+        }
         Password=new Password(newPass);
     }
     public void UpdateFields( string newDescription, byte[] newImage){
@@ -95,11 +118,19 @@ public class User
         
     // removes profile picture provided one exists
     public void RemoveProfilePicture(){
+        if(Image==null)
+        {
+            throw new Exception("no picture to remove");
+        }
         this.Image=null;
     }
 
     // removes description provided one exists
     public void RemoveDescription(){
+        if(Description==null)
+        {
+            throw new Exception("no description to remove");
+        }
         this.Description=null;
     }
 
