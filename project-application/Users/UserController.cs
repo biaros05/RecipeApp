@@ -26,8 +26,9 @@ public class UserController
                 throw new Exception("username already exists");
             }
         }
+        int total=AllUsers.Count+1;
         Password p=new Password(password);
-        User user1 = new User(username,p,description);
+        User user1 = new User(total,username,p,description);
         AllUsers.Add(user1);
     }
     // make sure the user exists in the database, and the hashed password matches 

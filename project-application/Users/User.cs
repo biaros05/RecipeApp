@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Reflection;
 namespace users;
 
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Dynamic;
 using recipes;
 
@@ -13,10 +14,13 @@ public class User
 
 //ignore salt just take in the user and pwd
 //access the properties like explained in clas and ex on stack
-    public List<Recipe> UserCreatedRecipies{get;}
-    public List<Recipe> UserFavoriteRecipies{get;}
+    [InverseProperty("UserCreatedRecipies")]
+    public List<Recipe> UserCreatedRecipies{get;set;}
+
+    [InverseProperty("UserFavoriteRecipies")]
+    public List<Recipe> UserFavoriteRecipies{get;set;}
     private string username;
-    private int id{get;set;}
+    private int Id{get;set;}
     public string Username
     {
         get
@@ -53,8 +57,8 @@ public class User
 
     // this constructor sets the username, hashes password and saves it
     //, byte[] salt
-    public User(string username, Password password,string description){
-        
+    public User(int id, string username, Password password,string description){
+        this.Id=id;
         this.Username=username;
         this.Password=password;
         this.Description=description;
@@ -89,7 +93,6 @@ public class User
 
     // take recipe, retrieve the list of recipes for user, remove that recipe, send back to data layer
     public void RemoveFromFavourites(Recipe recipe){
-        //am i capable of using remove(obj)???
         UserFavoriteRecipies.Remove(recipe);
     }
 

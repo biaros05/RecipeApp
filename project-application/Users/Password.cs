@@ -1,9 +1,18 @@
 // this class represents a password in its entirety and will take care of password logic
+using RNGCryptoServiceProvider;
+namespace users;
 public class Password
 {
     //private string HashedPassword {get; set;}
 
     private string pass;
+    public byte[] salt = new byte[8];
+    using RNGCryptoServiceProvider rngCsp = new();
+    RngCsp.GetBytes(salt);
+
+    
+    
+
     public string Pass {
         get{
             return this.pass;
@@ -25,7 +34,12 @@ public class Password
     // implements algo for hashing and returns the hashed password for that user
     private string HashPassword()
     {
-        throw new NotImplementedException();
+        private int numIterations = 1000;
+
+        HashAlgorithmName algoName = HashAlgorithmName.SHA512;
+
+        Rfc2898DeriveBytes key =new(pass, salt, numIterations, algoName);
+        byte[] hash = key.GetBytes(32);
     }
 
     // checks if two passwords match (to authenticate the user)
