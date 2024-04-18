@@ -35,18 +35,15 @@ public class Password
     {
         if (password.Length<5 || password.Length>50)
         {
-            byte[] salt=GenerateSalt();
-            this.Hash=HashPassword(salt,password);
-            this.Salt=salt;
-        }
-        else{
             throw new Exception("password doesnt meet requirements");
         }
-        // this.Pass=password;
+            byte[] salt=GenerateSalt();
+            this.Hash= HashPassword(salt,password);
+            this.Salt=salt;
     }
 
     // implements algo for hashing and returns the hashed password for that user
-    private string HashPassword(byte[] salt,string password)
+    private static string HashPassword(byte[] salt,string password)
     {
         int numIterations = 1000;
 
@@ -70,7 +67,7 @@ public class Password
 
     public bool DoPasswordsMatch(string password)
     {
-        string enteredHash=HashPassword(this.Salt,password);
+        string enteredHash= HashPassword(this.Salt,password);
         if (this.Hash==enteredHash)
         {
             return true;

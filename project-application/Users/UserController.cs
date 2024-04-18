@@ -6,9 +6,13 @@ using recipes;
 public class UserController
 {
     // currently logged on user
-    public static User ActiveUser {get; set;}
+    public static User? ActiveUser {get; set;}
     public static List<User> AllUsers{get;} = new();
 
+    public UserController()
+    {
+
+    }
     
     // adds a new account (validates the input) --> should it take a user or params to create a new user individually?
     // public void CreateAccount(User newUser){}
@@ -26,6 +30,9 @@ public class UserController
             //     throw new Exception("username already exists");
             // }
         }
+
+    
+
         Password p=new Password(password);
         User user1 = new User(username,p,description);
         AllUsers.Add(user1);
@@ -89,4 +96,9 @@ public class UserController
         
     //     return ((User)o).Username.Equals(username);
     // }
+    //filter the username //to create a new user
+    //filter the hashpassword //fot authenticate user
+    //filter passsword and user // delete user
+
+
 }

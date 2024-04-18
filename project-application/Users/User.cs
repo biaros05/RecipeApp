@@ -20,7 +20,6 @@ public class User
     [InverseProperty("UserFavoriteRecipies")]
     public List<Recipe> UserFavoriteRecipies{get;set;}
     private string username;
-    private int Id{get;set;}
     public string Username
     {
         get
@@ -35,11 +34,28 @@ public class User
             //         throw new Exception("this username is already in use");
             //     }
             // }
+            if(value.Length<5 || value.Length>25 || value==null)
+            {
+                throw new Exception("username must be between 5-25 characters");
+            }
             this.username=value;
         } 
     }
     public byte[]? Image {get;set;}
-    public string? Description {get; set;}
+    private string? description;
+    public string? Description {
+        get{
+            return this.description;
+        } 
+
+        set{
+            if(value?.Length>500)
+            {
+                throw new Exception("description is too long. needs to be less than 500 charcters");
+            }
+            this.description=value;
+        }
+    }
     
     public Password Password;
     // private byte[] Salt {get; set;}
@@ -61,14 +77,16 @@ public class User
         this.Username=username;
         this.Password=password;
         this.Description=description;
+        UserCreatedRecipies=new();
+        UserFavoriteRecipies=new();
         // this.Salt=salt; need to set salt
     }
 
     // performs the correct logic to update these fields and send changes to DB
     //shoudnt we be able to update each field seperatley?????
-    public void UpdatePassword(Password newPass)
+    public void UpdatePassword(string newPass)
     {
-        Password=newPass;
+        Password=new Password(newPass);
     }
     public void UpdateFields( string newDescription, byte[] newImage){
         this.Description=newDescription;
