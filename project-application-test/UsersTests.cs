@@ -1,5 +1,6 @@
 namespace project_application_test;
 using users;
+using recipes;
 
 [TestClass]
 public class UsersTests
@@ -256,6 +257,74 @@ public class UsersTests
             Assert.IsFalse(result);
         }
 
+        [TestMethod]
+        public void User_Test_AddingToFavorite()
+        {
+            //Arrange
+            Ingredient i = new("egg", Units.Quantity);
+            Dictionary<Ingredient, double> dict = new();
+            dict.Add(i, 20);
+            Recipe recipe = new("Test Recipe", new User("Bianca", new Password("123456789")), "Test Description", 30, 60, 4,
+                new List<string> { "Step 1", "Step 2" }, dict, new List<string> { "Tag1", "Tag2" }, 2);
+
+            string username="testing";
+            string passwrd="password";
+            string description="description";
+            Password pass=new(passwrd);
+            //Act
+            User user1=new(username,pass,description);
+            user1.AddToFavourites(recipe);
+            //Assert
+            Assert.IsTrue(user1.UserFavoriteRecipies.Contains(recipe));
+        }
+
+        [TestMethod]
+        public void User_Test_RemoveFromFavorite()
+        {
+            //Arrange
+            Ingredient i = new("egg", Units.Quantity);
+            Dictionary<Ingredient, double> dict = new();
+            dict.Add(i, 20);
+            Recipe recipe = new("Test Recipe", new User("Bianca", new Password("123456789")), "Test Description", 30, 60, 4,
+                new List<string> { "Step 1", "Step 2" }, dict, new List<string> { "Tag1", "Tag2" }, 2);
+
+            // Recipe recipe2 = new("Test Recipe2", new User("Bianca", new Password("123456789")), "Test Description", 30, 60, 4,
+            //     new List<string> { "Step 1", "Step 2" }, dict, new List<string> { "Tag1", "Tag2" }, 2);
+
+            string username="testing";
+            string passwrd="password";
+            string description="description";
+            Password pass=new(passwrd);
+            //Act
+            User user1=new(username,pass,description);
+            // user1.AddToFavourites(recipe);
+            // user1.AddToFavourites(recipe2);
+            user1.RemoveFromFavourites(recipe);
+
+            //Assert
+            Assert.IsFalse(user1.UserFavoriteRecipies.Contains(recipe));
+        }
+
+        // [TestMethod]
+        // public void User_Test_AddingToFavorite()
+        // {
+        //     //Arrange
+        //     Ingredient i = new("egg", Units.Quantity);
+        //     Dictionary<Ingredient, double> dict = new();
+        //     dict.Add(i, 20);
+        //     Recipe recipe = new("Test Recipe", new User("Bianca", new Password("123456789")), "Test Description", 30, 60, 4,
+        //         new List<string> { "Step 1", "Step 2" }, dict, new List<string> { "Tag1", "Tag2" }, 2);
+
+        //     string username="testing";
+        //     string passwrd="password";
+        //     string description="description";
+        //     Password pass=new(passwrd);
+        //     //Act
+        //     User user1=new(username,pass,description);
+        //     user1.AddToFavourites(recipe);
+        //     //Assert
+        //     Assert.IsTrue(user1.UserFavoriteRecipies.Contains(recipe));
+        // }
     // CHEN --------------------------------------
     // test the creation of EVERY FIELD.
     // test UpdatePassword
