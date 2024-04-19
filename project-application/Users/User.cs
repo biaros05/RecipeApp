@@ -81,6 +81,7 @@ public class User
         this.Description=description;
         UserCreatedRecipies=new();
         UserFavoriteRecipies=new();
+        //Image need to be here as a byte[]
     }
 
     public User( string username, Password password){
@@ -89,6 +90,8 @@ public class User
         this.Description=null;
         UserCreatedRecipies=new();
         UserFavoriteRecipies=new();
+        //Image need to be here as a byte[]
+
     }
 
     // performs the correct logic to update these fields and send changes to DB
