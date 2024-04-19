@@ -7,12 +7,12 @@ using users;
 
 public class Recipe
 {
-    private int Id {get;}
+    private int? Id {get;}
     private string? _name;
-    public string? Name{
+    public string Name{
         get
         {
-            return this._name;
+            return this._name!;
         } 
         set
         {
@@ -33,10 +33,10 @@ public class Recipe
     }
     public User Owner {get;}
     private string? _description;
-    public string? Description {
+    public string Description {
         get
         {
-            return this._description;
+            return this._description!;
         }
         set
         {
@@ -89,12 +89,14 @@ public class Recipe
         }
     }
 
-    // get returns the CookTime + PrepTime
-    public double TotalTimeMins{
+    // get returns the CookTime + PrepTime and returns proper time formatted string
+    public string TotalTime{
         get
         {
-            double value = (this.PrepTimeMins + this.CookTimeMins) / 60.0;
-            return (double) Math.Round(value, 1);
+            double mins = this.PrepTimeMins + this.CookTimeMins;
+            int hours = (int)Math.Truncate(mins / 60.0);
+            mins = mins % 60;
+            return $"{hours}h{mins}mins";
         }
     }
 
@@ -199,7 +201,6 @@ public class Recipe
         {
             if (!newIngredients.Contains(new KeyValuePair<Ingredient, double>(i, quantity)))
             {
-                RecipeController.AddIngredient(i); // should this be here???
                 newIngredients.Add(i, quantity);
             }
         }
@@ -214,19 +215,16 @@ public class Recipe
             return false;
         }
 
-        return ((Recipe)obj).Id == this.Id && ((Recipe)obj).Name == this.Name;
+        return ((Recipe)obj).Id == this.Id || ((Recipe)obj).Name.Equals(this.Name);
     }
 
     public Recipe(Recipe other)
-    : this(other.Id, other.Name, other.Owner, other.Description, other.PrepTimeMins, other.CookTimeMins, other.NumberOfServings, other.Instructions, other.Ingredients, other.Tags, other.Budget.Length)
+    : this(other.Name, other.Owner, other.Description, other.PrepTimeMins, other.CookTimeMins, other.NumberOfServings, other.Instructions, other.Ingredients, other.Tags, other.Budget.Length)
     {
     }
 
-    public Recipe(int id, string name, User owner, string description, int prepTimeMins, int cookTimeMins, int numberOfServings, List<String> instructions, Dictionary<Ingredient, double> ingredients, List<string> tags, int budget)
+    public Recipe(string name, User owner, string description, int prepTimeMins, int cookTimeMins, int numberOfServings, List<String> instructions, Dictionary<Ingredient, double> ingredients, List<string> tags, int budget)
     {
-        // validate if it already exists???
-        this.Id = id;
-        // validate if user exists???
         this.Owner = owner;
         this.Name = name;
 
