@@ -5,7 +5,7 @@ internal class Password
     private byte[] Salt {get; set;}
     public Password(string password)
     {
-
+        this.HashedPassword = password;
     }
 
     // implements algo for hashing and returns the hashed password for that user

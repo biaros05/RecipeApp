@@ -8,5 +8,6 @@ enum MainMenuOption
   CreateRecipe,
   FilterRecipeSearch,
   AddRecipeToFavourites,
-  RateRecipe
+  RateRecipe,
+  ViewRecipes
 }

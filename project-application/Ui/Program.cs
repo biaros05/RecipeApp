@@ -19,7 +19,7 @@ public class Program
         bool validInput = false;
         while (!validInput && num >=0)
         {
-            Console.WriteLine("Enter a number:");
+            Console.WriteLine("Enter an integer number:");
             string? input = Console.ReadLine();
             validInput = int.TryParse(input, out num);
         }
@@ -32,7 +32,7 @@ public class Program
         bool validInput = false;
         while (!validInput && num >=0)
         {
-            Console.WriteLine("Enter a number:");
+            Console.WriteLine("Enter a decimal number:");
             string? input = Console.ReadLine();
             validInput = double.TryParse(input, out num);
         }
@@ -59,7 +59,7 @@ public class Program
         while (true)
         {
             chosenOption = ConsoleUtils.GetUserChoice(
-                "Choose the next operation", UnitsOptions);
+                "Choose the next operation (Volume will default to ml, Mass will default to g)", UnitsOptions);
 
             if (!chosenOption.HasValue)
             {
@@ -123,7 +123,7 @@ public class Program
 
     private static void Login()
     {
-
+        UserController.ActiveUser = new User("Bianca", "Rossetti");
     }
 
     private static List<string> FillTags()
@@ -163,17 +163,18 @@ public class Program
         List<string> tags = FillTags();
         Console.WriteLine("Budget on a scale of 1-3:");
         int budget = ValidateInt();
-        Recipe newRecipe = new Recipe(name, owner, description, prepTimeMins, cookTimeMins, numberOfServings, instructions, ingredients, tags, budget);
+        Recipe newRecipe = new Recipe(name, owner, description, prepTimeMins, cookTimeMins, numberOfServings, instructions, ingredients, tags, budget, RecipeController.Instance.AllRecipes.Count);
 
         RecipeController.Instance.CreateRecipe(newRecipe);
     }
 
-    private void PrintRecipes()
+    private static void PrintRecipes()
     {
         foreach (Recipe r in RecipeController.Instance.AllRecipes)
         {
             Console.WriteLine(r);
         }
+        ConsoleUtils.WaitUserPressKey();
     }
 
     private static void FilterRecipeSearch()
@@ -221,6 +222,9 @@ public class Program
                 break;
                 case MainMenuOption.RateRecipe:
                 RateRecipe();
+                break;
+                case MainMenuOption.ViewRecipes:
+                PrintRecipes();
                 break;
             }
         }

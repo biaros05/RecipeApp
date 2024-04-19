@@ -106,7 +106,7 @@ public class Recipe
     public Dictionary<Ingredient, double> Ingredients{get; private set;} = new();
     private readonly List<double> _ratings = new(); // all the ratings given by users OUT OF FIVE STARS
 
-    public double Rating {
+    public double? Rating {
         get
         {
             int totalRating = 0;
@@ -115,11 +115,11 @@ public class Recipe
                 totalRating += r;
             } 
             double rating = totalRating / (double)_ratings.Count;
-            return Math.Round(rating, 2);
+            return this._ratings.Count != 0 ? Math.Round(rating, 2) : null;
         }
     } // sum of Ratings and get average.
     private readonly List<int> _difficulties = new(); // all the difficulties given by users OUT OF 10
-    public int DifficultyRating {
+    public int? DifficultyRating {
         get
         {
             int difficulty = 0;
@@ -128,7 +128,7 @@ public class Recipe
                 difficulty += d;
             }
             double averageDiff = difficulty / (double)this._difficulties.Count;
-            return (int) Math.Round(averageDiff, 0);
+            return this._difficulties.Count != 0 ? (int) Math.Round(averageDiff, 0) : null;
         }
     } // sum of Difficulties and get average
 
@@ -223,7 +223,7 @@ public class Recipe
     {
     }
 
-    public Recipe(string name, User owner, string description, int prepTimeMins, int cookTimeMins, int numberOfServings, List<String> instructions, Dictionary<Ingredient, double> ingredients, List<string> tags, int budget)
+    public Recipe(string name, User owner, string description, int prepTimeMins, int cookTimeMins, int numberOfServings, List<String> instructions, Dictionary<Ingredient, double> ingredients, List<string> tags, int budget, int? id=null)
     {
         this.Owner = owner;
         this.Name = name;
@@ -232,7 +232,7 @@ public class Recipe
         this.PrepTimeMins = prepTimeMins;
         this.CookTimeMins = cookTimeMins;
         this.NumberOfServings = numberOfServings;
-
+        this.Id = id;
         if (instructions.Count == 0 || ingredients.Count == 0)
         {
             throw new ArgumentException("there must be a minimum of one ingredient and one instruction on each recipe");
@@ -259,5 +259,10 @@ public class Recipe
             hash = hash * 31 + (Name?.GetHashCode() ?? 0);
             return hash;
         }
+    }
+
+    public override string ToString()
+    {
+        return $"{this.Name} by {this.Owner}. Rating: {(this.Rating == null ? "Not available" : this.Rating)}, Budget: {this.Budget}";
     }
 }

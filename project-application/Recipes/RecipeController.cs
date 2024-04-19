@@ -44,6 +44,7 @@ public class RecipeController
         }
 
         AllRecipes.Add(recipe);
+
     }
 
     public void AddIngredient(Ingredient ingredient)
