@@ -1,6 +1,6 @@
 namespace filtering;
 using users;
-// this class will filter by ingredients
+// this class will filter by username
 public class FilterByUsername
 {
     private readonly List<User> Users;
