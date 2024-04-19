@@ -666,5 +666,4 @@ public class RecipesTest
             CollectionAssert.AreEqual(newTags, copiedRecipe.Tags);
             Assert.AreEqual("$$", copiedRecipe.Budget);
         }
-
 }

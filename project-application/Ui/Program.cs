@@ -89,6 +89,7 @@ public class Program
         while (!successful)
         {
             try{
+                Console.WriteLine("Ingredient name:");
                 string name = Console.ReadLine();
                 Units unit = ChooseUnit();
                 i = new Ingredient(name, unit);
@@ -104,16 +105,18 @@ public class Program
 
     private static Dictionary<Ingredient, double> FillIngredients()
     {
+        Console.WriteLine("What ingredients would you like to add?");
         Dictionary<Ingredient, double> ingredients = new();
-        string input = Console.ReadLine();
-        double quantity = ValidateDouble();
+        string input = "";
 
         while (!input.Equals("done")) 
         {
-            input = Console.ReadLine();
             Ingredient i = NewIngredient();
-            quantity = ValidateDouble();
-
+            Console.WriteLine("Quantity:");
+            double quantity = ValidateDouble();
+            ingredients.Add(i, quantity);
+            Console.WriteLine("Type 'done' if you are finished");
+            input = Console.ReadLine();
         }
         return ingredients;
     }
@@ -125,21 +128,52 @@ public class Program
 
     private static List<string> FillTags()
     {
-        throw new NotImplementedException();
+        Console.WriteLine("What Tags would you like to add?");
+        List<string> tags = new();
+        string input = "";
+
+        while (!input.Equals("done")) 
+        {
+            Console.WriteLine("Enter your tag");
+            string tag = Console.ReadLine();
+            tags.Add(tag);
+            Console.WriteLine("Type 'done' if you are finished");
+            input = Console.ReadLine();
+        }
+        return tags;
     }
 
     private static void CreateRecipe()
     {
+        Console.WriteLine("Name of Recipe:");
         string name = Console.ReadLine();
         User owner = UserController.ActiveUser; 
+        Console.WriteLine("Description of Recipe:");
         string description = Console.ReadLine();
+        Console.WriteLine("Prep time of Recipe (in minutes):");
         int prepTimeMins = ValidateInt();
+        Console.WriteLine("Cook time of Recipe (in minutes):");
         int cookTimeMins = ValidateInt(); 
+        Console.WriteLine("Number of servings:");
         int numberOfServings = ValidateInt(); 
+        Console.WriteLine("List the instrucrions:");
         List<String> instructions = FillInstructions(); 
         Dictionary<Ingredient, double> ingredients = FillIngredients(); 
+        Console.WriteLine("Add Tags to recipe:");
         List<string> tags = FillTags();
-        int budget = 0;
+        Console.WriteLine("Budget on a scale of 1-3:");
+        int budget = ValidateInt();
+        Recipe newRecipe = new Recipe(name, owner, description, prepTimeMins, cookTimeMins, numberOfServings, instructions, ingredients, tags, budget);
+
+        RecipeController.Instance.CreateRecipe(newRecipe);
+    }
+
+    private void PrintRecipes()
+    {
+        foreach (Recipe r in RecipeController.Instance.AllRecipes)
+        {
+            Console.WriteLine(r);
+        }
     }
 
     private static void FilterRecipeSearch()
