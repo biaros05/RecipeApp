@@ -7,7 +7,7 @@ using users;
 [TestClass]
 public class PasswordTests
 {
-    {TestMethod}
+    [TestMethod]
         public void Pass_Doesnt_Meet_Requirements()
         {
             //Arrange
@@ -18,7 +18,7 @@ public class PasswordTests
         }
     // test Password if password does not meet requirements
     // test hashpassword
-    {TestMethod}
+    [TestMethod]
         public void Pass_checkHash_correct()
         {
             //Arrange
@@ -27,7 +27,7 @@ public class PasswordTests
 
             //Assert
         }
-    {TestMethod}
+    [TestMethod]
         public void Pass_checkHash_incorrect()
         {
             //Arrange
@@ -37,7 +37,7 @@ public class PasswordTests
             //Assert
         }
     // test DoPasswordsMatch if passwords match
-    {TestMethod}
+    [TestMethod]
         public void Pass_Match()
         {
             //Arrange
@@ -47,7 +47,7 @@ public class PasswordTests
             //Assert
         }
     // test if passwords do not match 
-    {TestMethod}
+    [TestMethod]
         public void Pass_Dont_Match()
         {
             //Arrange
