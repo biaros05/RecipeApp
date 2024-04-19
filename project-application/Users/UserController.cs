@@ -21,7 +21,7 @@ public class UserController
     public void CreateAccount(string username, string password,string description)
     {
         filtering=new(AllUsers);
-        User result=filtering.filterByUser(username);
+        User result=filtering.FilterUsers(username);
         if (result!=null)
         {
             throw new Exception("username already exists");
@@ -46,7 +46,7 @@ public class UserController
     public bool AuthenticateUser(string username, string password)
     {
         filtering=new(AllUsers);
-        User result=filtering.filterByUser(username);
+        User result=filtering.FilterUsers(username);
         if (result==null)
         {
             throw new Exception("username user doesnt exist");
@@ -77,7 +77,7 @@ public class UserController
             if (result)
             {
                 filtering=new(AllUsers);
-                User user=filtering.filterByUser(username);
+                User user=filtering.FilterUsers(username);
                 AllUsers.Remove(user);
             }
         // foreach (User user in AllUsers)
