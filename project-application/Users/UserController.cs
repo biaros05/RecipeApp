@@ -10,18 +10,13 @@ public class UserController
 
     public static User? ActiveUser {get; set;}
     public static List<User> AllUsers{get;} = new();
-
-    public UserController()
-    {
-
-    }
     
     // adds a new account (validates the input) --> should it take a user or params to create a new user individually?
     // public void CreateAccount(User newUser){}
     public void CreateAccount(string username, string password,string description)
     {
-        filtering=new(AllUsers);
-        User result=filtering.filterByUser(username);
+        filtering = new(AllUsers);
+        User result=filtering.FilterUsers(username);
         if (result!=null)
         {
             throw new Exception("username already exists");
@@ -45,80 +40,31 @@ public class UserController
     // update ActiveUser
     public bool AuthenticateUser(string username, string password)
     {
-        filtering=new(AllUsers);
-        User result=filtering.filterByUser(username);
-        if (result==null)
+        filtering = new(AllUsers);
+        User result = filtering.FilterUsers(username);
+        if (result == null)
         {
-            throw new Exception("username user doesnt exist");
+            throw new Exception("Username user doesnt exist");
         }
         if(result.Password.DoPasswordsMatch(password))
-                {
-                    ActiveUser=result;
-                    return true;
-                }
-
-        // foreach (User user in AllUsers)
-        // {
-        //     if(user.Username.Equals(username))
-        //     {
-        //         if(user.Password.DoPasswordsMatch(password))
-        //         {
-        //             ActiveUser=user;
-        //             return true;
-        //         }
-        //     }
-        // }
+        {
+            ActiveUser = result;
+            return true;
+        }
         return false;
     }
 
     // retrieve list of users from db, remove active user from list, sned back new list to data layer
-    public void DeleteAccount(string username, string password){
-            bool result=AuthenticateUser(username,password);
-            if (result)
-            {
-                filtering=new(AllUsers);
-                User user=filtering.filterByUser(username);
-                AllUsers.Remove(user);
-            }
-        // foreach (User user in AllUsers)
-        // {
-        //     if(user.Username.Equals(username))
-        //     {
-        //         if(user.Password.DoPasswordsMatch(password)){
-        //             AllUsers.Remove(user);
-        //             Console.WriteLine("user sucessfully deleted");
-        //         }
-        //         // if(user.Password==password){
-        //         //     AllUsers.Remove(user);
-        //         //     Console.WriteLine("user sucessfully deleted");
-        //         // }
-                
-        //         Console.WriteLine("user found but password was incorrect");
-        //     }
-        // }
-        // Console.WriteLine("user doesn't exist");
+    public void DeleteAccount(string username, string password)
+    {
+        bool result = AuthenticateUser(username,password);
+        if (result)
+        {
+            filtering = new(AllUsers);
+            User user = filtering.FilterUsers(username);
+            AllUsers.Remove(user);
+        }
     }
-
-    //a list that contains all the users
-    // public List<User> ListOfUsers{get;}
-
-    // public bool findUser(string username)
-    // {
-    //     return ArrayOfUsers.Contains(username);
-    // }
-
-    // public override bool Equals(object? o)
-    // {
-    //     if(o == null || !(o is User))
-    //     {
-    //         return false;
-    //     }
-        
-    //     return ((User)o).Username.Equals(username);
-    // }
-    //filter the username //to create a new user
-    //filter the hashpassword //fot authenticate user
-    //filter passsword and user // delete user
 
 
 }

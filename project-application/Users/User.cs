@@ -10,12 +10,7 @@ using recipes;
 
 public class User
 {
-//store salt(from pwd to user)
-//store img as a array of bytes
-//add user id only visible in db(private)
 
-//ignore salt just take in the user and pwd
-//access the properties like explained in clas and ex on stack
     [InverseProperty("UserCreatedRecipies")]
     public List<Recipe> UserCreatedRecipies{get;set;}
 
@@ -29,28 +24,27 @@ public class User
             return this.username;
         }
         set{
-            // foreach (User oneUser in usersList)
-            // {
-            //     if(value.Equals(oneUser.Username))
-            //     {
-            //         throw new Exception("this username is already in use");
-            //     }
-            // }
-            if(value.Length<5 || value.Length>25 || value==null)
+            if (string.IsNullOrEmpty(value))
             {
-                throw new Exception("username must be between 5-25 characters");
+                throw new ArgumentNullException("password cannot be empty");
             }
-            this.username=value;
+            if(value.Length < 5 || value.Length > 25)
+            {
+                throw new ArgumentException("username must be between 5-25 characters");
+            }
+            this.username = value;
         } 
     }
     public byte[]? Image {get;set;}
     private string? description;
     public string? Description {
-        get{
+        get
+        {
             return this.description;
         } 
 
-        set{
+        set
+        {
             if(value?.Length>500)
             {
                 throw new Exception("description is too long. needs to be less than 500 charcters");
@@ -59,9 +53,7 @@ public class User
         }
     }
     
-    public Password Password;
-    // private byte[] Salt {get; set;}
-
+    internal Password Password;
 
     public override bool Equals(object? o)
     {
@@ -75,25 +67,24 @@ public class User
 
     // this constructor sets the username, hashes password and saves it
     //, byte[] salt
-    public User( string username, Password password,string description){
-        this.Username=username;
-        this.Password=password;
-        this.Description=description;
-        UserCreatedRecipies=new();
-        UserFavoriteRecipies=new();
+    public User( string username, Password password,string description)
+    {
+        this.Username = username;
+        this.Password = password;
+        this.Description = description;
+        UserCreatedRecipies = new();
+        UserFavoriteRecipies = new();
     }
 
-    public User( string username, Password password){
-        this.Username=username;
-        this.Password=password;
-        this.Description=null;
-        UserCreatedRecipies=new();
-        UserFavoriteRecipies=new();
+    public User( string username, Password password)
+    {
+        this.Username = username;
+        this.Password = password;
+        this.Description = null;
+        UserCreatedRecipies = new();
+        UserFavoriteRecipies = new();
     }
 
-    // performs the correct logic to update these fields and send changes to DB
-    //shoudnt we be able to update each field seperatley?????
-    
     public void UpdateUsername(string newUsername)
     {
         if(newUsername.Length<5 || newUsername.Length>25 || newUsername==null)
@@ -136,13 +127,28 @@ public class User
 
     // take recipe, retrieve the list of recipes for user, add that recipe, send back to data layer
     public void AddToFavourites(Recipe recipe){
+        if (recipe == null)
+        {
+            throw new ArgumentNullException("Recipe cannot be null");
+        }
+        if (this.UserFavoriteRecipies.Contains(recipe))
+        {
+            throw new ArgumentException("This recipe has already been added to favourites");
+        }
         UserFavoriteRecipies.Add(recipe);
     }
 
     // take recipe, retrieve the list of recipes for user, remove that recipe, send back to data layer
     public void RemoveFromFavourites(Recipe recipe){
+        if (recipe == null)
+        {
+            throw new ArgumentNullException("Recipe cannot be null");
+        }
+        if (!this.UserFavoriteRecipies.Contains(recipe))
+        {
+            throw new ArgumentException("This recipe was never added to your favourites");
+        }
         UserFavoriteRecipies.Remove(recipe);
     }
 
-    // interacts with data layer to retrieve the recipes by that user
 }
