@@ -17,7 +17,7 @@ public class Program
     {
         int num = 0; 
         bool validInput = false;
-        while (!validInput)
+        while (!validInput && num >=0)
         {
             Console.WriteLine("Enter a number:");
             string? input = Console.ReadLine();
@@ -26,15 +26,15 @@ public class Program
         return num;
     }
 
-    private static double ValidateInt()
+    private static double ValidateDouble()
     {
-        int num = 0; 
+        double num = 0; 
         bool validInput = false;
-        while (!validInput)
+        while (!validInput && num >=0)
         {
             Console.WriteLine("Enter a number:");
             string? input = Console.ReadLine();
-            validInput = int.TryParse(input, out num);
+            validInput = double.TryParse(input, out num);
         }
         return num;
     }
@@ -106,10 +106,14 @@ public class Program
     {
         Dictionary<Ingredient, double> ingredients = new();
         string input = Console.ReadLine();
+        double quantity = ValidateDouble();
 
         while (!input.Equals("done")) 
         {
             input = Console.ReadLine();
+            Ingredient i = NewIngredient();
+            quantity = ValidateDouble();
+
         }
         return ingredients;
     }
@@ -121,7 +125,7 @@ public class Program
 
     private static List<string> FillTags()
     {
-
+        throw new NotImplementedException();
     }
 
     private static void CreateRecipe()
@@ -129,9 +133,9 @@ public class Program
         string name = Console.ReadLine();
         User owner = UserController.ActiveUser; 
         string description = Console.ReadLine();
-        int prepTimeMins = ValidateNum();
-        int cookTimeMins = ValidateNum(); 
-        int numberOfServings = ValidateNum(); 
+        int prepTimeMins = ValidateInt();
+        int cookTimeMins = ValidateInt(); 
+        int numberOfServings = ValidateInt(); 
         List<String> instructions = FillInstructions(); 
         Dictionary<Ingredient, double> ingredients = FillIngredients(); 
         List<string> tags = FillTags();
