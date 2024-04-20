@@ -32,4 +32,9 @@ public class FilterByServings : IFilterBy
             });
         return filteredRecipes.ToList();
     }
+
+    public override string ToString()
+    {
+        return "Serving";
+    }
 }

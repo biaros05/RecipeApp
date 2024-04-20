@@ -40,4 +40,9 @@ public class FilterByIngredients : IFilterBy
             .TakeWhile(recipe => ContainsIngredient(new List<Ingredient>(recipe.Ingredients.Keys)));
         return filteredRecipes.ToList();
     }
+
+    public override string ToString()
+    {
+        return "Ingredients";
+    }
 }

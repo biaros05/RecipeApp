@@ -2,6 +2,7 @@ using System.Data;
 using users;
 using recipes;
 using System.Globalization;
+using filtering;
 namespace Ui;
 
 public class Program
@@ -160,7 +161,7 @@ public class Program
         Console.WriteLine("Number of servings:");
         int numberOfServings = ValidateInt();
         Console.WriteLine("List the instrucrions:");
-        List<String> instructions = FillInstructions();
+        List<string> instructions = FillInstructions();
         Dictionary<Ingredient, double> ingredients = FillIngredients();
         Console.WriteLine("Add Tags to recipe:");
         List<string> tags = FillTags();
@@ -182,9 +183,170 @@ public class Program
         ConsoleUtils.WaitUserPressKey();
     }
 
+    /// <summary>
+    /// prints the type of filters
+    /// </summary>
+    private static void PrintFilters()
+    {
+        Console.Write("Current Filters: ");
+        foreach (IFilterBy filter in RecipeController.Instance.Filters)
+        {
+            Console.Write($"{filter}, ");   
+        }
+        Console.WriteLine();
+    }
+
+    /// <summary>
+    /// Gets a list of ingredient names which is turned into ingredient objects from user input
+    /// can be one or many
+    /// </summary>
+    /// <returns>a list of ingredient objects</returns>
+    private static List<Ingredient> GetIngredients()
+    {
+        List<Ingredient> ingredients = new();
+        bool keepAddingIngredients = true;
+        while(keepAddingIngredients)
+        {
+            try{
+                Console.WriteLine("Enter an ingredient name, Enter 'done' to continue");
+                string? ingredientName = Console.ReadLine() ?? throw new Exception("ingredientName cannot be null");
+                if (ingredientName.Equals("done"))
+                {
+                    keepAddingIngredients = false;
+                }
+                else
+                {
+                    ingredients.Add(new Ingredient(ingredientName, Units.Volume)); // hardcoded Unit because not necesssary for comparison
+                    Console.Write("added ingredient to list: ");
+                    foreach (Ingredient ingredient in ingredients)
+                    {
+                        Console.Write(ingredient.Name + ", ");
+                    }
+                    Console.WriteLine();
+                }
+            }
+            catch (Exception)
+            {
+                Console.WriteLine("Please enter a string");
+            }
+        }
+        return ingredients;
+    }
+
+    /// <summary>
+    /// Gets a keyword from user input
+    /// </summary>
+    /// <returns>a string keyword</returns>
+    private static string GetKeyword()
+    {
+        while(true)
+        {
+            try{
+                Console.WriteLine("Enter a keyword:");
+                string? keyword = Console.ReadLine();
+                if (keyword == null || keyword == "")
+                {
+                    throw new Exception("Keyword cannot be null or empty");
+                }
+                Console.WriteLine("Filtering by " + keyword + " will be added. Press Enter to continue");
+                Console.ReadLine();
+                return keyword;
+            }catch (Exception)
+            {
+                Console.WriteLine("Keyword cannot be null or empty");
+            }
+        }
+    }
+
+    /// <summary>
+    /// Gets a username from user input and turns it into a user object
+    /// </summary>
+    /// <returns>a user object with given username from user input</returns>
+    private static User GetUser()
+    {
+        while(true)
+        {
+            try{
+                Console.WriteLine("Enter a username who's recipes you would like to search for:");
+                string? username = Console.ReadLine();
+                if (username == null || username == "")
+                {
+                    throw new Exception("username cannot be null or empty");
+                }
+                Console.WriteLine("Filtering by user " + username + " will be added. Press Enter to continue");
+                Console.ReadLine();
+                return new User(username, new Password("test")); //creates a "fake" user object
+            }catch (Exception)
+            {
+                Console.WriteLine("The entered username cannot be null or empty");
+            }
+        }
+    }
+
+    private static int GetRating()
+    {
+        while(true)
+        {
+            try{
+                Console.WriteLine("Enter a rating");
+                int rating = ValidateInt();
+                if (rating > 5 || rating < 1)
+                {
+                    throw new Exception("rating must be out of 5 stars");
+                }
+                return rating;
+            }catch (Exception){
+                Console.WriteLine("The rating must be out of 5 stars");
+            }
+        }
+    }
+
     private static void FilterRecipeSearch()
     {
+        while (true)
+        {
+            FilterRecipeSearch? chosenOption = ConsoleUtils.GetUserChoice("Choose to filter", FilterRecipeSearches);
 
+            if (!chosenOption.HasValue)
+            {
+                break;
+            }
+
+            switch (chosenOption)
+            {
+                case Ui.FilterRecipeSearch.FilterByIngredient:
+                    List<Ingredient> ingredients = GetIngredients();
+                    RecipeController.Instance.AddFilter(new FilterByIngredients(ingredients));
+                    break;
+                case Ui.FilterRecipeSearch.FilterByKeyword:
+                    string keyword = GetKeyword();
+                    RecipeController.Instance.AddFilter(new FilterByKeyword(keyword));
+                    break;
+                case Ui.FilterRecipeSearch.FilterByOwner:
+                    User user = GetUser();
+                    RecipeController.Instance.AddFilter(new FilterByOwner(user));
+                    break;
+                case Ui.FilterRecipeSearch.FilterByRating:
+                    int rating = GetRating();
+                    RecipeController.Instance.AddFilter(new FilterByRating(rating));
+                    break;
+                case Ui.FilterRecipeSearch.FilterByServing:
+                    break;
+                case Ui.FilterRecipeSearch.FilterByTag:
+                    break;
+                case Ui.FilterRecipeSearch.FilterByTime:
+                    break;
+                case Ui.FilterRecipeSearch.CompletedFilter:
+                    break;
+                case Ui.FilterRecipeSearch.RemoveAllFilters:
+                    break;
+                case Ui.FilterRecipeSearch.ShowFilters:
+                    PrintFilters();
+                    Console.WriteLine("Press 'Enter' to continue...");
+                    Console.ReadLine();
+                    break;
+            }
+        }
     }
 
     private static void RateRecipe()

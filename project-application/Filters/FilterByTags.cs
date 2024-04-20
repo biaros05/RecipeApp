@@ -18,4 +18,9 @@ public class FilterByTags : IFilterBy
             .Where(recipe => recipe.Tags.Intersect(Tags).Any());
         return filteredRecipes.ToList();
     }
+
+    public override string ToString()
+    {
+        return "Tags";
+    }
 }

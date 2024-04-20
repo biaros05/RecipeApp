@@ -33,4 +33,9 @@ public class FilterByTime : IFilterBy
             });
         return filteredRecipes.ToList();
     }
+
+    public override string ToString()
+    {
+        return "Time";
+    }
 }
