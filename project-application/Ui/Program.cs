@@ -42,11 +42,12 @@ public class Program
 
     private static List<string> FillInstructions()
     {
+        Console.WriteLine("Type 'done' when you are finished");
         List<string> instructions = new();
         string input = Console.ReadLine();
         int stepNum = 1;
 
-        while ((!input.Equals("done")))
+        while (!input.Equals("done"))
         {
             instructions.Add($"{stepNum}. {input}");
             stepNum++;
@@ -124,6 +125,7 @@ public class Program
         return ingredients;
     }
 
+    // idk if this needs any more implementation
     private static void Login()
     {
         UserController.Instance.ActiveUser = new User("Bianca", new Password("1390238902"));
@@ -133,15 +135,13 @@ public class Program
     {
         Console.WriteLine("What Tags would you like to add?");
         List<string> tags = new();
-        string input = "";
+        string tag = "";
 
-        while (!input.Equals("done"))
+        while (!tag.Equals("done"))
         {
-            Console.WriteLine("Enter your tag");
-            string tag = Console.ReadLine();
+            Console.WriteLine("Enter your tag, type 'done' if you are finished:");
+            tag = Console.ReadLine();
             tags.Add(tag);
-            Console.WriteLine("Type 'done' if you are finished");
-            input = Console.ReadLine();
         }
         return tags;
     }
