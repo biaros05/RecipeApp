@@ -1,7 +1,7 @@
 namespace filtering;
 using recipes;
 // this class will filter by ingredients
-public class FilterByIngredients : IFilterBy 
+public class FilterByIngredients : IFilterBy
 {
     public FilterByIngredients(List<Ingredient> ingredients)
     {
@@ -26,7 +26,7 @@ public class FilterByIngredients : IFilterBy
             {
                 return true;
             }
-        }   
+        }
         return false;
     }
     /// <summary>

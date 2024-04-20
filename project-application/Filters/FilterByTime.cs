@@ -1,13 +1,13 @@
 namespace filtering;
 using recipes;
 
-public class FilterByTime : IFilterBy 
+public class FilterByTime : IFilterBy
 {
     public FilterByTime(int min, int max)
     {
         if (min <= 0 || max > 420 || max < min)
         {
-            throw new InvalidOperationException("Time must be between 0 and 420 inclusive and minimum must be less or equal to max");    
+            throw new InvalidOperationException("Time must be between 0 and 420 inclusive and minimum must be less or equal to max");
         }
         MinTimeMins = min;
         MaxTimeMins = max;
@@ -22,7 +22,8 @@ public class FilterByTime : IFilterBy
     public List<Recipe> FilterRecipes(List<Recipe> recipes)
     {
         var filteredRecipes = recipes
-            .Where(recipe => {
+            .Where(recipe =>
+            {
                 int totalTime = recipe.CookTimeMins + recipe.PrepTimeMins;
                 if (totalTime >= MinTimeMins && totalTime <= MaxTimeMins)
                 {

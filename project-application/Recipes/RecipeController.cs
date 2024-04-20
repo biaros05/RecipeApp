@@ -4,19 +4,19 @@ using System.Globalization;
 using System.Net;
 using filtering;
 using users;
-[assembly:  InternalsVisibleTo("project-application-test")]
+[assembly: InternalsVisibleTo("project-application-test")]
 
 namespace recipes;
 public class RecipeController
 {
     // as the user adds a filter, this will accumilate the filters (will NOT add one if already there.)
-    public List<IFilterBy> Filters {get;} = new();
-    public List<Recipe> AllRecipes {get;} = new();
-    public List<Ingredient> Ingredients {get;} = new();
+    public List<IFilterBy> Filters { get; } = new();
+    public List<Recipe> AllRecipes { get; } = new();
+    public List<Ingredient> Ingredients { get; } = new();
 
     private static RecipeController? _instance;
-    
-    private RecipeController(){}
+
+    private RecipeController() { }
 
     public static RecipeController Instance
     {
@@ -28,7 +28,7 @@ public class RecipeController
             }
             return _instance;
         }
-    } 
+    }
 
     // gets list of recipes from db, adds recipe, sends back list to db
     public void CreateRecipe(Recipe recipe)
@@ -38,12 +38,13 @@ public class RecipeController
             throw new ArgumentException("this recipe and name already exist in the database!");
         }
 
-        if (!recipe.Owner.Equals(UserController.ActiveUser))
+        if (!recipe.Owner.Equals(UserController.Instance.ActiveUser))
         {
             throw new ArgumentException("You cannot create a recipe that you are not the owner of");
         }
 
         AllRecipes.Add(recipe);
+
     }
 
     public void AddIngredient(Ingredient ingredient)
@@ -61,14 +62,14 @@ public class RecipeController
         {
             throw new ArgumentException("This recipe does not exist in the database");
         }
-        if (!recipe.Owner.Equals(UserController.ActiveUser))
+        if (!recipe.Owner.Equals(UserController.Instance.ActiveUser))
         {
             throw new ArgumentException("Cannot delete the recipe you arent an owner of");
         }
 
         AllRecipes.Remove(recipe);
     }
-    
+
 
     // filters all recipes using the filters in the list
     public List<Recipe> FilterBy()
@@ -98,5 +99,5 @@ public class RecipeController
         }
         Filters.Remove(filter);
     }
-    
+
 }

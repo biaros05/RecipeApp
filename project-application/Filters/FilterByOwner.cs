@@ -2,7 +2,7 @@ namespace filtering;
 using recipes;
 using users;
 
-public class FilterByOwner : IFilterBy 
+public class FilterByOwner : IFilterBy
 {
     public FilterByOwner(User owner)
     {

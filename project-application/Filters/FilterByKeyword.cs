@@ -1,14 +1,14 @@
 namespace filtering;
 using recipes;
 // this class will filter by keyword
-public class FilterByKeyword : IFilterBy 
+public class FilterByKeyword : IFilterBy
 {
     // in name or description
     public FilterByKeyword(string keyword)
     {
-        if(keyword == null || keyword == "")
+        if (keyword == null || keyword == "")
         {
-            throw new InvalidOperationException("keyword must not be null or empty");    
+            throw new InvalidOperationException("keyword must not be null or empty");
         }
         Keyword = keyword;
     }
@@ -23,7 +23,8 @@ public class FilterByKeyword : IFilterBy
     {
         var filteredRecipes = recipes
             //finds if the recipe name contains the keyword
-            .Where(recipe => {
+            .Where(recipe =>
+            {
                 if (recipe.Name == null || recipe.Name == "")
                 {
                     throw new InvalidOperationException("Recipe name is null or empty");
@@ -40,7 +41,8 @@ public class FilterByKeyword : IFilterBy
                 else
                 {
                     return result;
-                }});
+                }
+            });
         return filteredRecipes.ToList();
     }
 }
