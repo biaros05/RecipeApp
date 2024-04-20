@@ -152,4 +152,9 @@ public class User
         UserFavoriteRecipies.Remove(recipe);
     }
 
+    public override string ToString()
+    {
+        return this.Username + this.Description;
+    }
+
 }
