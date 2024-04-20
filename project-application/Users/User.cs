@@ -12,10 +12,10 @@ public class User
 {
 
     [InverseProperty("UserCreatedRecipies")]
-    public List<Recipe> UserCreatedRecipies{get;set;}
+    public List<Recipe> UserCreatedRecipies { get; set; }
 
     [InverseProperty("UserFavoriteRecipies")]
-    public List<Recipe> UserFavoriteRecipies{get;set;}
+    public List<Recipe> UserFavoriteRecipies { get; set; }
     private string username;
     public string Username
     {
@@ -23,111 +23,119 @@ public class User
         {
             return this.username;
         }
-        set{
+        set
+        {
             if (string.IsNullOrEmpty(value))
             {
                 throw new ArgumentNullException("password cannot be empty");
             }
-            if(value.Length < 5 || value.Length > 25)
+            if (value.Length < 5 || value.Length > 25)
             {
                 throw new ArgumentException("username must be between 5-25 characters");
             }
             this.username = value;
-        } 
+        }
     }
-    public byte[]? Image {get;set;}
+    public byte[]? Image { get; set; }
     private string? description;
-    public string? Description {
+    public string? Description
+    {
         get
         {
             return this.description;
-        } 
+        }
 
         set
         {
-            if(value?.Length>500)
+            if (value?.Length > 500)
             {
                 throw new Exception("description is too long. needs to be less than 500 charcters");
             }
-            this.description=value;
+            this.description = value;
         }
     }
-    
+
     internal Password Password;
 
     public override bool Equals(object? o)
     {
-        if(o == null || !(o is User))
+        if (o == null || !(o is User))
         {
             return false;
         }
-        
+
         return ((User)o).Username.Equals(this.Username);
     }
 
     // this constructor sets the username, hashes password and saves it
     //, byte[] salt
-    public User( string username, Password password,string description){
-        this.Username=username;
-        this.Password=password;
-        this.Description=description;
-        UserCreatedRecipies=new();
-        UserFavoriteRecipies=new();
+    public User(string username, Password password, string description)
+    {
+        this.Username = username;
+        this.Password = password;
+        this.Description = description;
+        UserCreatedRecipies = new();
+        UserFavoriteRecipies = new();
         //Image need to be here as a byte[]
     }
 
-    public User( string username, Password password){
-        this.Username=username;
-        this.Password=password;
-        this.Description=null;
-        UserCreatedRecipies=new();
-        UserFavoriteRecipies=new();
+    public User(string username, Password password)
+    {
+        this.Username = username;
+        this.Password = password;
+        this.Description = null;
+        UserCreatedRecipies = new();
+        UserFavoriteRecipies = new();
         //Image need to be here as a byte[]
 
     }
 
     public void UpdateUsername(string newUsername)
     {
-        if(newUsername.Length<5 || newUsername.Length>25 || newUsername==null)
+        if (newUsername.Length < 5 || newUsername.Length > 25 || newUsername == null)
         {
             throw new Exception("username doesnt meet requirements");
         }
-        Username=newUsername;
+        Username = newUsername;
     }
 
     public void UpdatePassword(string newPass)
     {
-        if(newPass.Length<5 || newPass.Length>50)
+        if (newPass.Length < 5 || newPass.Length > 50)
         {
             throw new Exception("password doesnt meet requirements");
         }
-        Password=new Password(newPass);
+        Password = new Password(newPass);
     }
-    public void UpdateFields( string newDescription, byte[] newImage){
-        this.Description=newDescription;
-        this.Image=newImage;
+    public void UpdateFields(string newDescription, byte[] newImage)
+    {
+        this.Description = newDescription;
+        this.Image = newImage;
     }
-        
+
     // removes profile picture provided one exists
-    public void RemoveProfilePicture(){
-        if(Image==null)
+    public void RemoveProfilePicture()
+    {
+        if (Image == null)
         {
             throw new Exception("no picture to remove");
         }
-        this.Image=null;
+        this.Image = null;
     }
 
     // removes description provided one exists
-    public void RemoveDescription(){
-        if(Description==null)
+    public void RemoveDescription()
+    {
+        if (Description == null)
         {
             throw new Exception("no description to remove");
         }
-        this.Description=null;
+        this.Description = null;
     }
 
     // take recipe, retrieve the list of recipes for user, add that recipe, send back to data layer
-    public void AddToFavourites(Recipe recipe){
+    public void AddToFavourites(Recipe recipe)
+    {
         if (recipe == null)
         {
             throw new ArgumentNullException("Recipe cannot be null");
@@ -140,7 +148,8 @@ public class User
     }
 
     // take recipe, retrieve the list of recipes for user, remove that recipe, send back to data layer
-    public void RemoveFromFavourites(Recipe recipe){
+    public void RemoveFromFavourites(Recipe recipe)
+    {
         if (recipe == null)
         {
             throw new ArgumentNullException("Recipe cannot be null");

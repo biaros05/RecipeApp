@@ -24,7 +24,7 @@ public class RecipeControllerTests
     //         {
     //             { b, 20 },
     //         };
-        
+
     //     //creating expected data
     //     List<Recipe> expected = new()
     //         {
@@ -133,7 +133,7 @@ public class RecipeControllerTests
     //     dict.Add(i, 20);
     //     Recipe recipe = new("Test Recipe", new User("Blob", "Blob"), "Test Description", 30, 60, 4,
     //         new List<string> { "Step 1", "Step 2" }, dict, new List<string> { "Tag1", "Tag2" }, 2);
-        
+
     //     Action act = () => instance.CreateRecipe(recipe);
 
     //     Assert.ThrowsException<ArgumentException>(act, "Cannot add recipe you arent the owner of");
@@ -160,7 +160,7 @@ public class RecipeControllerTests
 
     //     CollectionAssert.AreEqual(expectedRecipes, instance.AllRecipes);
     // }
-    
+
     // [TestMethod]
     // public void DeleteRecipe_RecipeDoesNotExist_ThrowsException()
     // {

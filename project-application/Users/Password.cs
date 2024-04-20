@@ -12,25 +12,25 @@ public class Password
 
     public Password(string password)
     {
-        if (password.Length<5 || password.Length>50 || password==null)
+        if (password.Length < 5 || password.Length > 50 || password == null)
         {
             throw new Exception("password doesnt meet requirements");
         }
-        byte[] salt=GenerateSalt();
-        this.Hash= HashPassword(salt,password);
-        this.Salt=salt;
+        byte[] salt = GenerateSalt();
+        this.Hash = HashPassword(salt, password);
+        this.Salt = salt;
     }
 
     // implements algo for hashing and returns the hashed password for that user
-    private static string HashPassword(byte[] salt,string password)
+    private static string HashPassword(byte[] salt, string password)
     {
         int numIterations = 1000;
 
         HashAlgorithmName algoName = HashAlgorithmName.SHA512;
 
-        Rfc2898DeriveBytes key =new(password, salt, numIterations, algoName);
+        Rfc2898DeriveBytes key = new(password, salt, numIterations, algoName);
         byte[] hash = key.GetBytes(32);
-        string result=Convert.ToBase64String(hash);
+        string result = Convert.ToBase64String(hash);
         return result;
     }
 
@@ -46,8 +46,8 @@ public class Password
 
     public bool DoPasswordsMatch(string password)
     {
-        string enteredHash= HashPassword(this.Salt,password);
-        if (this.Hash==enteredHash)
+        string enteredHash = HashPassword(this.Salt, password);
+        if (this.Hash == enteredHash)
         {
             return true;
         }

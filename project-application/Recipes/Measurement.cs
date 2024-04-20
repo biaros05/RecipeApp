@@ -2,13 +2,14 @@ namespace recipes;
 using recipes;
 using System;
 
-public class Measurement {
+public class Measurement
+{
     private readonly double _ratioToBase;
     private readonly double _ratioFromBase;
 
     // type of unit
-    public Units Unit {get;}
-    public Measurement(Units unit, double ratioToBase=0, double ratioFromBase=0)
+    public Units Unit { get; }
+    public Measurement(Units unit, double ratioToBase = 0, double ratioFromBase = 0)
     {
         this.Unit = unit;
         this._ratioToBase = unit == Units.Quantity ? 0 : ratioToBase;
@@ -23,7 +24,7 @@ public class Measurement {
         }
         return ((Measurement)obj).Unit == this.Unit;
     }
-    
+
     // this will convert the measurement to base unit, and then from this, will convert 
     //the base to the new measurement given
     // it will make sure the enums are the same, or else will not convert.

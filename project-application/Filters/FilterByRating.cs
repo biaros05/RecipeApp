@@ -1,12 +1,12 @@
 namespace filtering;
 using recipes;
-public class FilterByRating : IFilterBy 
+public class FilterByRating : IFilterBy
 {
     public FilterByRating(int rating)
     {
         if (rating <= 0 || rating > 5)
         {
-            throw new InvalidOperationException("rating must not be negative or zero or bigger than 5");    
+            throw new InvalidOperationException("rating must not be negative or zero or bigger than 5");
         }
         Rating = rating;
     }

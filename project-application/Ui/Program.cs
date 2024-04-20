@@ -15,9 +15,9 @@ public class Program
 
     private static int ValidateInt()
     {
-        int num = 0; 
+        int num = 0;
         bool validInput = false;
-        while (!validInput && num >=0)
+        while (!validInput && num >= 0)
         {
             Console.WriteLine("Enter an integer number:");
             string? input = Console.ReadLine();
@@ -28,9 +28,9 @@ public class Program
 
     private static double ValidateDouble()
     {
-        double num = 0; 
+        double num = 0;
         bool validInput = false;
-        while (!validInput && num >=0)
+        while (!validInput && num >= 0)
         {
             Console.WriteLine("Enter a decimal number:");
             string? input = Console.ReadLine();
@@ -45,7 +45,8 @@ public class Program
         string input = Console.ReadLine();
         int stepNum = 1;
 
-        while ((!input.Equals("done"))) {
+        while ((!input.Equals("done")))
+        {
             instructions.Add($"{stepNum}. {input}");
             stepNum++;
             input = Console.ReadLine();
@@ -69,18 +70,18 @@ public class Program
             switch (chosenOption)
             {
                 case Units.Mass:
-                chosenOption = Units.Mass;
-                break;
+                    chosenOption = Units.Mass;
+                    break;
                 case Units.Volume:
-                chosenOption = Units.Volume;
-                break;
+                    chosenOption = Units.Volume;
+                    break;
                 case Units.Quantity:
-                chosenOption = Units.Quantity;
-                break;
+                    chosenOption = Units.Quantity;
+                    break;
             }
             return (Units)chosenOption;
         }
-    }   
+    }
 
     private static Ingredient NewIngredient()
     {
@@ -88,7 +89,8 @@ public class Program
         Ingredient? i = null;
         while (!successful)
         {
-            try{
+            try
+            {
                 Console.WriteLine("Ingredient name:");
                 string name = Console.ReadLine();
                 Units unit = ChooseUnit();
@@ -109,7 +111,7 @@ public class Program
         Dictionary<Ingredient, double> ingredients = new();
         string input = "";
 
-        while (!input.Equals("done")) 
+        while (!input.Equals("done"))
         {
             Ingredient i = NewIngredient();
             Console.WriteLine("Quantity:");
@@ -123,7 +125,7 @@ public class Program
 
     private static void Login()
     {
-        
+
     }
 
     private static List<string> FillTags()
@@ -132,7 +134,7 @@ public class Program
         List<string> tags = new();
         string input = "";
 
-        while (!input.Equals("done")) 
+        while (!input.Equals("done"))
         {
             Console.WriteLine("Enter your tag");
             string tag = Console.ReadLine();
@@ -147,18 +149,18 @@ public class Program
     {
         Console.WriteLine("Name of Recipe:");
         string name = Console.ReadLine();
-        User owner = UserController.ActiveUser; 
+        User owner = UserController.ActiveUser;
         Console.WriteLine("Description of Recipe:");
         string description = Console.ReadLine();
         Console.WriteLine("Prep time of Recipe (in minutes):");
         int prepTimeMins = ValidateInt();
         Console.WriteLine("Cook time of Recipe (in minutes):");
-        int cookTimeMins = ValidateInt(); 
+        int cookTimeMins = ValidateInt();
         Console.WriteLine("Number of servings:");
-        int numberOfServings = ValidateInt(); 
+        int numberOfServings = ValidateInt();
         Console.WriteLine("List the instrucrions:");
-        List<String> instructions = FillInstructions(); 
-        Dictionary<Ingredient, double> ingredients = FillIngredients(); 
+        List<String> instructions = FillInstructions();
+        Dictionary<Ingredient, double> ingredients = FillIngredients();
         Console.WriteLine("Add Tags to recipe:");
         List<string> tags = FillTags();
         Console.WriteLine("Budget on a scale of 1-3:");
@@ -179,17 +181,17 @@ public class Program
 
     private static void FilterRecipeSearch()
     {
-        
+
     }
 
     private static void RateRecipe()
     {
-        
+
     }
 
     private static void AddRecipeToFavourites()
     {
-        
+
     }
 
 
@@ -212,20 +214,20 @@ public class Program
             switch (chosenOption)
             {
                 case MainMenuOption.CreateRecipe:
-                CreateRecipe();
-                break;
+                    CreateRecipe();
+                    break;
                 case MainMenuOption.FilterRecipeSearch:
-                FilterRecipeSearch();
-                break;
+                    FilterRecipeSearch();
+                    break;
                 case MainMenuOption.AddRecipeToFavourites:
-                AddRecipeToFavourites();
-                break;
+                    AddRecipeToFavourites();
+                    break;
                 case MainMenuOption.RateRecipe:
-                RateRecipe();
-                break;
+                    RateRecipe();
+                    break;
                 case MainMenuOption.ViewRecipes:
-                PrintRecipes();
-                break;
+                    PrintRecipes();
+                    break;
             }
         }
     }
