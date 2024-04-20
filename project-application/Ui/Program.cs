@@ -2,6 +2,8 @@ using System.Data;
 using users;
 using recipes;
 using System.Globalization;
+using System.Xml;
+using System.Reflection.Metadata.Ecma335;
 namespace Ui;
 
 public class Program
@@ -194,9 +196,45 @@ public class Program
 
     private static void AddRecipeToFavourites()
     {
+        PrintRecipes();
+        Console.WriteLine("which recipie would you like to add to your favorite list");
+        int num=System.Convert.ToInt32(Console.ReadLine());
 
+        Recipe recipe = ReturnOneRecipe(num - 1);
+
+        UserController.Instance.ActiveUser.AddToFavourites(recipe);
+
+        Console.WriteLine("recipe has been added to your favorites");
+        Console.WriteLine(recipe);
     }
 
+    public static Recipe ReturnOneRecipe(int num)
+    {
+        int count=0;
+        foreach (Recipe r in RecipeController.Instance.AllRecipes)
+        {
+            if (count==num)
+            {
+                return r;
+            }
+            count++;
+        }
+        throw new Exception("no item in current position");
+    }
+
+private static void RemoveRecipeFromFavourites()
+    {
+        PrintRecipes();
+        Console.WriteLine("which recipie would you like to add to your favorite list");
+        int num=System.Convert.ToInt32(Console.ReadLine());
+
+        Recipe recipe = ReturnOneRecipe(num - 1);
+
+        UserController.Instance.ActiveUser.RemoveFromFavourites(recipe);
+
+        Console.WriteLine("recipe has been removed from your favorites");
+        Console.WriteLine(recipe);
+    }
 
     public static void Main()
     {
@@ -230,6 +268,9 @@ public class Program
                     break;
                 case MainMenuOption.ViewRecipes:
                     PrintRecipes();
+                    break;
+                case MainMenuOption.RemoveFromFavourites:
+                    RemoveRecipeFromFavourites();
                     break;
             }
         }
