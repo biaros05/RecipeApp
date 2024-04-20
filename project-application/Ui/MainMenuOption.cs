@@ -10,5 +10,6 @@ enum MainMenuOption
   AddRecipeToFavourites,
   RateRecipe,
   ViewRecipes,
-  RemoveFromFavourites
+  RemoveFromFavourites,
+  ViewFavoriteRecipes
 }

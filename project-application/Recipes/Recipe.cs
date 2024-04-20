@@ -222,9 +222,9 @@ public class Recipe
             return false;
         }
 
-        return ((Recipe)obj).Id == this.Id || ((Recipe)obj).Name.Equals(this.Name);
+        return ((Recipe)obj).Name.Equals(this.Name);
     }
-
+// (Recipe)obj).Id == this.Id || 
     public Recipe(Recipe other)
     : this(other.Name, other.Owner, other.Description, other.PrepTimeMins, other.CookTimeMins, other.NumberOfServings, other.Instructions, other.Ingredients, other.Tags, other.Budget.Length)
     {
