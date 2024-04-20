@@ -11,19 +11,11 @@ public class User
     
     public override bool Equals(object? o)
     {
-        if (o == null)
-        {
-            return false;
-        }
-        return ((User)o).Username.Equals(this.Username);
+        throw new NotImplementedException();
     }
 
     // this constructor sets the username, hashes password and saves it
-    public User(string username, string password)
-    {
-        this.Username = username;
-        this.Password = new Password(password);
-    }
+    public User(string username, string password){}
 
     // performs the correct logic to update these fields and send changes to DB
     public void UpdateFields(string newPassword, string newDescription, string newImage){}

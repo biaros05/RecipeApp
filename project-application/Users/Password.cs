@@ -3,10 +3,7 @@ internal class Password
 {
     private string HashedPassword {get; set;}
     private byte[] Salt {get; set;}
-    public Password(string password)
-    {
-        this.HashedPassword = password;
-    }
+    public Password(string password){}
 
     // implements algo for hashing and returns the hashed password for that user
     private string HashPassword()
