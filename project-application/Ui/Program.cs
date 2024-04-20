@@ -123,7 +123,7 @@ public class Program
 
     private static void Login()
     {
-        UserController.ActiveUser = new User("Bianca", "Rossetti");
+        
     }
 
     private static List<string> FillTags()
