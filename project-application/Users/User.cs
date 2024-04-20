@@ -154,7 +154,7 @@ public class User
 
     public override string ToString()
     {
-        return this.Username + this.Description;
+        return this.Username + this.Image + this.Description;
     }
 
 }
