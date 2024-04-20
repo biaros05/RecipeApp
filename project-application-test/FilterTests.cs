@@ -324,7 +324,7 @@ public class FilterTests
                 new List<string> { "Step 1", "Step 2" }, dict, new List<string> { "Tag1", "Tag2" }, 2),
             };
 
-        IFilterBy filter = new FilterByOwner(new User("Biance", new Password("123456789")));
+        IFilterBy filter = new FilterByOwner(new User("Bianca", new Password("123456789")));
         List<Recipe> actual = filter.FilterRecipes(recipes);
 
         CollectionAssert.AreEqual(expected, actual);
@@ -403,15 +403,15 @@ public class FilterTests
         // creating new test data
         List<User> users = new()
         {
-            new User("John", new Password("123456789")),
-            new User("Bob", new Password("123456789")),
-            new User("Doe", new Password("123456789"))
+            new User("Johny", new Password("123456789")),
+            new User("Bobbie", new Password("123456789")),
+            new User("Doeey", new Password("123456789"))
         };
         // filter the users
         FilterByUsername filter = new FilterByUsername(users);
-        User actual = filter.FilterUsers("John");
+        User actual = filter.FilterUsers("Johny");
 
-        Assert.AreEqual(new User("John", new Password("123456789")), actual);
+        Assert.AreEqual(new User("Johny", new Password("123456789")), actual);
     }
 
     //test if given user is null (no test for null return handled by UserController)
