@@ -173,9 +173,11 @@ public class Program
 
     private static void PrintRecipes()
     {
+        int num = 1;
         foreach (Recipe r in RecipeController.Instance.AllRecipes)
         {
-            Console.WriteLine(r);
+            Console.WriteLine($"{num}. {r}");
+            num++;
         }
         ConsoleUtils.WaitUserPressKey();
     }
