@@ -7,13 +7,14 @@ using users;
 
 public class Recipe
 {
-    private int? Id {get;}
+    private int? Id { get; }
     private string? _name;
-    public string Name{
+    public string Name
+    {
         get
         {
             return this._name!;
-        } 
+        }
         set
         {
             if (string.IsNullOrEmpty(value))
@@ -31,9 +32,10 @@ public class Recipe
 
         }
     }
-    public User Owner {get;}
+    public User Owner { get; }
     private string? _description;
-    public string Description {
+    public string Description
+    {
         get
         {
             return this._description!;
@@ -52,7 +54,8 @@ public class Recipe
     }
 
     private int _prepTimeMins;
-    public int PrepTimeMins {
+    public int PrepTimeMins
+    {
         get
         {
             return this._prepTimeMins;
@@ -63,7 +66,7 @@ public class Recipe
             {
                 throw new ArgumentOutOfRangeException("The prep time must be less than 4 hours and more than 0 minutes.");
             }
-            else 
+            else
             {
                 this._prepTimeMins = value;
             }
@@ -71,7 +74,8 @@ public class Recipe
     }
 
     private int _cookTimeMins;
-    public int CookTimeMins {
+    public int CookTimeMins
+    {
         get
         {
             return this._cookTimeMins;
@@ -90,7 +94,8 @@ public class Recipe
     }
 
     // get returns the CookTime + PrepTime and returns proper time formatted string
-    public string TotalTime{
+    public string TotalTime
+    {
         get
         {
             double mins = this.PrepTimeMins + this.CookTimeMins;
@@ -100,26 +105,28 @@ public class Recipe
         }
     }
 
-    public int NumberOfServings {get;}
-    public List<string> Instructions {get;} = new();
+    public int NumberOfServings { get; }
+    public List<string> Instructions { get; } = new();
     // contains the ingredient and its quantity for specified unit 
-    public Dictionary<Ingredient, double> Ingredients{get; private set;} = new();
+    public Dictionary<Ingredient, double> Ingredients { get; private set; } = new();
     private readonly List<double> _ratings = new(); // all the ratings given by users OUT OF FIVE STARS
 
-    public double Rating {
+    public double? Rating
+    {
         get
         {
             int totalRating = 0;
-            foreach ( int r in this._ratings)
+            foreach (int r in this._ratings)
             {
                 totalRating += r;
-            } 
+            }
             double rating = totalRating / (double)_ratings.Count;
-            return Math.Round(rating, 2);
+            return this._ratings.Count != 0 ? Math.Round(rating, 2) : null;
         }
     } // sum of Ratings and get average.
     private readonly List<int> _difficulties = new(); // all the difficulties given by users OUT OF 10
-    public int DifficultyRating {
+    public int? DifficultyRating
+    {
         get
         {
             int difficulty = 0;
@@ -128,13 +135,13 @@ public class Recipe
                 difficulty += d;
             }
             double averageDiff = difficulty / (double)this._difficulties.Count;
-            return (int) Math.Round(averageDiff, 0);
+            return this._difficulties.Count != 0 ? (int)Math.Round(averageDiff, 0) : null;
         }
     } // sum of Difficulties and get average
 
 
-    public List<string> Tags {get; private set;}
-    public string Budget {get;}
+    public List<string> Tags { get; private set; }
+    public string Budget { get; }
 
     // add rating to recipe and send information to database
     public void RateRecipe(int rating)
@@ -145,7 +152,7 @@ public class Recipe
         }
         this._ratings.Add(rating);
     }
-    
+
     public void RateDifficulty(int rating)
     {
         if (rating < 1 || rating > 10)
@@ -166,7 +173,7 @@ public class Recipe
         {
             this.Tags.Add(tag);
         }
-        
+
     }
 
     // will take all parameters for a recipe and send this new information to the database (VALDATE THE USER IS THE OWNER)
@@ -223,7 +230,7 @@ public class Recipe
     {
     }
 
-    public Recipe(string name, User owner, string description, int prepTimeMins, int cookTimeMins, int numberOfServings, List<String> instructions, Dictionary<Ingredient, double> ingredients, List<string> tags, int budget)
+    public Recipe(string name, User owner, string description, int prepTimeMins, int cookTimeMins, int numberOfServings, List<String> instructions, Dictionary<Ingredient, double> ingredients, List<string> tags, int budget, int? id = null)
     {
         this.Owner = owner;
         this.Name = name;
@@ -232,7 +239,7 @@ public class Recipe
         this.PrepTimeMins = prepTimeMins;
         this.CookTimeMins = cookTimeMins;
         this.NumberOfServings = numberOfServings;
-
+        this.Id = id;
         if (instructions.Count == 0 || ingredients.Count == 0)
         {
             throw new ArgumentException("there must be a minimum of one ingredient and one instruction on each recipe");
@@ -254,10 +261,16 @@ public class Recipe
     public override int GetHashCode()
     {
         int hash = 17;//prime num
-        unchecked {
+        unchecked
+        {
             hash = hash * 31 + this.Id.GetHashCode();
             hash = hash * 31 + (Name?.GetHashCode() ?? 0);
             return hash;
         }
+    }
+
+    public override string ToString()
+    {
+        return $"{this.Name} by {this.Owner}. Rating: {(this.Rating == null ? "Not available" : this.Rating)}, Budget: {this.Budget}";
     }
 }

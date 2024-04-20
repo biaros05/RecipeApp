@@ -1,5 +1,5 @@
 namespace project_application_test;
-
+using filtering;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks.Dataflow;
@@ -9,6 +9,44 @@ using users;
 [TestClass]
 public class RecipeControllerTests
 {
+    // [TestMethod]
+    // public void FilterBy_MultipleFilters_FiltersCorrectly()
+    // {
+    //     //creating test data
+    //     UserController.ActiveUser = new User("Bianca", "Rossetti");
+    //     Ingredient a = new("Apple", Units.Quantity);
+    //     Ingredient b = new("Sugar", Units.Mass);
+    //     Dictionary<Ingredient, double> dict = new()
+    //         {
+    //             { a, 20 },
+    //         };
+    //     Dictionary<Ingredient, double> dict2 = new()
+    //         {
+    //             { b, 20 },
+    //         };
+
+    //     //creating expected data
+    //     List<Recipe> expected = new()
+    //         {
+    //             new("Test Recipe", UserController.ActiveUser, "Test Description", 30, 60, 4,
+    //             new List<string> { "Step 1", "Step 2" }, dict, new List<string> { "Tag1", "Tag2" }, 2),
+    //         };
+    //     expected[0].Id = 1;
+    //     IFilterBy filter = new FilterByServings(3, 6);
+    //     IFilterBy filter2 = new FilterByKeyword("Test");
+    //     RecipeController.Instance.AddFilter(filter);
+    //     RecipeController.Instance.AddFilter(filter2);
+    //     RecipeController.Instance.CreateRecipe(new("Test Recipe", UserController.ActiveUser, "Test Description", 30, 60, 4,
+    //         new List<string> { "Step 1", "Step 2" }, dict, new List<string> { "Tag1", "Tag2" }, 2));
+    //     RecipeController.Instance.AllRecipes[0].Id = 1;
+    //     RecipeController.Instance.CreateRecipe(new("Recipe need 10 characters", UserController.ActiveUser, "Description", 30, 60, 5,
+    //         new List<string> { "Step 1", "Step 2" }, dict2, new List<string> { "Tag1", "Tag2" }, 2));
+    //     RecipeController.Instance.AllRecipes[1].Id = 2;
+
+    //     List<Recipe> filteredRecipes = RecipeController.Instance.FilterBy();
+
+    //     CollectionAssert.AreEqual(expected, filteredRecipes);
+    // }
     // cleanup static members after every test
 
     // TESTS FOR CREATERECIPE
@@ -95,7 +133,7 @@ public class RecipeControllerTests
     //     dict.Add(i, 20);
     //     Recipe recipe = new("Test Recipe", new User("Blob", "Blob"), "Test Description", 30, 60, 4,
     //         new List<string> { "Step 1", "Step 2" }, dict, new List<string> { "Tag1", "Tag2" }, 2);
-        
+
     //     Action act = () => instance.CreateRecipe(recipe);
 
     //     Assert.ThrowsException<ArgumentException>(act, "Cannot add recipe you arent the owner of");
@@ -122,7 +160,7 @@ public class RecipeControllerTests
 
     //     CollectionAssert.AreEqual(expectedRecipes, instance.AllRecipes);
     // }
-    
+
     // [TestMethod]
     // public void DeleteRecipe_RecipeDoesNotExist_ThrowsException()
     // {

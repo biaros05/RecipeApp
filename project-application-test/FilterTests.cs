@@ -42,7 +42,7 @@ public class FilterTests
                 new("Recipe need 10 characters", new User("Not Bianca", new Password("123456789")), "Test Description", 60, 60, 4,
                 new List<string> { "Step 1", "Step 2" }, dict2, new List<string> { "Tag4", "Tag6" }, 2)
             };
-        
+
         //filter
         IFilterBy filter = new FilterByTime(75, 130);
         List<Recipe> actual = filter.FilterRecipes(recipes);
@@ -212,12 +212,12 @@ public class FilterTests
                 new("Test Recipe", new User("Bianca", new Password("123456789")), "Test Description", 30, 60, 4,
                 new List<string> { "Step 1", "Step 2" }, dict, new List<string> { "Tag1", "Tag2" }, 2),
             };
-        
+
         IFilterBy filter = new FilterByRating(3);
         List<Recipe> actual = filter.FilterRecipes(recipes);
         //assert
         CollectionAssert.AreEqual(expected, actual);
-        
+
     }
     //tests for filter by rating if rating is less than 0
     [TestMethod]
@@ -261,7 +261,7 @@ public class FilterTests
                 new("Recipe need 10 characters", new User("Not Bianca", new Password("123456789")), "Test Description", 30, 60, 4,
                 new List<string> { "Step 1", "Step 2" }, dict2, new List<string> { "Tag4", "Tag1" }, 2)
             };
-        
+
         //create expected data
         List<Recipe> expected = new()
             {
@@ -316,15 +316,15 @@ public class FilterTests
                 new("Recipe need 10 characters", new User("Not Bianca", new Password("123456789")), "Test Description", 30, 60, 4,
                 new List<string> { "Step 1", "Step 2" }, dict2, new List<string> { "Tag1", "Tag2" }, 2)
             };
-        
+
         // creating expected data
         List<Recipe> expected = new()
             {
                 new("Test Recipe", new User("Bianca", new Password("123456789")), "Test Description", 30, 60, 4,
                 new List<string> { "Step 1", "Step 2" }, dict, new List<string> { "Tag1", "Tag2" }, 2),
             };
-        
-        IFilterBy filter = new FilterByOwner(new User("Biance", new Password("123456789")));
+
+        IFilterBy filter = new FilterByOwner(new User("Bianca", new Password("123456789")));
         List<Recipe> actual = filter.FilterRecipes(recipes);
 
         CollectionAssert.AreEqual(expected, actual);
@@ -362,7 +362,7 @@ public class FilterTests
                 new("Recipe need 10 characters", new User("Not Bianca", new Password("123456789")), "Test Description", 30, 60, 5,
                 new List<string> { "Step 1", "Step 2" }, dict2, new List<string> { "Tag1", "Tag2" }, 2)
             };
-        
+
         //creating expected data
         List<Recipe> expected = new()
             {
@@ -371,7 +371,7 @@ public class FilterTests
                 new("Recipe need 10 characters", new User("Not Bianca", new Password("123456789")), "Test Description", 30, 60, 5,
                 new List<string> { "Step 1", "Step 2" }, dict2, new List<string> { "Tag1", "Tag2" }, 2)
             };
-        
+
         //filter
         IFilterBy filter = new FilterByServings(3, 6);
         List<Recipe> actual = filter.FilterRecipes(recipes);
@@ -397,30 +397,30 @@ public class FilterTests
     }
 
     //tests for filtering by user
-    [TestMethod]    
+    [TestMethod]
     public void FilterByUsersTest()
     {
         // creating new test data
         List<User> users = new()
         {
-            new User("John", new Password("123456789")),
-            new User("Bob", new Password("123456789")),
-            new User("Doe", new Password("123456789"))
+            new User("Johny", new Password("123456789")),
+            new User("Bobbie", new Password("123456789")),
+            new User("Doeey", new Password("123456789"))
         };
         // filter the users
         FilterByUsername filter = new FilterByUsername(users);
-        User actual = filter.FilterUsers("John");
+        User actual = filter.FilterUsers("Johny");
 
-        Assert.AreEqual(new User("John", new Password("123456789")), actual);
+        Assert.AreEqual(new User("Johny", new Password("123456789")), actual);
     }
 
     //test if given user is null (no test for null return handled by UserController)
-    [TestMethod]  
-    [ExpectedException(typeof(InvalidOperationException))]  
+    [TestMethod]
+    [ExpectedException(typeof(InvalidOperationException))]
     public void FilterByUsersNullTest()
     {
         // creating new test data
-        List<User> users = new(){};
+        List<User> users = new() { };
         // filter the users
         FilterByUsername filter = new FilterByUsername(users);
         User actual = filter.FilterUsers("John");

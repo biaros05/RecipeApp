@@ -10,7 +10,7 @@ public class FilterByUsername
         {
             throw new InvalidOperationException("List of users cannot be null or empty");
         }
-        Users = users; 
+        Users = users;
     }
 
     /// <summary>

@@ -1,7 +1,7 @@
 namespace filtering;
 using recipes;
 
-public class FilterByTags : IFilterBy 
+public class FilterByTags : IFilterBy
 {
     public FilterByTags(List<string> tags)
     {
