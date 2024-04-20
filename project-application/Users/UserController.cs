@@ -8,8 +8,8 @@ public class UserController
     // currently logged on user
     public FilterByUsername? filtering;
 
-    public static User? ActiveUser { get; set; }
-    public static List<User> AllUsers { get; } = new();
+    public User? ActiveUser { get; set; }
+    public List<User> AllUsers { get; } = new();
 
     // adds a new account (validates the input) --> should it take a user or params to create a new user individually?
     // public void CreateAccount(User newUser){}
@@ -64,24 +64,22 @@ public class UserController
             User user = filtering.FilterUsers(username);
             AllUsers.Remove(user);
         }
-        // foreach (User user in AllUsers)
-        // {
-        //     if(user.Username.Equals(username))
-        //     {
-        //         if(user.Password.DoPasswordsMatch(password)){
-        //             AllUsers.Remove(user);
-        //             Console.WriteLine("user sucessfully deleted");
-        //         }
-        //         // if(user.Password==password){
-        //         //     AllUsers.Remove(user);
-        //         //     Console.WriteLine("user sucessfully deleted");
-        //         // }
-
-        //         Console.WriteLine("user found but password was incorrect");
-        //     }
-        // }
-        // Console.WriteLine("user doesn't exist");
     }
+
+    private static UserController? _instance;
+
+        private UserController() { }
+        public static UserController Instance
+        {
+            get
+            {
+                if (_instance == null)
+                {
+                    _instance = new UserController();
+                }
+                return _instance;
+            }
+        }
 
 
 }

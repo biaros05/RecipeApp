@@ -67,6 +67,11 @@ public class User
         return ((User)o).Username.Equals(this.Username);
     }
 
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(this.Username);
+    }
+
     // this constructor sets the username, hashes password and saves it
     //, byte[] salt
     public User(string username, Password password, string description)

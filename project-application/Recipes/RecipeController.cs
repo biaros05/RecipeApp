@@ -38,7 +38,7 @@ public class RecipeController
             throw new ArgumentException("this recipe and name already exist in the database!");
         }
 
-        if (!recipe.Owner.Equals(UserController.ActiveUser))
+        if (!recipe.Owner.Equals(UserController.Instance.ActiveUser))
         {
             throw new ArgumentException("You cannot create a recipe that you are not the owner of");
         }
@@ -62,7 +62,7 @@ public class RecipeController
         {
             throw new ArgumentException("This recipe does not exist in the database");
         }
-        if (!recipe.Owner.Equals(UserController.ActiveUser))
+        if (!recipe.Owner.Equals(UserController.Instance.ActiveUser))
         {
             throw new ArgumentException("Cannot delete the recipe you arent an owner of");
         }

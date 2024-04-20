@@ -1,6 +1,7 @@
 using System.Data;
 using users;
 using recipes;
+using System.Globalization;
 namespace Ui;
 
 public class Program
@@ -125,7 +126,7 @@ public class Program
 
     private static void Login()
     {
-
+        UserController.Instance.ActiveUser = new User("Bianca", new Password("1390238902"));
     }
 
     private static List<string> FillTags()
@@ -149,7 +150,7 @@ public class Program
     {
         Console.WriteLine("Name of Recipe:");
         string name = Console.ReadLine();
-        User owner = UserController.ActiveUser;
+        User owner = UserController.Instance.ActiveUser;
         Console.WriteLine("Description of Recipe:");
         string description = Console.ReadLine();
         Console.WriteLine("Prep time of Recipe (in minutes):");
