@@ -37,7 +37,7 @@ public class FilterByIngredients : IFilterBy
     public List<Recipe> FilterRecipes(List<Recipe> recipes)
     {
         var filteredRecipes = recipes
-            .TakeWhile(recipe => ContainsIngredient(new List<Ingredient>(recipe.Ingredients.Keys)));
+            .Where(recipe => ContainsIngredient(new List<Ingredient>(recipe.Ingredients.Keys)));
         return filteredRecipes.ToList();
     }
 

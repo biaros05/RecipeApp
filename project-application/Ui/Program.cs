@@ -191,7 +191,7 @@ public class Program
         Console.Write("Current Filters: ");
         foreach (IFilterBy filter in RecipeController.Instance.Filters)
         {
-            Console.Write($"{filter}, ");   
+            Console.Write($"{filter}, ");
         }
         Console.WriteLine();
     }
@@ -205,9 +205,10 @@ public class Program
     {
         List<Ingredient> ingredients = new();
         bool keepAddingIngredients = true;
-        while(keepAddingIngredients)
+        while (keepAddingIngredients)
         {
-            try{
+            try
+            {
                 Console.WriteLine("Enter an ingredient name, Enter 'done' to continue");
                 string? ingredientName = Console.ReadLine() ?? throw new Exception("ingredientName cannot be null");
                 if (ingredientName.Equals("done"))
@@ -239,9 +240,10 @@ public class Program
     /// <returns>a string keyword</returns>
     private static string GetKeyword()
     {
-        while(true)
+        while (true)
         {
-            try{
+            try
+            {
                 Console.WriteLine("Enter a keyword:");
                 string? keyword = Console.ReadLine();
                 if (keyword == null || keyword == "")
@@ -251,7 +253,8 @@ public class Program
                 Console.WriteLine("Filtering by " + keyword + " will be added. Press Enter to continue");
                 Console.ReadLine();
                 return keyword;
-            }catch (Exception)
+            }
+            catch (Exception)
             {
                 Console.WriteLine("Keyword cannot be null or empty");
             }
@@ -264,9 +267,10 @@ public class Program
     /// <returns>a user object with given username from user input</returns>
     private static User GetUser()
     {
-        while(true)
+        while (true)
         {
-            try{
+            try
+            {
                 Console.WriteLine("Enter a username who's recipes you would like to search for:");
                 string? username = Console.ReadLine();
                 if (username == null || username == "")
@@ -275,19 +279,25 @@ public class Program
                 }
                 Console.WriteLine("Filtering by user " + username + " will be added. Press Enter to continue");
                 Console.ReadLine();
-                return new User(username, new Password("test")); //creates a "fake" user object
-            }catch (Exception)
+                return new User(username, new Password("test123")); //creates a "fake" user object
+            }
+            catch (Exception)
             {
-                Console.WriteLine("The entered username cannot be null or empty");
+                Console.WriteLine("The entered username cannot be null or empty and has to be within 5 and 50 characters");
             }
         }
     }
 
+    /// <summary>
+    /// gets a interger representing a rating
+    /// </summary>
+    /// <returns>returns </returns>
     private static int GetRating()
     {
-        while(true)
+        while (true)
         {
-            try{
+            try
+            {
                 Console.WriteLine("Enter a rating");
                 int rating = ValidateInt();
                 if (rating > 5 || rating < 1)
@@ -295,9 +305,104 @@ public class Program
                     throw new Exception("rating must be out of 5 stars");
                 }
                 return rating;
-            }catch (Exception){
+            }
+            catch (Exception)
+            {
                 Console.WriteLine("The rating must be out of 5 stars");
             }
+        }
+    }
+
+    /// <summary>
+    /// Asks the user to enter a minimum serving size and max serving size
+    /// </summary>
+    /// <returns>FilterByServings object</returns>
+    private static FilterByServings GetServing()
+    {
+        while (true)
+        {
+            try
+            {
+                Console.WriteLine("Enter a minimum serving size");
+                int servingMin = ValidateInt();
+                Console.WriteLine("Enter a maximum serving size");
+                int servingMax = ValidateInt();
+                return new FilterByServings(servingMin, servingMax);
+            }
+            catch (Exception)
+            {
+                Console.WriteLine("min serving size must be smaller than max serving size");
+            }
+        }
+    }
+
+    /// <summary>
+    /// asks the user to enter tags to filter
+    /// </summary>
+    /// <returns>returns a list of string</returns>
+    private static List<string> GetTags()
+    {
+        List<string> tags = new();
+        bool keepAddingTags = true;
+        while (keepAddingTags)
+        {
+            try
+            {
+                Console.WriteLine("Enter a tag, Enter 'done' to continue");
+                string? tag = Console.ReadLine() ?? throw new Exception("tag cannot be null");
+                if (tag.Equals("done"))
+                {
+                    keepAddingTags = false;
+                }
+                else
+                {
+                    tags.Add(tag);
+                    Console.Write("added ingredient to list: ");
+                    foreach (string t in tags)
+                    {
+                        Console.Write(t + ", ");
+                    }
+                    Console.WriteLine();
+                }
+            }
+            catch (Exception)
+            {
+                Console.WriteLine("Please enter a string");
+            }
+        }
+        return tags;
+    }
+
+    /// <summary>
+    /// asks the user to create a filter by time object that takes min and max
+    /// </summary>
+    /// <returns>a FilterByTime object</returns>
+    private static FilterByTime GetTime()
+    {
+        while (true)
+        {
+            try
+            {
+                Console.WriteLine("Enter a minimum time");
+                int timeMin = ValidateInt();
+                Console.WriteLine("Enter a maximum time (420 minutes MAX)");
+                int timeMax = ValidateInt();
+                return new FilterByTime(timeMin, timeMax);
+            }
+            catch (Exception)
+            {
+                Console.WriteLine("min time must be greater than max time and must be 420 minutes MAX");
+            }
+        }
+    }
+
+    private static void PrintFilteredList(List<Recipe> recipes)
+    {
+        Console.Write("Recipes: ");
+        foreach (Recipe recipe in recipes)
+        {
+            
+            Console.WriteLine(recipe);
         }
     }
 
@@ -331,14 +436,24 @@ public class Program
                     RecipeController.Instance.AddFilter(new FilterByRating(rating));
                     break;
                 case Ui.FilterRecipeSearch.FilterByServing:
+                    RecipeController.Instance.AddFilter(GetServing());
                     break;
                 case Ui.FilterRecipeSearch.FilterByTag:
+                    List<string> tags = GetTags();
+                    RecipeController.Instance.AddFilter(new FilterByTags(tags));
                     break;
                 case Ui.FilterRecipeSearch.FilterByTime:
+                    RecipeController.Instance.AddFilter(GetTime());
                     break;
                 case Ui.FilterRecipeSearch.CompletedFilter:
+                    Console.WriteLine("Filtering... Press 'Enter' to continue");
+                    PrintFilteredList(RecipeController.Instance.FilterBy());
+                    Console.ReadLine();
                     break;
                 case Ui.FilterRecipeSearch.RemoveAllFilters:
+                    Console.WriteLine("Removing filters... Press 'Enter' to continue");
+                    RecipeController.Instance.RemoveAllFilters();
+                    Console.ReadLine();
                     break;
                 case Ui.FilterRecipeSearch.ShowFilters:
                     PrintFilters();
@@ -351,7 +466,7 @@ public class Program
 
     private static void RateRecipe()
     {
-
+        
     }
 
     private static void AddRecipeToFavourites()
@@ -363,8 +478,42 @@ public class Program
     public static void Main()
     {
         var program = new Program();
-
         Login();
+
+        Ingredient i = new("egg", Units.Quantity);
+        Ingredient b = new("meat", Units.Mass);
+        Ingredient c = new("food", Units.Mass);
+        Dictionary<Ingredient, double> dict = new()
+        {
+            { b, 30 },
+            { i, 20 }
+        };
+        Dictionary<Ingredient, double> dict2 = new()
+        {
+            { i, 20 },
+            { c, 10 }
+        };
+        Dictionary<Ingredient, double> dict3 = new()
+        {
+            { c, 10 },
+            { i, 20 },
+            { b, 30 }
+        };
+        
+        Recipe recipe = new("Test Recipe", UserController.Instance.ActiveUser, "Test Description", 120, 60, 10,
+            new List<string> { "Step 1", "Step 2" }, dict, new List<string> { "Tag1", "Tag2" }, 2);
+        Recipe recipe2 = new("TEST RECIPE2 meat", UserController.Instance.ActiveUser, "Test Description", 30, 60, 4,
+            new List<string> { "Step 1", "Step 2" }, dict2, new List<string> { "Tag3", "Tag2" }, 2);
+        Recipe recipe3 = new("GRRRRRRR meat", UserController.Instance.ActiveUser, "Test Description", 30, 60, 4,
+            new List<string> { "Step 1", "Step 2" }, dict3, new List<string> { "Tag3", "Tag2" }, 2);
+
+
+
+        RecipeController.Instance.CreateRecipe(recipe);
+        RecipeController.Instance.CreateRecipe(recipe2);
+        RecipeController.Instance.CreateRecipe(recipe3);
+
+
 
         while (true)
         {

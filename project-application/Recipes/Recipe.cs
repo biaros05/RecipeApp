@@ -222,7 +222,7 @@ public class Recipe
             return false;
         }
 
-        return ((Recipe)obj).Id == this.Id || ((Recipe)obj).Name.Equals(this.Name);
+        return ((Recipe)obj).Name.Equals(this.Name);
     }
 
     public Recipe(Recipe other)
