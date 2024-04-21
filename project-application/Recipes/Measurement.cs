@@ -44,10 +44,13 @@ public class Measurement
 
     }
 
+    // this method will convert the current quantity given to the base ratio
     private double ConvertToBase(double quantity) // quantity * first ratio
     {
         return this.Unit == Units.Quantity ? quantity : quantity * this._ratioToBase;
     }
+
+    // this method will convert the current quantity in base unit to the desired unit
     private double ConvertFromBase(double quantity) // quantity * second ratio
     {
         return this.Unit == Units.Quantity ? quantity : quantity * this._ratioFromBase;

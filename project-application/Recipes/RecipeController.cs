@@ -9,11 +9,11 @@ using users;
 namespace recipes;
 public class RecipeController
 {
-    // as the user adds a filter, this will accumilate the filters (will NOT add one if already there.)
     public List<IFilterBy> Filters { get; set;} = new();
     public List<Recipe> AllRecipes { get; } = new();
     public List<Ingredient> Ingredients { get; } = new();
 
+    // singleton RecipeController in order to keep the instance up to date across entire program
     private static RecipeController? _instance;
 
     private RecipeController() { }
@@ -30,7 +30,7 @@ public class RecipeController
         }
     }
 
-    // gets list of recipes from db, adds recipe, sends back list to db
+    // will add the recipe to the list of all recipes
     public void CreateRecipe(Recipe recipe)
     {
         if (AllRecipes.Contains(recipe))
@@ -47,6 +47,7 @@ public class RecipeController
 
     }
 
+    // adds an ingredient to the list of ingredients available for selection
     public void AddIngredient(Ingredient ingredient)
     {
         if (!Ingredients.Contains(ingredient))
@@ -55,7 +56,7 @@ public class RecipeController
         }
     }
 
-    // get list of recipes, and remove particular recipe (VALIDATE THE USER TRYING TO DELETE)
+    // get list of recipes, and remove particular recipe. only allows owner to remove recipe
     public void DeleteRecipe(Recipe recipe)
     {
         if (!AllRecipes.Contains(recipe))
@@ -81,6 +82,8 @@ public class RecipeController
         }
         return filtered;
     }
+
+    // as the user adds a filter, this will accumilate the filters (will NOT add one if already there.)
 
     public void AddFilter(IFilterBy filter)
     {
