@@ -222,11 +222,11 @@ public class Recipe
             return false;
         }
 
-        return ((Recipe)obj).Id == this.Id || ((Recipe)obj).Name.Equals(this.Name);
+        return this.Id != null ? ((Recipe)obj).Id == this.Id : ((Recipe)obj).Name.Equals(this.Name) && ((Recipe)obj).Owner.Equals(this.Owner);
     }
 
     public Recipe(Recipe other)
-    : this(other.Name, other.Owner, other.Description, other.PrepTimeMins, other.CookTimeMins, other.NumberOfServings, other.Instructions, other.Ingredients, other.Tags, other.Budget.Length)
+    : this(other.Name, other.Owner, other.Description, other.PrepTimeMins, other.CookTimeMins, other.NumberOfServings, other.Instructions, other.Ingredients, other.Tags, other.Budget.Length, other.Id)
     {
     }
 

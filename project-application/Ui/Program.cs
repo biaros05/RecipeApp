@@ -2,6 +2,8 @@ using System.Data;
 using users;
 using recipes;
 using System.Globalization;
+using System.Xml;
+using System.Reflection.Metadata.Ecma335;
 namespace Ui;
 
 public class Program
@@ -189,14 +191,93 @@ public class Program
 
     private static void RateRecipe()
     {
+        PrintRecipes();
+        Console.WriteLine("which recipie would you like to rate");
+        int num=Convert.ToInt32(Console.ReadLine());
 
+        Recipe recipe = ReturnOneRecipe(num - 1);
+
+        Console.WriteLine("what would you like to rate this recipe out of 5?");
+        int rating=Convert.ToInt32(Console.ReadLine());
+        recipe.RateRecipe(rating);
+        
+        Console.WriteLine("the recipe rating has been updated");
+        Console.WriteLine(recipe);
+
+        ConsoleUtils.WaitUserPressKey();
     }
 
     private static void AddRecipeToFavourites()
     {
+        PrintRecipes();
+        Console.WriteLine("which recipie would you like to add to your favorite list");
+        int num=Convert.ToInt32(Console.ReadLine());
 
+        Recipe recipe = ReturnOneRecipe(num - 1);
+
+        UserController.Instance.ActiveUser.AddToFavourites(recipe);
+
+        Console.WriteLine("recipe has been added to your favorites");
+        Console.WriteLine(recipe);
+
+        ConsoleUtils.WaitUserPressKey();
     }
 
+//return the correct object from the recipe list
+    public static Recipe ReturnOneRecipe(int num)
+    {
+        int count=0;
+        foreach (Recipe r in RecipeController.Instance.AllRecipes)
+        {
+            if (count==num)
+            {
+                return r;
+            }
+            count++;
+        }
+        throw new Exception("no item in current position");
+    }
+//return the correct object from the user favorite recipe list
+    public static Recipe ReturnOneRecipeFromFave(int num)
+    {
+        int count=0;
+        foreach (Recipe r in UserController.Instance.ActiveUser.UserFavoriteRecipies)
+        {
+            if (count==num)
+            {
+                return r;
+            }
+            count++;
+        }
+        throw new Exception("no item in current position");
+    }
+
+    private static void RemoveRecipeFromFavourites()
+    {
+        PrintFavoriteList();
+        Console.WriteLine("which recipie would you like to add to your favorite list");
+        int num=System.Convert.ToInt32(Console.ReadLine());
+
+        Recipe recipe = ReturnOneRecipeFromFave(num - 1);
+
+        UserController.Instance.ActiveUser.RemoveFromFavourites(recipe);
+
+        Console.WriteLine("recipe has been removed from your favorites");
+        Console.WriteLine("updated look of favorite list");
+        PrintFavoriteList();
+    }
+
+//show the active user their favorited recipes 
+    private static void PrintFavoriteList()
+    {
+        int num = 1;
+        foreach (Recipe r in  UserController.Instance.ActiveUser.UserFavoriteRecipies)
+        {
+            Console.WriteLine($"{num}. {r}");
+            num++;
+        }
+        ConsoleUtils.WaitUserPressKey();
+    }
 
     public static void Main()
     {
@@ -230,6 +311,12 @@ public class Program
                     break;
                 case MainMenuOption.ViewRecipes:
                     PrintRecipes();
+                    break;
+                case MainMenuOption.RemoveFromFavourites:
+                    RemoveRecipeFromFavourites();
+                    break;
+                case MainMenuOption.ViewFavoriteRecipes:
+                    PrintFavoriteList();
                     break;
             }
         }
