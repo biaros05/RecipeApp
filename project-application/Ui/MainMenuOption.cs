@@ -9,5 +9,7 @@ enum MainMenuOption
   FilterRecipeSearch,
   AddRecipeToFavourites,
   RateRecipe,
-  ViewRecipes
+  ViewRecipes,
+  RemoveFromFavourites,
+  ViewFavoriteRecipes
 }
