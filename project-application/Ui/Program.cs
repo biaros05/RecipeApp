@@ -191,7 +191,20 @@ public class Program
 
     private static void RateRecipe()
     {
+        PrintRecipes();
+        Console.WriteLine("which recipie would you like to rate");
+        int num=Convert.ToInt32(Console.ReadLine());
 
+        Recipe recipe = ReturnOneRecipe(num - 1);
+
+        Console.WriteLine("what would you like to rate this recipe out of 5?");
+        int rating=Convert.ToInt32(Console.ReadLine());
+        recipe.RateRecipe(rating);
+        
+        Console.WriteLine("the recipe rating has been updated");
+        Console.WriteLine(recipe);
+
+        ConsoleUtils.WaitUserPressKey();
     }
 
     private static void AddRecipeToFavourites()
