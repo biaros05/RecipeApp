@@ -10,7 +10,7 @@ namespace recipes;
 public class RecipeController
 {
     // as the user adds a filter, this will accumilate the filters (will NOT add one if already there.)
-    public List<IFilterBy> Filters { get; } = new();
+    public List<IFilterBy> Filters { get; set;} = new();
     public List<Recipe> AllRecipes { get; } = new();
     public List<Ingredient> Ingredients { get; } = new();
 
@@ -98,6 +98,11 @@ public class RecipeController
             throw new ArgumentException("this filter hasnt been applied yet");
         }
         Filters.Remove(filter);
+    }
+
+    public void RemoveAllFilters()
+    {
+        Filters = new();
     }
 
 }

@@ -45,4 +45,9 @@ public class FilterByKeyword : IFilterBy
             });
         return filteredRecipes.ToList();
     }
+
+    public override string ToString()
+    {
+        return "Keyword";
+    }
 }

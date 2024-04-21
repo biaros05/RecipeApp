@@ -1,4 +1,14 @@
+namespace Ui;
 enum FilterRecipeSearch
 {
-  FilterByKeyword
+  FilterByKeyword,
+  FilterByIngredient,
+  FilterByOwner,
+  FilterByRating,
+  FilterByServing,
+  FilterByTag,
+  FilterByTime,
+  CompletedFilter,
+  RemoveAllFilters,
+  ShowFilters
 }

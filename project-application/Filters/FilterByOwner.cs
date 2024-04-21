@@ -20,4 +20,9 @@ public class FilterByOwner : IFilterBy
             .Where(recipe => recipe.Owner.Equals(Owner));
         return filteredRecipes.ToList();
     }
+
+    public override string ToString()
+    {
+        return "Owner";
+    }
 }

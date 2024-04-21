@@ -22,4 +22,9 @@ public class FilterByRating : IFilterBy
             .Where(recipe => recipe.Rating >= Rating);
         return filteredRecipes.ToList();
     }
+
+    public override string ToString()
+    {
+        return "Ratings";
+    }
 }
