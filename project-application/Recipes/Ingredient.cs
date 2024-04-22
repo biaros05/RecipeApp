@@ -15,12 +15,13 @@ public struct Ingredient
         this.Unit = (Units)unit;
     }
     public string Name { get; set; }
-    //private Units _unit;
+
     public Units Unit
     {
         get; set;
     }
 
+    // Equals method evaluates equality using the name of the ingredient
     public override bool Equals(object? obj)
     {
         if (obj == null || !(obj is Ingredient))
@@ -30,6 +31,8 @@ public struct Ingredient
         return ((Ingredient)obj).Name.ToLower() == this.Name.ToLower();
     }
 
+    // gethashcode essential for the equality, uses the same property as the equals to get the
+    // hashcode (the name of the ingredient)
     public override int GetHashCode()
     {
         int hash = 17;//prime num

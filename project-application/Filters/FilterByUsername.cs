@@ -6,9 +6,9 @@ public class FilterByUsername
     private readonly List<User> Users;
     public FilterByUsername(List<User> users)
     {
-        if (users == null || users.Count == 0)
+        if (users == null)
         {
-            throw new InvalidOperationException("List of users cannot be null or empty");
+            throw new InvalidOperationException("List of users cannot be null");
         }
         Users = users;
     }

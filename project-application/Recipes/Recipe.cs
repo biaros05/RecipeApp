@@ -9,6 +9,8 @@ public class Recipe
 {
     private int? Id { get; }
     private string? _name;
+
+    // sets the name of the recipe, cannot be null or empty + additional validation for length added
     public string Name
     {
         get
@@ -34,6 +36,8 @@ public class Recipe
     }
     public User Owner { get; }
     private string? _description;
+
+    // sets the description, defaults to the name of the recipe if not provided
     public string Description
     {
         get
@@ -54,6 +58,8 @@ public class Recipe
     }
 
     private int _prepTimeMins;
+
+    // get/set prep time of the recipe in minutes, with max time of 4 hours
     public int PrepTimeMins
     {
         get
@@ -74,6 +80,8 @@ public class Recipe
     }
 
     private int _cookTimeMins;
+
+    // get/set cook time of the recipe in minutes, with max time of 4 hours
     public int CookTimeMins
     {
         get
@@ -111,6 +119,7 @@ public class Recipe
     public Dictionary<Ingredient, double> Ingredients { get; private set; } = new();
     private readonly List<double> _ratings = new(); // all the ratings given by users OUT OF FIVE STARS
 
+    // property calculates the average rating with rounding by 2 decimals
     public double? Rating
     {
         get
@@ -125,6 +134,8 @@ public class Recipe
         }
     } // sum of Ratings and get average.
     private readonly List<int> _difficulties = new(); // all the difficulties given by users OUT OF 10
+
+    // property calculates the average difficulty with rounding by 2 decimals
     public int? DifficultyRating
     {
         get
@@ -137,13 +148,13 @@ public class Recipe
             double averageDiff = difficulty / (double)this._difficulties.Count;
             return this._difficulties.Count != 0 ? (int)Math.Round(averageDiff, 0) : null;
         }
-    } // sum of Difficulties and get average
+    }
 
 
     public List<string> Tags { get; private set; }
     public string Budget { get; }
 
-    // add rating to recipe and send information to database
+    // allows user to add rating with necessary validation
     public void RateRecipe(int rating)
     {
         if (rating < 1 || rating > 5)
@@ -153,6 +164,7 @@ public class Recipe
         this._ratings.Add(rating);
     }
 
+    // allows the user to rate the difficulty of the recipe with necessary validation
     public void RateDifficulty(int rating)
     {
         if (rating < 1 || rating > 10)
@@ -176,7 +188,7 @@ public class Recipe
 
     }
 
-    // will take all parameters for a recipe and send this new information to the database (VALDATE THE USER IS THE OWNER)
+    // will take all parameters for a recipe and update the necessary fields
     public void UpdateRecipe(
     string description, int preptimeMins, int cooktimeMins,
     Dictionary<Ingredient, double> ingredients, List<string> tags)
@@ -215,6 +227,7 @@ public class Recipe
         this.Ingredients = newIngredients;
     }
 
+    // overriding the equals to check either ID or name + owner
     public override bool Equals(object? obj)
     {
         if (obj == null || !(obj is Recipe))
@@ -225,11 +238,13 @@ public class Recipe
         return this.Id != null ? ((Recipe)obj).Id == this.Id : ((Recipe)obj).Name.Equals(this.Name) && ((Recipe)obj).Owner.Equals(this.Owner);
     }
 
+    // copy constructor for Recipe class
     public Recipe(Recipe other)
     : this(other.Name, other.Owner, other.Description, other.PrepTimeMins, other.CookTimeMins, other.NumberOfServings, other.Instructions, other.Ingredients, other.Tags, other.Budget.Length, other.Id)
     {
     }
 
+    // constructor for recipe with necessary validation
     public Recipe(string name, User owner, string description, int prepTimeMins, int cookTimeMins, int numberOfServings, List<String> instructions, Dictionary<Ingredient, double> ingredients, List<string> tags, int budget, int? id = null)
     {
         this.Owner = owner;
@@ -256,19 +271,14 @@ public class Recipe
         this.Budget = new string('$', budget);
     }
 
-    // gethashcode essential for equality. i have calculated the hash code by name and Id 
+    // gethashcode essential for equality. calculated the hash code by name and ID
     // because those are my attributes of equality for recipe object
     public override int GetHashCode()
     {
-        int hash = 17;//prime num
-        unchecked
-        {
-            hash = hash * 31 + this.Id.GetHashCode();
-            hash = hash * 31 + (Name?.GetHashCode() ?? 0);
-            return hash;
-        }
+        return this.Id != null ? HashCode.Combine(this.Id) : HashCode.Combine(this.Name, this.Owner);
     }
 
+    // tostring override which includes basic information about the recipe
     public override string ToString()
     {
         return $"{this.Name} by {this.Owner}. Rating: {(this.Rating == null ? "Not available" : this.Rating)}, Budget: {this.Budget}";

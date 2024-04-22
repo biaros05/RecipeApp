@@ -12,7 +12,11 @@ public class Password
 
     public Password(string password)
     {
-        if (password.Length < 5 || password.Length > 50 || password == null)
+        if (string.IsNullOrEmpty(password))
+        {
+            throw new ArgumentNullException("password cannot be empty");
+        }
+        if (password.Length < 5 || password.Length > 50)
         {
             throw new Exception("password doesnt meet requirements");
         }

@@ -12,6 +12,9 @@ public class Program
     private static MainMenuOption[] MainMenuOptions { get; } =
     Enum.GetValues<MainMenuOption>();
 
+    private static UserOptions[] UserOption { get; } =
+    Enum.GetValues<UserOptions>();
+
     private static Units[] UnitsOptions { get; } =
     Enum.GetValues<Units>();
     private static FilterRecipeSearch[] FilterRecipeSearches { get; } =
@@ -129,9 +132,57 @@ public class Program
     }
 
     // idk if this needs any more implementation
+    private static void LoginOrRegister()
+    {
+        while (UserController.Instance.ActiveUser == null)
+        {
+            UserOptions? chosenOption = ConsoleUtils.GetUserChoice(
+                "Choose the next operation", UserOption);
+
+            if (!chosenOption.HasValue)
+            {
+                break;
+            }
+
+            switch (chosenOption)
+            {
+                case UserOptions.Login:
+                    Login();
+                    break;
+                case UserOptions.Register:
+                    Register();
+                    break;
+            }
+        }
+    }
+
     private static void Login()
     {
-        UserController.Instance.ActiveUser = new User("Bianca", new Password("1390238902"));
+        Console.WriteLine("Enter your username");
+        string username = Console.ReadLine();
+        Console.WriteLine("Enter your password");
+        string password = Console.ReadLine();
+        if (UserController.Instance.AuthenticateUser(username, password))
+        {
+            Console.WriteLine("Login successful!");
+        }
+        else
+        {
+            Console.WriteLine("Username or password wrong");
+        }
+        ConsoleUtils.WaitUserPressKey();
+    }
+
+    private static void Register()
+    {
+        Console.WriteLine("Enter your username");
+        string username = Console.ReadLine();
+        Console.WriteLine("Enter your password");
+        string password = Console.ReadLine();
+        Console.WriteLine("Enter a description for your user");
+        string description = Console.ReadLine();
+        Console.WriteLine("Registration successful!");
+        UserController.Instance.CreateAccount(username, password, description);
     }
 
     private static List<string> FillTags()
@@ -559,9 +610,9 @@ public class Program
     public static void Main()
     {
         var program = new Program();
-        Login();
+        LoginOrRegister();
 
-        Ingredient i = new("egg", Units.Quantity);
+    Ingredient i = new("egg", Units.Quantity);
         Ingredient b = new("meat", Units.Mass);
         Ingredient c = new("food", Units.Mass);
         Dictionary<Ingredient, double> dict = new()
@@ -593,8 +644,6 @@ public class Program
         RecipeController.Instance.CreateRecipe(recipe);
         RecipeController.Instance.CreateRecipe(recipe2);
         RecipeController.Instance.CreateRecipe(recipe3);
-
-
 
         while (true)
         {

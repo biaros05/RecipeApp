@@ -37,16 +37,14 @@ public class PasswordTests
         public void Pass_Doesnt_Meet_Requirements()
         {
             Password p=new Password("hi");
-            //Arrange
-            // string pass=null;
-            // string expectedErrorMessage="password doesnt meet requirements";
-            //Act
-            // Password p;
-            // Action act = () => p=new("hi");
-            //Assert
-            // var ex = Assert.ThrowsException<Exception>(() => act);
-            // Assert.Equals(expectedErrorMessage, ex.Message);
-            // Assert.ThrowsException<Exception>(act, "password doesnt meet requirements");
+        }
+
+        [TestMethod]
+    [ExpectedException(typeof(ArgumentNullException))]
+        public void Pass_Doesnt_Meet_Requirements_null_error()
+        {
+            string value=null;
+            Password p=new Password(value);
         }
     // test Password if password does not meet requirements
     // test hashpassword
