@@ -542,6 +542,7 @@ public class Program
         Console.WriteLine("recipe has been removed from your favorites");
         Console.WriteLine("updated look of favorite list");
         PrintFavoriteList();
+        ConsoleUtils.WaitUserPressKey();
     }
 
 //show the active user their favorited recipes 
