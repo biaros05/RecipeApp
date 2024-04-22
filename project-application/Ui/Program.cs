@@ -603,7 +603,7 @@ public class Program
         var program = new Program();
         LoginOrRegister();
 
-        Ingredient i = new("egg", Units.Quantity);
+    Ingredient i = new("egg", Units.Quantity);
         Ingredient b = new("meat", Units.Mass);
         Ingredient c = new("food", Units.Mass);
         Dictionary<Ingredient, double> dict = new()
@@ -635,8 +635,6 @@ public class Program
         RecipeController.Instance.CreateRecipe(recipe);
         RecipeController.Instance.CreateRecipe(recipe2);
         RecipeController.Instance.CreateRecipe(recipe3);
-
-
 
         while (true)
         {
