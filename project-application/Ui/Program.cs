@@ -542,7 +542,6 @@ public class Program
         Console.WriteLine("recipe has been removed from your favorites");
         Console.WriteLine("updated look of favorite list");
         PrintFavoriteList();
-        ConsoleUtils.WaitUserPressKey();
     }
 
 //show the active user their favorited recipes 
@@ -561,6 +560,39 @@ public class Program
     {
         var program = new Program();
         Login();
+
+    Ingredient i = new("egg", Units.Quantity);
+        Ingredient b = new("meat", Units.Mass);
+        Ingredient c = new("food", Units.Mass);
+        Dictionary<Ingredient, double> dict = new()
+        {
+            { b, 30 },
+            { i, 20 }
+        };
+        Dictionary<Ingredient, double> dict2 = new()
+        {
+            { i, 20 },
+            { c, 10 }
+        };
+        Dictionary<Ingredient, double> dict3 = new()
+        {
+            { c, 10 },
+            { i, 20 },
+            { b, 30 }
+        };
+        
+        Recipe recipe = new("Test Recipe", UserController.Instance.ActiveUser, "Test Description", 120, 60, 10,
+            new List<string> { "Step 1", "Step 2" }, dict, new List<string> { "Tag1", "Tag2" }, 2);
+        Recipe recipe2 = new("TEST RECIPE2 meat", UserController.Instance.ActiveUser, "Test Description", 30, 60, 4,
+            new List<string> { "Step 1", "Step 2" }, dict2, new List<string> { "Tag3", "Tag2" }, 2);
+        Recipe recipe3 = new("GRRRRRRR meat", UserController.Instance.ActiveUser, "Test Description", 30, 60, 4,
+            new List<string> { "Step 1", "Step 2" }, dict3, new List<string> { "Tag3", "Tag2" }, 2);
+
+
+
+        RecipeController.Instance.CreateRecipe(recipe);
+        RecipeController.Instance.CreateRecipe(recipe2);
+        RecipeController.Instance.CreateRecipe(recipe3);
 
         while (true)
         {
