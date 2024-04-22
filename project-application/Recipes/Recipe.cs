@@ -275,13 +275,7 @@ public class Recipe
     // because those are my attributes of equality for recipe object
     public override int GetHashCode()
     {
-        int hash = 17;//prime num
-        unchecked
-        {
-            hash = hash * 31 + this.Id.GetHashCode();
-            hash = hash * 31 + (Name?.GetHashCode() ?? 0);
-            return hash;
-        }
+        return this.Id != null ? HashCode.Combine(this.Id) : HashCode.Combine(this.Name, this.Owner);
     }
 
     // tostring override which includes basic information about the recipe
