@@ -325,25 +325,7 @@ public class UsersTests
     //     //Assert
     //     Assert.IsTrue(user1.UserFavoriteRecipies.Contains(recipe));
     // }
-    // CHEN --------------------------------------
-    // test the creation of EVERY FIELD.
-    // test UpdatePassword
-    // test UpdatePassword if password null
-    // test UpdatePassword if password empty
-    // test UpdatePassword if password does not meet requirements
-    // test AddToFavourites
-    // test AddToFavourites if recipe does not exist
-    // test AddToFavourites if recipe is null
-    // test RemoveFromFavourites
-    // test RemoveFromFavourites if recipe does not exist
-    // test RemoveFromFavourites if recipe is null
 
-
-
-    // test RemoveProfilePicture
-    // test RemoveProfilePicture if Image already empty
-    // test RemoveDescription
-    // test RemoveDescription if description already empty
 
 
 }
