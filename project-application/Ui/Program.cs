@@ -162,7 +162,15 @@ public class Program
         string username = Console.ReadLine();
         Console.WriteLine("Enter your password");
         string password = Console.ReadLine();
-        UserController.Instance.AuthenticateUser(username, password);
+        if (UserController.Instance.AuthenticateUser(username, password))
+        {
+            Console.WriteLine("Login successful!");
+        }
+        else
+        {
+            Console.WriteLine("Username or password wrong");
+        }
+        ConsoleUtils.WaitUserPressKey();
     }
 
     private static void Register()
@@ -173,6 +181,7 @@ public class Program
         string password = Console.ReadLine();
         Console.WriteLine("Enter a description for your user");
         string description = Console.ReadLine();
+        Console.WriteLine("Registration successful!");
         UserController.Instance.CreateAccount(username, password, description);
     }
 
