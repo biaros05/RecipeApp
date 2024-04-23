@@ -7,7 +7,7 @@ using users;
 
 public class Recipe
 {
-    private int? Id { get; }
+    public int? Id { get; set;}
     private string? _name;
 
     // sets the name of the recipe, cannot be null or empty + additional validation for length added

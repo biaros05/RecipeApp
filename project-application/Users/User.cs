@@ -10,6 +10,7 @@ using recipes;
 
 public class User
 {
+    public int UserId {get; set;}
 
     [InverseProperty("UserCreatedRecipies")]
     public List<Recipe> UserCreatedRecipies { get; set; }
