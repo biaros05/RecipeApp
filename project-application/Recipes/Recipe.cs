@@ -114,7 +114,7 @@ public class Recipe
     }
 
     public int NumberOfServings { get; }
-    public List<string> Instructions { get; } = new();
+    public List<Instruction> Instructions { get; } = new();
     // contains the ingredient and its quantity for specified unit 
     public Dictionary<Ingredient, double> Ingredients { get; private set; } = new();
     private readonly List<double> _ratings = new(); // all the ratings given by users OUT OF FIVE STARS
@@ -245,7 +245,7 @@ public class Recipe
     }
 
     // constructor for recipe with necessary validation
-    public Recipe(string name, User owner, string description, int prepTimeMins, int cookTimeMins, int numberOfServings, List<String> instructions, Dictionary<Ingredient, double> ingredients, List<string> tags, int budget, int? id = null)
+    public Recipe(string name, User owner, string description, int prepTimeMins, int cookTimeMins, int numberOfServings, List<Instruction> instructions, Dictionary<Ingredient, double> ingredients, List<string> tags, int budget, int? id = null)
     {
         this.Owner = owner;
         this.Name = name;
