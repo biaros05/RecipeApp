@@ -9,11 +9,11 @@ using users;
 public class Recipe
 {
     public Recipe(){}
-    public int UserFavouriteId {get; set;}
+    //public List<int> UserFavouriteId {get; set;}
     public int OwnerId {get; set;}
 
-    [ForeignKey("UserFavouriteId")]
-    public User UserFavourite {get; set;}
+    //[ForeignKey("UserFavouriteId")]
+    public ICollection<User> UserFavourite {get; set;}
 
     [ForeignKey("OwnerId")]
     public User Owner {get; set;}

@@ -20,8 +20,8 @@ public class User
     [InverseProperty("Owner")]
     public List<Recipe> UserCreatedRecipies { get; set; }
 
-    [InverseProperty("UserFavourite")]
-    public List<Recipe> UserFavoriteRecipies { get; set; }
+    //[InverseProperty("UserFavourite")]
+    public ICollection<Recipe> UserFavoriteRecipies { get; set; }
     private string username;
     public string Username
     {
@@ -86,7 +86,7 @@ public class User
 
         this.Description = description;
         UserCreatedRecipies = new();
-        UserFavoriteRecipies = new();
+        UserFavoriteRecipies = new List<Recipe>();
         //Image need to be here as a byte[]
     }
 
@@ -98,7 +98,7 @@ public class User
 
         this.Description = null;
         UserCreatedRecipies = new();
-        UserFavoriteRecipies = new();
+        UserFavoriteRecipies = new List<Recipe>();
         //Image need to be here as a byte[]
         //asign default pic
 

@@ -40,4 +40,14 @@ public class RecipesContext : DbContext
         $"User Id={UserName}; Password={Password}");
     }
 
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<Recipe>()
+            .HasMany(bc => bc.UserFavourite)
+            .WithMany(b => b.UserFavoriteRecipies);
+        modelBuilder.Entity<User>()
+            .HasMany(bc => bc.UserFavoriteRecipies)
+            .WithMany(c => c.UserFavourite);
+    }
+
 }
