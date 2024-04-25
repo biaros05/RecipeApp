@@ -23,14 +23,13 @@ public class UserController
         }
         if (description == null)
         {
-            Password p = new Password(password);
-            User user1 = new User(username, p);
+            
+            User user1 = new User(username, password);
             AllUsers.Add(user1);
         }
         else
         {
-            Password p = new Password(password);
-            User user1 = new User(username, p, description);
+            User user1 = new User(username, password, description);
             AllUsers.Add(user1);
         }
     }
@@ -46,7 +45,7 @@ public class UserController
         {
             throw new Exception("Username user doesnt exist");
         }
-        if (result.Password.DoPasswordsMatch(password))
+        if (Password.DoPasswordsMatch(password,result.Salt,result.HashPass))
         {
             ActiveUser = result;
             return true;

@@ -332,7 +332,7 @@ public class Program
                 }
                 Console.WriteLine("Filtering by user " + username + " will be added. Press Enter to continue");
                 Console.ReadLine();
-                return new User(username, new Password("test123")); //creates a "fake" user object
+                return new User(username, "test123"); //creates a "fake" user object
             }
             catch (Exception)
             {
