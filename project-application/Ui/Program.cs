@@ -185,17 +185,17 @@ public class Program
         UserController.Instance.CreateAccount(username, password, description);
     }
 
-    private static List<string> FillTags()
+    private static List<Tag> FillTags()
     {
         Console.WriteLine("What Tags would you like to add?");
-        List<string> tags = new();
+        List<Tag> tags = new();
         string tag = "";
 
         while (!tag.Equals("done"))
         {
             Console.WriteLine("Enter your tag, type 'done' if you are finished:");
             tag = Console.ReadLine();
-            tags.Add(tag);
+            tags.Add(new Tag(tag));
         }
         return tags;
     }
@@ -217,7 +217,7 @@ public class Program
         List<MeasuredIngredient> ingredients = FillIngredients();
         List<Instruction> instructions = FillInstructions();
         Console.WriteLine("Add Tags to recipe:");
-        List<string> tags = FillTags();
+        List<Tag> tags = FillTags();
         Console.WriteLine("Budget on a scale of 1-3:");
         int budget = ValidateInt();
         Recipe newRecipe = new Recipe(name, owner, description, prepTimeMins, cookTimeMins, numberOfServings, instructions, ingredients, tags, budget, RecipeController.Instance.AllRecipes.Count);
@@ -393,9 +393,9 @@ public class Program
     /// asks the user to enter tags to filter
     /// </summary>
     /// <returns>returns a list of string</returns>
-    private static List<string> GetTags()
+    private static List<Tag> GetTags()
     {
-        List<string> tags = new();
+        List<Tag> tags = new();
         bool keepAddingTags = true;
         while (keepAddingTags)
         {
@@ -409,11 +409,11 @@ public class Program
                 }
                 else
                 {
-                    tags.Add(tag);
+                    tags.Add(new Tag(tag));
                     Console.Write("added ingredient to list: ");
-                    foreach (string t in tags)
+                    foreach (Tag t in tags)
                     {
-                        Console.Write(t + ", ");
+                        Console.Write(t.TagName + ", ");
                     }
                     Console.WriteLine();
                 }
@@ -492,7 +492,7 @@ public class Program
                     RecipeController.Instance.AddFilter(GetServing());
                     break;
                 case Ui.FilterRecipeSearch.FilterByTag:
-                    List<string> tags = GetTags();
+                    List<Tag> tags = GetTags();
                     RecipeController.Instance.AddFilter(new FilterByTags(tags));
                     break;
                 case Ui.FilterRecipeSearch.FilterByTime:
@@ -633,11 +633,11 @@ public class Program
         };
 
         Recipe recipe = new("Test Recipe", UserController.Instance.ActiveUser, "Test Description", 120, 60, 10,
-            new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict, new List<string> { "Tag1", "Tag2" }, 2);
+            new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict, new List<Tag> { new("Tag1"), new("Tag2") }, 2);
         Recipe recipe2 = new("TEST RECIPE2 meat", UserController.Instance.ActiveUser, "Test Description", 30, 60, 4,
-            new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict2, new List<string> { "Tag3", "Tag2" }, 2);
+            new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict2, new List<Tag> { new("Tag3"), new("Tag2") }, 2);
         Recipe recipe3 = new("GRRRRRRR meat", UserController.Instance.ActiveUser, "Test Description", 30, 60, 4,
-            new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict3, new List<string> { "Tag3", "Tag2" }, 2);
+            new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict3, new List<Tag> { new("Tag3"), new("Tag2") }, 2);
 
 
 

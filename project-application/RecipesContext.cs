@@ -4,11 +4,12 @@ using users;
 
 public class RecipesContext : DbContext
 {
-    public virtual DbSet<Recipe> Recipes {get; set;}
-    public virtual DbSet<User> Users {get; set;}
-    public virtual DbSet<Ingredient> Ingredients {get; set;}
-    public virtual DbSet<Password> Passwords {get; set;}
+    public virtual DbSet<Recipe> RecipeManager_Recipes {get; set;}
+    public virtual DbSet<User> RecipeManager_Users {get; set;}
+    public virtual DbSet<Ingredient> RecipeManager_Ingredients {get; set;}
     
+    public virtual DbSet<Instruction> RecipeManager_Instructions {get; set;}
+    public virtual DbSet<MeasuredIngredient> RecipeManager_MeasuredIngredients {get; set;}
     public string HostName { get; set; }
 
     public string Port { get; set; }
@@ -30,6 +31,7 @@ public class RecipesContext : DbContext
         UserName = Environment.GetEnvironmentVariable("ORACLE_DB_USER")!;
 
         Password = Environment.GetEnvironmentVariable("ORACLE_DB_PASSWORD")!;
+        Console.WriteLine($"{HostName}, {Port}, {ServiceName}, {UserName}, {Password}");
     }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

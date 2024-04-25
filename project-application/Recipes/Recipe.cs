@@ -161,7 +161,7 @@ public class Recipe
     }
 
 
-    public List<string> Tags { get; private set; }
+    public List<Tag> Tags { get; private set; }
     public string Budget { get; }
 
     // allows user to add rating with necessary validation
@@ -187,13 +187,14 @@ public class Recipe
     // this method will add a tag to the list of tags if it does not already exist
     public void AddTag(string tag)
     {
+        Tag t = new(tag);
         if (tag == "")
         {
             throw new ArgumentException("Your tag must have a value");
         }
-        if (!this.Tags.Contains(tag))
+        if (!this.Tags.Contains(t))
         {
-            this.Tags.Add(tag);
+            this.Tags.Add(t);
         }
 
     }
@@ -201,7 +202,7 @@ public class Recipe
     // will take all parameters for a recipe and update the necessary fields
     public void UpdateRecipe(
     string description, int preptimeMins, int cooktimeMins,
-    List<MeasuredIngredient> ingredients, List<string> tags)
+    List<MeasuredIngredient> ingredients, List<Tag> tags)
     {
         if (preptimeMins < 0 || preptimeMins > 240)
         {
@@ -257,7 +258,7 @@ public class Recipe
     }
 
     // constructor for recipe with necessary validation
-    public Recipe(string name, User owner, string description, int prepTimeMins, int cookTimeMins, int numberOfServings, List<Instruction> instructions, List<MeasuredIngredient> ingredients, List<string> tags, int budget, int? id = null)
+    public Recipe(string name, User owner, string description, int prepTimeMins, int cookTimeMins, int numberOfServings, List<Instruction> instructions, List<MeasuredIngredient> ingredients, List<Tag> tags, int budget, int? id = null)
     {
         this.Owner = owner;
         this.Name = name;

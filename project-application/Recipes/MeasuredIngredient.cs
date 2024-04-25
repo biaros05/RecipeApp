@@ -11,6 +11,8 @@ public class MeasuredIngredient
         this.Quantity = quantity;
     }
 
+    public MeasuredIngredient(){}
+
     public override bool Equals(object? obj)
     {
         if (obj == null || !(obj is MeasuredIngredient))

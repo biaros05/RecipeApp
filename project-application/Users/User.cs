@@ -17,7 +17,7 @@ public class User
 
     public byte[] Salt;
 
-    [InverseProperty("UserCreatedRecipies")]
+    [InverseProperty("Owner")]
     public List<Recipe> UserCreatedRecipies { get; set; }
 
     [InverseProperty("UserFavourite")]
