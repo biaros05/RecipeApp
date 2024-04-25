@@ -14,10 +14,10 @@ public class UsersTests
         string username = "testing";
         string passwrd = "password";
         string description = "description";
-        Password pass = new(passwrd);
+        
 
         //Act
-        User user1 = new(username, pass, description);
+        User user1 = new(username,passwrd, description);
         //Assert
         Assert.AreEqual("testing", user1.Username);
     }
@@ -30,10 +30,10 @@ public class UsersTests
         string username = "abcdefghijklmnopqrstuvwxyz1234567890";
         string passwrd = "password";
         string description = "description";
-        Password pass = new(passwrd);
+        
 
         //Act
-        User user1 = new(username, pass, description);
+        User user1 = new(username,passwrd, description);
         //Assert
     }
 
@@ -45,10 +45,10 @@ public class UsersTests
         string username = "a";
         string passwrd = "password";
         string description = "description";
-        Password pass = new(passwrd);
+        
 
         //Act
-        User user1 = new(username, pass, description);
+        User user1 = new(username,passwrd, description);
         //Assert
     }
 
@@ -60,10 +60,10 @@ public class UsersTests
         string username = null;
         string passwrd = "password";
         string description = "description";
-        Password pass = new(passwrd);
+        
 
         //Act
-        User user1 = new(username, pass, description);
+        User user1 = new(username,passwrd, description);
         //Assert
     }
     // [TestMethod]
@@ -87,10 +87,10 @@ public class UsersTests
         string username = "testing";
         string passwrd = "password";
         string description = "description";
-        Password pass = new(passwrd);
+        
 
         //Act
-        User user1 = new(username, pass, description);
+        User user1 = new(username,passwrd, description);
         //Assert
         Assert.AreEqual("description", user1.Description);
     }
@@ -102,10 +102,10 @@ public class UsersTests
         string username = "testing";
         string passwrd = "password";
         string description = null;
-        Password pass = new(passwrd);
+        
 
         //Act
-        User user1 = new(username, pass, description);
+        User user1 = new(username,passwrd, description);
         //Assert
         Assert.AreEqual(null, user1.Description);
     }
@@ -118,10 +118,10 @@ public class UsersTests
         string username = "testing";
         string passwrd = "password";
         string longDescription = new string('a', 505);
-        Password pass = new(passwrd);
+        
 
         //Act
-        User user1 = new(username, pass, longDescription);
+        User user1 = new(username,passwrd, longDescription);
         //Assert
     }
 
@@ -132,10 +132,10 @@ public class UsersTests
         string username = "testing";
         string passwrd = "password";
         string description = "description";
-        Password pass = new(passwrd);
+        
         string newUsername = "updatedUser";
         //Act
-        User user1 = new(username, pass, description);
+        User user1 = new(username,passwrd, description);
         user1.UpdateUsername(newUsername);
         //Assert
         Assert.AreEqual("updatedUser", user1.Username);
@@ -149,10 +149,10 @@ public class UsersTests
         string username = "testing";
         string passwrd = "password";
         string description = "description";
-        Password pass = new(passwrd);
+        
         string newUsername = "a";
         //Act
-        User user1 = new(username, pass, description);
+        User user1 = new(username,passwrd, description);
         user1.UpdateUsername(newUsername);
         //Assert
 
@@ -166,11 +166,11 @@ public class UsersTests
         string username = "testing";
         string passwrd = "password";
         string description = "description";
-        Password pass = new(passwrd);
+        
         byte[] byteArray = new byte[] { 0x01, 0x23, 0x45, 0x67, 0x89, 0xAB, 0xCD, 0xEF };
         string newDescription = "changed";
         //Act
-        User user1 = new(username, pass, description);
+        User user1 = new(username,passwrd, description);
         user1.UpdateFields(newDescription, byteArray);
         //Assert
         Assert.AreEqual("changed", user1.Description);
@@ -182,12 +182,12 @@ public class UsersTests
         string username = "testing";
         string passwrd = "password";
         string description = "description";
-        Password pass = new(passwrd);
+        
         byte[] oldImg = new byte[] { 0x01, 0x23, 0x45, 0x67, 0x89, 0xAB, 0xCD, 0xEF };
         byte[] newImg = new byte[] { 0x01, 0x23, 0x45, 0x67, 0x89, 0xAB, 0xCD, 0xEF };
         string newDescription = "changed";
         //Act
-        User user1 = new(username, pass, description);
+        User user1 = new(username,passwrd, description);
         user1.Image = oldImg;
         user1.UpdateFields(newDescription, newImg);
         //Assert
@@ -202,9 +202,9 @@ public class UsersTests
         string username = "testing";
         string passwrd = "password";
         string description = "description";
-        Password pass = new(passwrd);
+        
         //Act
-        User user1 = new(username, pass, description);
+        User user1 = new(username,passwrd, description);
         user1.RemoveDescription();
         //Assert
         Assert.IsNull(user1.Description);
@@ -217,9 +217,9 @@ public class UsersTests
         string username = "testing";
         string passwrd = "password";
         string description = null;
-        Password pass = new(passwrd);
+        
         //Act
-        User user1 = new(username, pass, description);
+        User user1 = new(username,passwrd, description);
         user1.RemoveDescription();
         //Assert
 
@@ -234,9 +234,9 @@ public class UsersTests
         string username = "testing";
         string passwrd = "password";
         string description = "description";
-        Password pass = new(passwrd);
+        
         //Act
-        User user1 = new(username, pass, description);
+        User user1 = new(username,passwrd, description);
         bool result = user1.Username.Equals("testing");
         //Assert
         Assert.IsTrue(result);
@@ -249,9 +249,9 @@ public class UsersTests
         string username = "testing";
         string passwrd = "password";
         string description = "description";
-        Password pass = new(passwrd);
+        
         //Act
-        User user1 = new(username, pass, description);
+        User user1 = new(username,passwrd, description);
         bool result = user1.Username.Equals("wrong");
         //Assert
         Assert.IsFalse(result);
@@ -264,15 +264,15 @@ public class UsersTests
         Ingredient i = new("egg", Units.Quantity);
         Dictionary<Ingredient, double> dict = new();
         dict.Add(i, 20);
-        Recipe recipe = new("Test Recipe", new User("Bianca", new Password("123456789")), "Test Description", 30, 60, 4,
+        Recipe recipe = new("Test Recipe", new User("Bianca", "123456789"), "Test Description", 30, 60, 4,
             new List<string> { "Step 1", "Step 2" }, dict, new List<string> { "Tag1", "Tag2" }, 2);
 
         string username = "testing";
         string passwrd = "password";
         string description = "description";
-        Password pass = new(passwrd);
+        
         //Act
-        User user1 = new(username, pass, description);
+        User user1 = new(username,passwrd, description);
         user1.AddToFavourites(recipe);
         //Assert
         Assert.IsTrue(user1.UserFavoriteRecipies.Contains(recipe));
@@ -285,7 +285,7 @@ public class UsersTests
         Ingredient i = new("egg", Units.Quantity);
         Dictionary<Ingredient, double> dict = new();
         dict.Add(i, 20);
-        Recipe recipe = new("Test Recipe", new User("Bianca", new Password("123456789")), "Test Description", 30, 60, 4,
+        Recipe recipe = new("Test Recipe", new User("Bianca", "123456789"), "Test Description", 30, 60, 4,
             new List<string> { "Step 1", "Step 2" }, dict, new List<string> { "Tag1", "Tag2" }, 2);
 
         //Recipe recipe2 = new("Test Recipe2", new User("Bianca", new Password("123456789")), "Test Description", 30, 60, 4,
@@ -294,9 +294,9 @@ public class UsersTests
         string username = "testing";
         string passwrd = "password";
         string description = "description";
-        Password pass = new(passwrd);
+        
         //Act
-        User user1 = new(username, pass, description);
+        User user1 = new(username,passwrd, description);
         user1.AddToFavourites(recipe);
         // user1.AddToFavourites(recipe2);
         user1.RemoveFromFavourites(recipe);

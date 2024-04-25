@@ -4,13 +4,9 @@ using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 // using RNGCryptoServiceProvider;
 namespace users;
-public class Password
+public static class Password
 {
-    public byte[] Salt = new byte[8];
-
-    private string Hash;
-
-    public Password(string password)
+    private static void ValidatePassword(string password)
     {
         if (string.IsNullOrEmpty(password))
         {
@@ -20,14 +16,12 @@ public class Password
         {
             throw new Exception("password doesnt meet requirements");
         }
-        byte[] salt = GenerateSalt();
-        this.Hash = HashPassword(salt, password);
-        this.Salt = salt;
     }
 
     // implements algo for hashing and returns the hashed password for that user
-    private static string HashPassword(byte[] salt, string password)
+    public static string HashPassword(byte[] salt, string password)
     {
+        ValidatePassword(password);
         int numIterations = 1000;
 
         HashAlgorithmName algoName = HashAlgorithmName.SHA512;
@@ -39,8 +33,9 @@ public class Password
     }
 
     // checks if two passwords match (to authenticate the user)
-    public byte[] GenerateSalt()
+    public static byte[] GenerateSalt()
     {
+        byte[] Salt = new byte[8];
         // using RNGCryptoServiceProvider rngCsp = new();
         var random = new RNGCryptoServiceProvider();
         random.GetBytes(Salt);
@@ -48,10 +43,11 @@ public class Password
         return Salt;
     }
 
-    public bool DoPasswordsMatch(string password)
+    public static bool DoPasswordsMatch(string password,byte[] salt, string hash)//salt and hash
     {
-        string enteredHash = HashPassword(this.Salt, password);
-        if (this.Hash == enteredHash)
+        //do hash and salt 
+        string enteredHash = HashPassword(salt, password);
+        if (hash == enteredHash)
         {
             return true;
         }
