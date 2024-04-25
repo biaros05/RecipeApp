@@ -262,10 +262,10 @@ public class UsersTests
     {
         //Arrange
         Ingredient i = new("egg", Units.Quantity);
-        Dictionary<Ingredient, double> dict = new();
-        dict.Add(i, 20);
+        List<MeasuredIngredient> dict = new();
+        dict.Add(new(i, 20));
         Recipe recipe = new("Test Recipe", new User("Bianca", "123456789"), "Test Description", 30, 60, 4,
-            new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict, new List<string> { "Tag1", "Tag2" }, 2);
+            new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict, new List<Tag> { new("Tag1"), new("Tag2") }, 2);
 
         string username = "testing";
         string passwrd = "password";
@@ -283,10 +283,10 @@ public class UsersTests
     {
         //Arrange
         Ingredient i = new("egg", Units.Quantity);
-        Dictionary<Ingredient, double> dict = new();
-        dict.Add(i, 20);
+        List<MeasuredIngredient> dict = new();
+        dict.Add(new(i, 20));
         Recipe recipe = new("Test Recipe", new User("Bianca", "123456789"), "Test Description", 30, 60, 4,
-            new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict, new List<string> { "Tag1", "Tag2" }, 2);
+            new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict, new List<Tag> { new("Tag1"), new("Tag2") }, 2);
 
         //Recipe recipe2 = new("Test Recipe2", new User("Bianca", "123456789"), "Test Description", 30, 60, 4,
         //    new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict, new List<string> { "Tag1", "Tag2" }, 2);
@@ -310,8 +310,8 @@ public class UsersTests
     // {
     //     //Arrange
     //     Ingredient i = new("egg", Units.Quantity);
-    //     Dictionary<Ingredient, double> dict = new();
-    //     dict.Add(i, 20);
+    //     List<MeasuredIngredient> dict = new();
+    //     dict.Add(new(i, 20));
     //     Recipe recipe = new("Test Recipe", new User("Bianca", "123456789"), "Test Description", 30, 60, 4,
     //         new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict, new List<string> { "Tag1", "Tag2" }, 2);
 
@@ -325,7 +325,4 @@ public class UsersTests
     //     //Assert
     //     Assert.IsTrue(user1.UserFavoriteRecipies.Contains(recipe));
     // }
-
-
-
 }

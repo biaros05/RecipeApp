@@ -40,7 +40,7 @@ public class PasswordTests
         }
 
         [TestMethod]
-    [ExpectedException(typeof(ArgumentNullException))]
+        [ExpectedException(typeof(ArgumentNullException))]
         public void Pass_Doesnt_Meet_Requirements_null_error()
         {
             string pass=null;

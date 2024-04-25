@@ -10,15 +10,17 @@ using recipes;
 
 public class User
 {
+    public User(){}
+    public int UserId {get; set;}
 
     public string HashPass;
 
     public byte[] Salt;
 
-    [InverseProperty("UserCreatedRecipies")]
+    [InverseProperty("Owner")]
     public List<Recipe> UserCreatedRecipies { get; set; }
 
-    [InverseProperty("UserFavoriteRecipies")]
+    [InverseProperty("UserFavourite")]
     public List<Recipe> UserFavoriteRecipies { get; set; }
     private string username;
     public string Username

@@ -3,7 +3,7 @@ using recipes;
 
 public class FilterByTags : IFilterBy
 {
-    public FilterByTags(List<string> tags)
+    public FilterByTags(List<Tag> tags)
     {
         if ((tags == null) || tags.Count == 0)
         {
@@ -11,7 +11,7 @@ public class FilterByTags : IFilterBy
         }
         Tags = tags;
     }
-    private List<string> Tags;
+    private List<Tag> Tags;
     public List<Recipe> FilterRecipes(List<Recipe> recipes)
     {
         var filteredRecipes = recipes

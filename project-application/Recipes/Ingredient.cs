@@ -2,8 +2,9 @@ using System.Diagnostics.CodeAnalysis;
 using System.Reflection.Metadata.Ecma335;
 
 namespace recipes;
-public struct Ingredient
+public class Ingredient
 {
+    public int IngredientId {get; set;}
     // initializes ingredient with proper data validation
     public Ingredient(string? name, Units? unit)
     {
@@ -14,6 +15,8 @@ public struct Ingredient
         this.Name = name;
         this.Unit = (Units)unit;
     }
+
+    public Ingredient(){}
     public string Name { get; set; }
 
     public Units Unit

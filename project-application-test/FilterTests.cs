@@ -14,33 +14,33 @@ public class FilterTests
         //creating test data
         Ingredient a = new("Apple", Units.Quantity);
         Ingredient b = new("Sugar", Units.Mass);
-        Dictionary<Ingredient, double> dict = new()
+        List<MeasuredIngredient> dict = new()
             {
-                { a, 20 },
+                new(a, 20),
             };
-        Dictionary<Ingredient, double> dict2 = new()
+        List<MeasuredIngredient> dict2 = new()
             {
-                { b, 20 },
+                new( b, 20 ),
             };
         List<Recipe> recipes = new()
             {
                 new("Test Recipe", new User("Bianca", "123456789"), "Test Description", 30, 45, 4,
-                new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict, new List<string> { "Tag1", "Tag2" }, 2),
+                new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict, new List<Tag> { new("Tag1"),new("Tag2") }, 2),
                 new("Recipe need 10 characters", new User("Not Bianca", "123456789"), "Test Description", 15, 15, 4,
-                new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict2, new List<string> { "Tag2", "Tag3" }, 2),
+                new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict2, new List<Tag> { new("Tag2"), new("Tag3") }, 2),
                 new("Recipe need 10 characters", new User("Not Bianca", "123456789"), "Test Description", 60, 60, 4,
-                new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict2, new List<string> { "Tag4", "Tag6" }, 2),
+                new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict2, new List<Tag> { new("Tag4"), new("Tag6") }, 2),
                 new("Recipe need 10 characters", new User("Not Bianca", "123456789"), "Test Description", 90, 60, 4,
-                new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict2, new List<string> { "Tag4", "Tag1" }, 2)
+                new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict2, new List<Tag> { new("Tag4"), new("Tag1") }, 2)
             };
 
         //create expected data
         List<Recipe> expected = new()
             {
                 new("Test Recipe", new User("Bianca", "123456789"), "Test Description", 30, 45, 4,
-                new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict, new List<string> { "Tag1", "Tag2" }, 2),
+                new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict, new List<Tag> { new("Tag1"), new("Tag2") }, 2),
                 new("Recipe need 10 characters", new User("Not Bianca", "123456789"), "Test Description", 60, 60, 4,
-                new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict2, new List<string> { "Tag4", "Tag6" }, 2)
+                new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict2, new List<Tag> { new("Tag4"), new("Tag6") }, 2)
             };
 
         //filter
@@ -83,35 +83,35 @@ public class FilterTests
         //creating test recipes
         Ingredient a = new("Apple", Units.Quantity);
         Ingredient b = new("Sugar", Units.Mass);
-        Dictionary<Ingredient, double> dict = new()
+        List<MeasuredIngredient> dict = new()
             {
-                { a, 20 },
+                new( a, 20 ),
             };
-        Dictionary<Ingredient, double> dict2 = new()
+        List<MeasuredIngredient> dict2 = new()
             {
-                { b, 20 },
+                new( b, 20 ),
             };
         List<Recipe> recipes = new()
             {
                 new("Test Recipe", new User("Bianca", "123456789"), "Test Description", 30, 60, 4,
-                new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict, new List<string> { "Tag1", "Tag2" }, 2),
+                new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict, new List<Tag> { new("Tag1"), new("Tag2") }, 2),
                 new("Recipe need 10 characters", new User("Bianca", "123456789"), "Test Description", 30, 60, 4,
-                new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict2, new List<string> { "Tag1", "Tag2" }, 2),
+                new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict2, new List<Tag> { new("Tag1"), new("Tag2") }, 2),
                 new("recipe Test that is over 10 characters", new User("Bianca", "123456789"), "Description", 30, 60, 4,
-                new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict2, new List<string> { "Tag1", "Tag2" }, 2),
+                new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict2, new List<Tag> { new("Tag1"), new("Tag2") }, 2),
                 new("recipe that is over 10 characters", new User("Bianca", "123456789"), "Description", 30, 60, 4,
-                new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict2, new List<string> { "Tag1", "Tag2" }, 2)
+                new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict2, new List<Tag> { new("Tag1"), new("Tag2") }, 2)
             };
 
         //creating expected results
         List<Recipe> expected = new()
             {
                 new("Test Recipe", new User("Bianca", "123456789"), "Test Description", 30, 60, 4,
-                new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict, new List<string> { "Tag1", "Tag2" }, 2),
+                new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict, new List<Tag> { new("Tag1"), new("Tag2") }, 2),
                 new("Recipe need 10 characters", new User("Bianca", "123456789"), "Test Description", 30, 60, 4,
-                new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict2, new List<string> { "Tag1", "Tag2" }, 2),
+                new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict2, new List<Tag> { new("Tag1"), new("Tag2") }, 2),
                 new("recipe Test that is over 10 characters", new User("Bianca", "123456789"), "Description", 30, 60, 4,
-                new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict2, new List<string> { "Tag1", "Tag2" }, 2)
+                new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict2, new List<Tag> { new("Tag1"), new("Tag2") }, 2)
             };
 
         IFilterBy filter = new FilterByKeyword("Test");
@@ -143,24 +143,24 @@ public class FilterTests
         // adding test recipes
         Ingredient a = new("Apple", Units.Quantity);
         Ingredient b = new("Sugar", Units.Mass);
-        Dictionary<Ingredient, double> dict = new()
+        List<MeasuredIngredient> dict = new()
             {
-                { a, 20 },
+                new( a, 20 ),
             };
-        Dictionary<Ingredient, double> dict2 = new()
+        List<MeasuredIngredient> dict2 = new()
             {
-                { b, 20 },
+                new( b, 20 ),
             };
         recipes.Add(new("Test Recipe", new User("Bianca", "123456789"), "Test Description", 30, 60, 4,
-            new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict, new List<string> { "Tag1", "Tag2" }, 2));
+            new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict, new List<Tag> { new("Tag1"), new("Tag2") }, 2));
         recipes.Add(new("Test Recipe", new User("Bianca", "123456789"), "Test Description", 30, 60, 4,
-            new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict2, new List<string> { "Tag1", "Tag2" }, 2));
+            new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict2, new List<Tag> { new("Tag1"), new("Tag2") }, 2));
 
         // creating expected recipes
         List<Recipe> expectedRecipes = new()
             {
                 new("Test Recipe", new User("Bianca", "123456789"), "Test Description", 30, 60, 4,
-                new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict, new List<string> { "Tag1", "Tag2" }, 2)
+                new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict, new List<Tag> { new("Tag1"), new("Tag2") }, 2)
             };
 
         // calling filtering
@@ -187,20 +187,20 @@ public class FilterTests
         //creating test data
         Ingredient a = new("Apple", Units.Quantity);
         Ingredient b = new("Sugar", Units.Mass);
-        Dictionary<Ingredient, double> dict = new()
+        List<MeasuredIngredient> dict = new()
             {
-                { a, 20 },
+                new( a, 20 ),
             };
-        Dictionary<Ingredient, double> dict2 = new()
+        List<MeasuredIngredient> dict2 = new()
             {
-                { b, 20 },
+                new( b, 20 ),
             };
         List<Recipe> recipes = new()
             {
                 new("Test Recipe", new User("Bianca", "123456789"), "Test Description", 30, 60, 4,
-                new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict, new List<string> { "Tag1", "Tag2" }, 2),
+                new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict, new List<Tag> { new("Tag1"), new("Tag2") }, 2),
                 new("Recipe need 10 characters", new User("Not Bianca", "123456789"), "Test Description", 30, 60, 4,
-                new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict2, new List<string> { "Tag1", "Tag2" }, 2)
+                new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict2, new List<Tag> { new("Tag1"), new("Tag2") }, 2)
             };
         //rate the first recipe 3 star and second 0
         recipes[0].RateRecipe(3);
@@ -210,7 +210,7 @@ public class FilterTests
         List<Recipe> expected = new()
             {
                 new("Test Recipe", new User("Bianca", "123456789"), "Test Description", 30, 60, 4,
-                new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict, new List<string> { "Tag1", "Tag2" }, 2),
+                new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict, new List<Tag> { new("Tag1"), new("Tag2") }, 2),
             };
 
         IFilterBy filter = new FilterByRating(3);
@@ -242,39 +242,39 @@ public class FilterTests
         //creating test data
         Ingredient a = new("Apple", Units.Quantity);
         Ingredient b = new("Sugar", Units.Mass);
-        Dictionary<Ingredient, double> dict = new()
+        List<MeasuredIngredient> dict = new()
             {
-                { a, 20 },
+                new( a, 20 ),
             };
-        Dictionary<Ingredient, double> dict2 = new()
+        List<MeasuredIngredient> dict2 = new()
             {
-                { b, 20 },
+                new( b, 20 ),
             };
         List<Recipe> recipes = new()
             {
                 new("Test Recipe", new User("Bianca", "123456789"), "Test Description", 30, 60, 4,
-                new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict, new List<string> { "Tag1", "Tag2" }, 2),
+                new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict, new List<Tag> { new("Tag1"), new("Tag2") }, 2),
                 new("Recipe need 10 characters", new User("Not Bianca", "123456789"), "Test Description", 30, 60, 4,
-                new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict2, new List<string> { "Tag2", "Tag3" }, 2),
+                new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict2, new List<Tag> { new("Tag2"), new("Tag3") }, 2),
                 new("Recipe need 10 characters", new User("Not Bianca", "123456789"), "Test Description", 30, 60, 4,
-                new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict2, new List<string> { "Tag4", "Tag6" }, 2),
+                new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict2, new List<Tag> { new("Tag4"), new("Tag6") }, 2),
                 new("Recipe need 10 characters", new User("Not Bianca", "123456789"), "Test Description", 30, 60, 4,
-                new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict2, new List<string> { "Tag4", "Tag1" }, 2)
+                new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict2, new List<Tag> { new("Tag4"), new("Tag1") }, 2)
             };
 
         //create expected data
         List<Recipe> expected = new()
             {
                 new("Test Recipe", new User("Bianca", "123456789"), "Test Description", 30, 60, 4,
-                new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict, new List<string> { "Tag1", "Tag2" }, 2),
+                new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict, new List<Tag> { new("Tag1"), new("Tag2") }, 2),
                 new("Recipe need 10 characters", new User("Not Bianca", "123456789"), "Test Description", 30, 60, 4,
-                new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict2, new List<string> { "Tag2", "Tag3" }, 2),
+                new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict2, new List<Tag> { new("Tag2"), new("Tag3") }, 2),
                 new("Recipe need 10 characters", new User("Not Bianca", "123456789"), "Test Description", 30, 60, 4,
-                new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict2, new List<string> { "Tag4", "Tag1" }, 2)
+                new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict2, new List<Tag> { new("Tag4"), new("Tag1") }, 2)
             };
 
         //filter
-        List<string> tags = new()
+        List<Tag> tags = new()
         {
             new("Tag1"),
             new("Tag2")
@@ -291,7 +291,7 @@ public class FilterTests
     [ExpectedException(typeof(InvalidOperationException))]
     public void FilterByTagsNull()
     {
-        IFilterBy filter = new FilterByTags(new List<string>());
+        IFilterBy filter = new FilterByTags(new List<Tag>());
     }
 
     //tests for filter by owner
@@ -301,27 +301,27 @@ public class FilterTests
         // creating test data
         Ingredient a = new("Apple", Units.Quantity);
         Ingredient b = new("Sugar", Units.Mass);
-        Dictionary<Ingredient, double> dict = new()
+        List<MeasuredIngredient> dict = new()
             {
-                { a, 20 },
+                new( a, 20 ),
             };
-        Dictionary<Ingredient, double> dict2 = new()
+        List<MeasuredIngredient> dict2 = new()
             {
-                { b, 20 },
+                new( b, 20 ),
             };
         List<Recipe> recipes = new()
             {
             new("Test Recipe", new User("Bianca", "123456789"), "Test Description", 30, 60, 4,
-                new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict, new List<string> { "Tag1", "Tag2" }, 2),
+                new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict, new List<Tag> { new("Tag1"), new("Tag2") }, 2),
                 new("Recipe need 10 characters", new User("Not Bianca", "123456789"), "Test Description", 30, 60, 4,
-                new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict2, new List<string> { "Tag1", "Tag2" }, 2)
+                new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict2, new List<Tag> { new("Tag1"), new("Tag2") }, 2)
             };
 
         // creating expected data
         List<Recipe> expected = new()
             {
                 new("Test Recipe", new User("Bianca", "123456789"), "Test Description", 30, 60, 4,
-                new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict, new List<string> { "Tag1", "Tag2" }, 2),
+                new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict, new List<Tag> { new("Tag1"), new("Tag2") }, 2),
             };
 
         IFilterBy filter = new FilterByOwner(new User("Bianca", "123456789"));
@@ -345,31 +345,31 @@ public class FilterTests
         //creating test data
         Ingredient a = new("Apple", Units.Quantity);
         Ingredient b = new("Sugar", Units.Mass);
-        Dictionary<Ingredient, double> dict = new()
+        List<MeasuredIngredient> dict = new()
             {
-                { a, 20 },
+                new( a, 20 ),
             };
-        Dictionary<Ingredient, double> dict2 = new()
+        List<MeasuredIngredient> dict2 = new()
             {
-                { b, 20 },
+                new( b, 20 ),
             };
         List<Recipe> recipes = new()
             {
                 new("Test Recipe", new User("Bianca", "123456789"), "Test Description", 30, 60, 4,
-                new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict, new List<string> { "Tag1", "Tag2" }, 2),
+                new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict, new List<Tag> { new("Tag1"), new("Tag2") }, 2),
                 new("Recipe need 10 characters", new User("Not Bianca", "123456789"), "Test Description", 30, 60, 2,
-                new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict2, new List<string> { "Tag1", "Tag2" }, 2),
+                new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict2, new List<Tag> { new("Tag1"), new("Tag2") }, 2),
                 new("Recipe need 10 characters", new User("Not Bianca", "123456789"), "Test Description", 30, 60, 5,
-                new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict2, new List<string> { "Tag1", "Tag2" }, 2)
+                new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict2, new List<Tag> { new("Tag1"), new("Tag2") }, 2)
             };
 
         //creating expected data
         List<Recipe> expected = new()
             {
                 new("Test Recipe", new User("Bianca", "123456789"), "Test Description", 30, 60, 4,
-                new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict, new List<string> { "Tag1", "Tag2" }, 2),
+                new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict, new List<Tag> { new("Tag1"), new("Tag2") }, 2),
                 new("Recipe need 10 characters", new User("Not Bianca", "123456789"), "Test Description", 30, 60, 5,
-                new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict2, new List<string> { "Tag1", "Tag2" }, 2)
+                new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict2, new List<Tag> { new("Tag1"), new("Tag2") }, 2)
             };
 
         //filter
