@@ -46,16 +46,16 @@ public class Program
         return num;
     }
 
-    private static List<string> FillInstructions()
+    private static List<Instruction> FillInstructions()
     {
         Console.WriteLine("Type 'done' when you are finished");
-        List<string> instructions = new();
+        List<Instruction> instructions = new();
         string input = Console.ReadLine();
         int stepNum = 1;
 
         while (!input.Equals("done"))
         {
-            instructions.Add($"{stepNum}. {input}");
+            instructions.Add(new Instruction(stepNum, input));
             stepNum++;
             input = Console.ReadLine();
         }
@@ -214,8 +214,8 @@ public class Program
         Console.WriteLine("Number of servings:");
         int numberOfServings = ValidateInt();
         Console.WriteLine("List the instrucrions:");
-        List<string> instructions = FillInstructions();
         List<MeasuredIngredient> ingredients = FillIngredients();
+        List<Instruction> instructions = FillInstructions();
         Console.WriteLine("Add Tags to recipe:");
         List<string> tags = FillTags();
         Console.WriteLine("Budget on a scale of 1-3:");
@@ -332,7 +332,7 @@ public class Program
                 }
                 Console.WriteLine("Filtering by user " + username + " will be added. Press Enter to continue");
                 Console.ReadLine();
-                return new User(username, new Password("test123")); //creates a "fake" user object
+                return new User(username, "test123"); //creates a "fake" user object
             }
             catch (Exception)
             {
@@ -454,7 +454,7 @@ public class Program
         Console.Write("Recipes: ");
         foreach (Recipe recipe in recipes)
         {
-            
+
             Console.WriteLine(recipe);
         }
     }
@@ -521,14 +521,14 @@ public class Program
     {
         PrintRecipes();
         Console.WriteLine("which recipie would you like to rate");
-        int num=Convert.ToInt32(Console.ReadLine());
+        int num = Convert.ToInt32(Console.ReadLine());
 
         Recipe recipe = ReturnOneRecipe(num - 1);
 
         Console.WriteLine("what would you like to rate this recipe out of 5?");
-        int rating=Convert.ToInt32(Console.ReadLine());
+        int rating = Convert.ToInt32(Console.ReadLine());
         recipe.RateRecipe(rating);
-        
+
         Console.WriteLine("the recipe rating has been updated");
         Console.WriteLine(recipe);
 
@@ -539,7 +539,7 @@ public class Program
     {
         PrintRecipes();
         Console.WriteLine("which recipie would you like to add to your favorite list");
-        int num=Convert.ToInt32(Console.ReadLine());
+        int num = Convert.ToInt32(Console.ReadLine());
 
         Recipe recipe = ReturnOneRecipe(num - 1);
 
@@ -551,13 +551,13 @@ public class Program
         ConsoleUtils.WaitUserPressKey();
     }
 
-//return the correct object from the recipe list
+    //return the correct object from the recipe list
     public static Recipe ReturnOneRecipe(int num)
     {
-        int count=0;
+        int count = 0;
         foreach (Recipe r in RecipeController.Instance.AllRecipes)
         {
-            if (count==num)
+            if (count == num)
             {
                 return r;
             }
@@ -565,13 +565,13 @@ public class Program
         }
         throw new Exception("no item in current position");
     }
-//return the correct object from the user favorite recipe list
+    //return the correct object from the user favorite recipe list
     public static Recipe ReturnOneRecipeFromFave(int num)
     {
-        int count=0;
+        int count = 0;
         foreach (Recipe r in UserController.Instance.ActiveUser.UserFavoriteRecipies)
         {
-            if (count==num)
+            if (count == num)
             {
                 return r;
             }
@@ -584,7 +584,7 @@ public class Program
     {
         PrintFavoriteList();
         Console.WriteLine("which recipie would you like to add to your favorite list");
-        int num=System.Convert.ToInt32(Console.ReadLine());
+        int num = System.Convert.ToInt32(Console.ReadLine());
 
         Recipe recipe = ReturnOneRecipeFromFave(num - 1);
 
@@ -595,11 +595,11 @@ public class Program
         PrintFavoriteList();
     }
 
-//show the active user their favorited recipes 
+    //show the active user their favorited recipes 
     private static void PrintFavoriteList()
     {
         int num = 1;
-        foreach (Recipe r in  UserController.Instance.ActiveUser.UserFavoriteRecipies)
+        foreach (Recipe r in UserController.Instance.ActiveUser.UserFavoriteRecipies)
         {
             Console.WriteLine($"{num}. {r}");
             num++;
@@ -612,7 +612,7 @@ public class Program
         var program = new Program();
         LoginOrRegister();
 
-    Ingredient i = new("egg", Units.Quantity);
+        Ingredient i = new("egg", Units.Quantity);
         Ingredient b = new("meat", Units.Mass);
         Ingredient c = new("food", Units.Mass);
         List<MeasuredIngredient> dict = new()
@@ -631,13 +631,13 @@ public class Program
             new( i, 20 ),
             new( b, 30 )
         };
-        
+
         Recipe recipe = new("Test Recipe", UserController.Instance.ActiveUser, "Test Description", 120, 60, 10,
-            new List<string> { "Step 1", "Step 2" }, dict, new List<string> { "Tag1", "Tag2" }, 2);
+            new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict, new List<string> { "Tag1", "Tag2" }, 2);
         Recipe recipe2 = new("TEST RECIPE2 meat", UserController.Instance.ActiveUser, "Test Description", 30, 60, 4,
-            new List<string> { "Step 1", "Step 2" }, dict2, new List<string> { "Tag3", "Tag2" }, 2);
+            new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict2, new List<string> { "Tag3", "Tag2" }, 2);
         Recipe recipe3 = new("GRRRRRRR meat", UserController.Instance.ActiveUser, "Test Description", 30, 60, 4,
-            new List<string> { "Step 1", "Step 2" }, dict3, new List<string> { "Tag3", "Tag2" }, 2);
+            new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict3, new List<string> { "Tag3", "Tag2" }, 2);
 
 
 

@@ -13,7 +13,11 @@ public class User
     public User(){}
     public int UserId {get; set;}
 
-    [InverseProperty("Owner")]
+    public string HashPass;
+
+    public byte[] Salt;
+
+    [InverseProperty("UserCreatedRecipies")]
     public List<Recipe> UserCreatedRecipies { get; set; }
 
     [InverseProperty("UserFavourite")]
@@ -57,8 +61,6 @@ public class User
         }
     }
 
-    internal Password Password;
-
     public override bool Equals(object? o)
     {
         if (o == null || !(o is User))
@@ -76,24 +78,29 @@ public class User
 
     // this constructor sets the username, hashes password and saves it
     //, byte[] salt
-    public User(string username, Password password, string description)
+    public User(string username, string password, string description)
     {
         this.Username = username;
-        this.Password = password;
+        this.Salt=Password.GenerateSalt();
+        this.HashPass=Password.HashPassword(this.Salt,password);
+
         this.Description = description;
         UserCreatedRecipies = new();
         UserFavoriteRecipies = new();
         //Image need to be here as a byte[]
     }
 
-    public User(string username, Password password)
+    public User(string username, string password)
     {
         this.Username = username;
-        this.Password = password;
+        this.Salt=Password.GenerateSalt();
+        this.HashPass=Password.HashPassword(this.Salt,password);
+
         this.Description = null;
         UserCreatedRecipies = new();
         UserFavoriteRecipies = new();
         //Image need to be here as a byte[]
+        //asign default pic
 
     }
 
@@ -112,7 +119,8 @@ public class User
         {
             throw new Exception("password doesnt meet requirements");
         }
-        Password = new Password(newPass);
+
+        this.HashPass=Password.HashPassword(this.Salt,newPass);    
     }
     public void UpdateFields(string newDescription, byte[] newImage)
     {
@@ -172,5 +180,8 @@ public class User
     {
         return this.Username + this.Image + this.Description;
     }
+
+    // ad hash and salt to constructor
+
 
 }
