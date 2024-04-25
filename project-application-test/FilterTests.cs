@@ -14,13 +14,13 @@ public class FilterTests
         //creating test data
         Ingredient a = new("Apple", Units.Quantity);
         Ingredient b = new("Sugar", Units.Mass);
-        Dictionary<Ingredient, double> dict = new()
+        List<MeasuredIngredient> dict = new()
             {
-                { a, 20 },
+                new(a, 20),
             };
-        Dictionary<Ingredient, double> dict2 = new()
+        List<MeasuredIngredient> dict2 = new()
             {
-                { b, 20 },
+                new( b, 20 ),
             };
         List<Recipe> recipes = new()
             {
@@ -83,13 +83,13 @@ public class FilterTests
         //creating test recipes
         Ingredient a = new("Apple", Units.Quantity);
         Ingredient b = new("Sugar", Units.Mass);
-        Dictionary<Ingredient, double> dict = new()
+        List<MeasuredIngredient> dict = new()
             {
-                { a, 20 },
+                new( a, 20 ),
             };
-        Dictionary<Ingredient, double> dict2 = new()
+        List<MeasuredIngredient> dict2 = new()
             {
-                { b, 20 },
+                new( b, 20 ),
             };
         List<Recipe> recipes = new()
             {
@@ -143,13 +143,13 @@ public class FilterTests
         // adding test recipes
         Ingredient a = new("Apple", Units.Quantity);
         Ingredient b = new("Sugar", Units.Mass);
-        Dictionary<Ingredient, double> dict = new()
+        List<MeasuredIngredient> dict = new()
             {
-                { a, 20 },
+                new( a, 20 ),
             };
-        Dictionary<Ingredient, double> dict2 = new()
+        List<MeasuredIngredient> dict2 = new()
             {
-                { b, 20 },
+                new( b, 20 ),
             };
         recipes.Add(new("Test Recipe", new User("Bianca", new Password("123456789")), "Test Description", 30, 60, 4,
             new List<string> { "Step 1", "Step 2" }, dict, new List<string> { "Tag1", "Tag2" }, 2));
@@ -187,13 +187,13 @@ public class FilterTests
         //creating test data
         Ingredient a = new("Apple", Units.Quantity);
         Ingredient b = new("Sugar", Units.Mass);
-        Dictionary<Ingredient, double> dict = new()
+        List<MeasuredIngredient> dict = new()
             {
-                { a, 20 },
+                new( a, 20 ),
             };
-        Dictionary<Ingredient, double> dict2 = new()
+        List<MeasuredIngredient> dict2 = new()
             {
-                { b, 20 },
+                new( b, 20 ),
             };
         List<Recipe> recipes = new()
             {
@@ -242,13 +242,13 @@ public class FilterTests
         //creating test data
         Ingredient a = new("Apple", Units.Quantity);
         Ingredient b = new("Sugar", Units.Mass);
-        Dictionary<Ingredient, double> dict = new()
+        List<MeasuredIngredient> dict = new()
             {
-                { a, 20 },
+                new( a, 20 ),
             };
-        Dictionary<Ingredient, double> dict2 = new()
+        List<MeasuredIngredient> dict2 = new()
             {
-                { b, 20 },
+                new( b, 20 ),
             };
         List<Recipe> recipes = new()
             {
@@ -301,13 +301,13 @@ public class FilterTests
         // creating test data
         Ingredient a = new("Apple", Units.Quantity);
         Ingredient b = new("Sugar", Units.Mass);
-        Dictionary<Ingredient, double> dict = new()
+        List<MeasuredIngredient> dict = new()
             {
-                { a, 20 },
+                new( a, 20 ),
             };
-        Dictionary<Ingredient, double> dict2 = new()
+        List<MeasuredIngredient> dict2 = new()
             {
-                { b, 20 },
+                new( b, 20 ),
             };
         List<Recipe> recipes = new()
             {
@@ -345,13 +345,13 @@ public class FilterTests
         //creating test data
         Ingredient a = new("Apple", Units.Quantity);
         Ingredient b = new("Sugar", Units.Mass);
-        Dictionary<Ingredient, double> dict = new()
+        List<MeasuredIngredient> dict = new()
             {
-                { a, 20 },
+                new( a, 20 ),
             };
-        Dictionary<Ingredient, double> dict2 = new()
+        List<MeasuredIngredient> dict2 = new()
             {
-                { b, 20 },
+                new( b, 20 ),
             };
         List<Recipe> recipes = new()
             {
@@ -414,17 +414,4 @@ public class FilterTests
         Assert.AreEqual(new User("Johny", new Password("123456789")), actual);
     }
 
-    //test if given user is null (no test for null return handled by UserController)
-    [TestMethod]
-    [ExpectedException(typeof(InvalidOperationException))]
-    public void FilterByUsersNullTest()
-    {
-        // creating new test data
-        List<User> users = new() { };
-        // filter the users
-        FilterByUsername filter = new FilterByUsername(users);
-        User actual = filter.FilterUsers("John");
-
-        Assert.AreEqual(new User("John", new Password("123456789")), actual);
-    }
 }

@@ -262,8 +262,8 @@ public class UsersTests
     {
         //Arrange
         Ingredient i = new("egg", Units.Quantity);
-        Dictionary<Ingredient, double> dict = new();
-        dict.Add(i, 20);
+        List<MeasuredIngredient> dict = new();
+        dict.Add(new(i, 20));
         Recipe recipe = new("Test Recipe", new User("Bianca", new Password("123456789")), "Test Description", 30, 60, 4,
             new List<string> { "Step 1", "Step 2" }, dict, new List<string> { "Tag1", "Tag2" }, 2);
 
@@ -283,8 +283,8 @@ public class UsersTests
     {
         //Arrange
         Ingredient i = new("egg", Units.Quantity);
-        Dictionary<Ingredient, double> dict = new();
-        dict.Add(i, 20);
+        List<MeasuredIngredient> dict = new();
+        dict.Add(new(i, 20));
         Recipe recipe = new("Test Recipe", new User("Bianca", new Password("123456789")), "Test Description", 30, 60, 4,
             new List<string> { "Step 1", "Step 2" }, dict, new List<string> { "Tag1", "Tag2" }, 2);
 
@@ -310,8 +310,8 @@ public class UsersTests
     // {
     //     //Arrange
     //     Ingredient i = new("egg", Units.Quantity);
-    //     Dictionary<Ingredient, double> dict = new();
-    //     dict.Add(i, 20);
+    //     List<MeasuredIngredient> dict = new();
+    //     dict.Add(new(i, 20));
     //     Recipe recipe = new("Test Recipe", new User("Bianca", new Password("123456789")), "Test Description", 30, 60, 4,
     //         new List<string> { "Step 1", "Step 2" }, dict, new List<string> { "Tag1", "Tag2" }, 2);
 

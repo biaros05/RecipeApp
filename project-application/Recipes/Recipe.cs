@@ -1,12 +1,23 @@
 using System.Collections.Generic;
 namespace recipes;
 
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Diagnostics.Metrics;
 using System.Timers;
 using users;
 
 public class Recipe
 {
+    public Recipe(){}
+    public int UserFavouriteId {get; set;}
+    public int OwnerId {get; set;}
+
+    [ForeignKey("UserFavouriteId")]
+    public User UserFavourite {get; set;}
+
+    [ForeignKey("OwnerId")]
+    public User Owner {get; set;}
+
     public int? Id { get; set;}
     private string? _name;
 
@@ -34,7 +45,6 @@ public class Recipe
 
         }
     }
-    public User Owner { get; }
     private string? _description;
 
     // sets the description, defaults to the name of the recipe if not provided
@@ -116,7 +126,7 @@ public class Recipe
     public int NumberOfServings { get; }
     public List<string> Instructions { get; } = new();
     // contains the ingredient and its quantity for specified unit 
-    public Dictionary<Ingredient, double> Ingredients { get; private set; } = new();
+    public List<MeasuredIngredient> Ingredients { get; set; } = new();
     private readonly List<double> _ratings = new(); // all the ratings given by users OUT OF FIVE STARS
 
     // property calculates the average rating with rounding by 2 decimals
@@ -191,7 +201,7 @@ public class Recipe
     // will take all parameters for a recipe and update the necessary fields
     public void UpdateRecipe(
     string description, int preptimeMins, int cooktimeMins,
-    Dictionary<Ingredient, double> ingredients, List<string> tags)
+    List<MeasuredIngredient> ingredients, List<string> tags)
     {
         if (preptimeMins < 0 || preptimeMins > 240)
         {
@@ -213,14 +223,14 @@ public class Recipe
 
     // helper method that updates the list of ingredients in the recipe and also updates them in 
     // the system if they do not already exist
-    private void UpdateIngredients(Dictionary<Ingredient, double> ingredients)
+    private void UpdateIngredients(List<MeasuredIngredient> ingredients)
     {
-        Dictionary<Ingredient, double> newIngredients = new();
-        foreach ((Ingredient i, double quantity) in ingredients)
+        List<MeasuredIngredient> newIngredients = new();
+        foreach (MeasuredIngredient i in ingredients)
         {
-            if (!newIngredients.Contains(new KeyValuePair<Ingredient, double>(i, quantity)))
+            if (!newIngredients.Contains(i))
             {
-                newIngredients.Add(i, quantity);
+                newIngredients.Add(i);
             }
         }
 
@@ -242,10 +252,12 @@ public class Recipe
     public Recipe(Recipe other)
     : this(other.Name, other.Owner, other.Description, other.PrepTimeMins, other.CookTimeMins, other.NumberOfServings, other.Instructions, other.Ingredients, other.Tags, other.Budget.Length, other.Id)
     {
+        this._ratings = other._ratings;
+        this._difficulties = other._difficulties;
     }
 
     // constructor for recipe with necessary validation
-    public Recipe(string name, User owner, string description, int prepTimeMins, int cookTimeMins, int numberOfServings, List<String> instructions, Dictionary<Ingredient, double> ingredients, List<string> tags, int budget, int? id = null)
+    public Recipe(string name, User owner, string description, int prepTimeMins, int cookTimeMins, int numberOfServings, List<String> instructions, List<MeasuredIngredient> ingredients, List<string> tags, int budget, int? id = null)
     {
         this.Owner = owner;
         this.Name = name;

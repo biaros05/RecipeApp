@@ -15,6 +15,8 @@ public class Ingredient
         this.Name = name;
         this.Unit = (Units)unit;
     }
+
+    public Ingredient(){}
     public string Name { get; set; }
 
     public Units Unit

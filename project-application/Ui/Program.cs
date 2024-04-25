@@ -113,10 +113,10 @@ public class Program
         return (Ingredient)i!;
     }
 
-    private static Dictionary<Ingredient, double> FillIngredients()
+    private static List<MeasuredIngredient> FillIngredients()
     {
         Console.WriteLine("What ingredients would you like to add?");
-        Dictionary<Ingredient, double> ingredients = new();
+        List<MeasuredIngredient> ingredients = new();
         string input = "";
 
         while (!input.Equals("done"))
@@ -124,7 +124,7 @@ public class Program
             Ingredient i = NewIngredient();
             Console.WriteLine("Quantity:");
             double quantity = ValidateDouble();
-            ingredients.Add(i, quantity);
+            ingredients.Add(new(i, quantity));
             Console.WriteLine("Type 'done' if you are finished");
             input = Console.ReadLine();
         }
@@ -215,7 +215,7 @@ public class Program
         int numberOfServings = ValidateInt();
         Console.WriteLine("List the instrucrions:");
         List<string> instructions = FillInstructions();
-        Dictionary<Ingredient, double> ingredients = FillIngredients();
+        List<MeasuredIngredient> ingredients = FillIngredients();
         Console.WriteLine("Add Tags to recipe:");
         List<string> tags = FillTags();
         Console.WriteLine("Budget on a scale of 1-3:");
@@ -615,21 +615,21 @@ public class Program
     Ingredient i = new("egg", Units.Quantity);
         Ingredient b = new("meat", Units.Mass);
         Ingredient c = new("food", Units.Mass);
-        Dictionary<Ingredient, double> dict = new()
+        List<MeasuredIngredient> dict = new()
         {
-            { b, 30 },
-            { i, 20 }
+            new(b, 30 ),
+            new(i, 20 )
         };
-        Dictionary<Ingredient, double> dict2 = new()
+        List<MeasuredIngredient> dict2 = new()
         {
-            { i, 20 },
-            { c, 10 }
+            new( i, 20 ),
+            new( c, 10 )
         };
-        Dictionary<Ingredient, double> dict3 = new()
+        List<MeasuredIngredient> dict3 = new()
         {
-            { c, 10 },
-            { i, 20 },
-            { b, 30 }
+            new( c, 10 ),
+            new( i, 20 ),
+            new( b, 30 )
         };
         
         Recipe recipe = new("Test Recipe", UserController.Instance.ActiveUser, "Test Description", 120, 60, 10,

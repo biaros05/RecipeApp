@@ -4,10 +4,10 @@ using users;
 
 public class RecipesContext : DbContext
 {
-    public DbSet<Recipe> Recipes {get; set;}
-    public DbSet<User> Users {get; set;}
-    public DbSet<Ingredient> Ingredients {get; set;}
-    public DbSet<Password> Passwords {get; set;}
+    public virtual DbSet<Recipe> Recipes {get; set;}
+    public virtual DbSet<User> Users {get; set;}
+    public virtual DbSet<Ingredient> Ingredients {get; set;}
+    public virtual DbSet<Password> Passwords {get; set;}
     
     public string HostName { get; set; }
 

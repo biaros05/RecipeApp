@@ -6,6 +6,7 @@ using System.Security.Cryptography.X509Certificates;
 namespace users;
 public class Password
 {
+    public Password(){}
     public int PasswordId {get; set;}
     public byte[] Salt = new byte[8];
 

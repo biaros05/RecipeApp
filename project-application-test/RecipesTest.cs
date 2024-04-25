@@ -14,8 +14,8 @@ public class RecipesTest
     {
         // Arrange
         Ingredient i = new("egg", Units.Quantity);
-        Dictionary<Ingredient, double> dict = new();
-        dict.Add(i, 20);
+        List<MeasuredIngredient> dict = new();
+        dict.Add(new(i, 20));
         Recipe recipe = new("Test Recipe", new User("Bianca", new Password("123456789")), "Test Description", 30, 60, 4,
             new List<string> { "Step 1", "Step 2" }, dict, new List<string> { "Tag1", "Tag2" }, 2);
         string validName = "Delicious Recipe";
@@ -32,8 +32,8 @@ public class RecipesTest
     {
         // Arrange
         Ingredient i = new("egg", Units.Quantity);
-        Dictionary<Ingredient, double> dict = new();
-        dict.Add(i, 20);
+        List<MeasuredIngredient> dict = new();
+        dict.Add(new(i, 20));
         Recipe recipe = new("Test Recipe", new User("Bianca", new Password("123456789")), "Test Description", 30, 60, 4,
             new List<string> { "Step 1", "Step 2" }, dict, new List<string> { "Tag1", "Tag2" }, 2);
 
@@ -48,8 +48,8 @@ public class RecipesTest
     {
         // Arrange
         Ingredient i = new("egg", Units.Quantity);
-        Dictionary<Ingredient, double> dict = new();
-        dict.Add(i, 20);
+        List<MeasuredIngredient> dict = new();
+        dict.Add(new(i, 20));
         Recipe recipe = new("Test Recipe", new User("Bianca", new Password("123456789")), "Test Description", 30, 60, 4,
             new List<string> { "Step 1", "Step 2" }, dict, new List<string> { "Tag1", "Tag2" }, 2);
         string shortName = "Short";
@@ -65,8 +65,8 @@ public class RecipesTest
     {
         // Arrange
         Ingredient i = new("egg", Units.Quantity);
-        Dictionary<Ingredient, double> dict = new();
-        dict.Add(i, 20);
+        List<MeasuredIngredient> dict = new();
+        dict.Add(new(i, 20));
         Recipe recipe = new("Test Recipe", new User("Bianca", new Password("123456789")), "Test Description", 30, 60, 4,
             new List<string> { "Step 1", "Step 2" }, dict, new List<string> { "Tag1", "Tag2" }, 2);
         string longName = "ThisIsAVeryLongRecipeNameThatExceedsTheMaximumAllowedLengthThisIsAVeryLongRecipeNameThatExceedsTheMaximumAllowedLength";
@@ -82,8 +82,8 @@ public class RecipesTest
     public void Description_SetValidDescription_SetsDescription_SetsDescriptionCorrectly()
     {
         Ingredient i = new("egg", Units.Quantity);
-        Dictionary<Ingredient, double> dict = new();
-        dict.Add(i, 20);
+        List<MeasuredIngredient> dict = new();
+        dict.Add(new(i, 20));
         Recipe recipe = new("Test Recipe", new User("Bianca", new Password("123456789")), "Test Description", 30, 60, 4,
             new List<string> { "Step 1", "Step 2" }, dict, new List<string> { "Tag1", "Tag2" }, 2);
         string validDescription = "This is a valid description";
@@ -97,8 +97,8 @@ public class RecipesTest
     public void Description_SetEmptyDescription_SetsEmptyDescription_SetsDescriptionAsRecipeName()
     {
         Ingredient i = new("egg", Units.Quantity);
-        Dictionary<Ingredient, double> dict = new();
-        dict.Add(i, 20);
+        List<MeasuredIngredient> dict = new();
+        dict.Add(new(i, 20));
         Recipe recipe = new("Test Recipe", new User("Bianca", new Password("123456789")), "Test Description", 30, 60, 4,
             new List<string> { "Step 1", "Step 2" }, dict, new List<string> { "Tag1", "Tag2" }, 2);
         string EmptyDescription = "";
@@ -112,8 +112,8 @@ public class RecipesTest
     public void Description_SetNullDescription_SetsDescriptionAsRecipeName()
     {
         Ingredient i = new("egg", Units.Quantity);
-        Dictionary<Ingredient, double> dict = new();
-        dict.Add(i, 20);
+        List<MeasuredIngredient> dict = new();
+        dict.Add(new(i, 20));
         Recipe recipe = new("Test Recipe", new User("Bianca", new Password("123456789")), "Test Description", 30, 60, 4,
             new List<string> { "Step 1", "Step 2" }, dict, new List<string> { "Tag1", "Tag2" }, 2);
 
@@ -127,8 +127,8 @@ public class RecipesTest
     public void PrepTimeMins_SetPrepTimeCorrectly_ReturnsTrue()
     {
         Ingredient i = new("egg", Units.Quantity);
-        Dictionary<Ingredient, double> dict = new();
-        dict.Add(i, 20);
+        List<MeasuredIngredient> dict = new();
+        dict.Add(new(i, 20));
         Recipe recipe = new("Test Recipe", new User("Bianca", new Password("123456789")), "Test Description", 30, 60, 4,
             new List<string> { "Step 1", "Step 2" }, dict, new List<string> { "Tag1", "Tag2" }, 2);
 
@@ -141,8 +141,8 @@ public class RecipesTest
     public void PrepTimeMins_SetPrepTimeGreaterThan4_ThrowsArgumentException()
     {
         Ingredient i = new("egg", Units.Quantity);
-        Dictionary<Ingredient, double> dict = new();
-        dict.Add(i, 20);
+        List<MeasuredIngredient> dict = new();
+        dict.Add(new(i, 20));
         Recipe recipe = new("Test Recipe", new User("Bianca", new Password("123456789")), "Test Description", 30, 60, 4,
             new List<string> { "Step 1", "Step 2" }, dict, new List<string> { "Tag1", "Tag2" }, 2);
 
@@ -155,8 +155,8 @@ public class RecipesTest
     public void PrepTimeMins_SetPrepTimeNegative_ThrowsArgumentException()
     {
         Ingredient i = new("egg", Units.Quantity);
-        Dictionary<Ingredient, double> dict = new();
-        dict.Add(i, 20);
+        List<MeasuredIngredient> dict = new();
+        dict.Add(new(i, 20));
         Recipe recipe = new("Test Recipe", new User("Bianca", new Password("123456789")), "Test Description", 30, 60, 4,
             new List<string> { "Step 1", "Step 2" }, dict, new List<string> { "Tag1", "Tag2" }, 2);
 
@@ -170,8 +170,8 @@ public class RecipesTest
     public void CookTimeMins_SetCookTimeCorrectly_ReturnsTrue()
     {
         Ingredient i = new("egg", Units.Quantity);
-        Dictionary<Ingredient, double> dict = new();
-        dict.Add(i, 20);
+        List<MeasuredIngredient> dict = new();
+        dict.Add(new(i, 20));
         Recipe recipe = new("Test Recipe", new User("Bianca", new Password("123456789")), "Test Description", 30, 60, 4,
             new List<string> { "Step 1", "Step 2" }, dict, new List<string> { "Tag1", "Tag2" }, 2);
 
@@ -184,8 +184,8 @@ public class RecipesTest
     public void CookTimeMins_SetCookTimeGreaterThan4_ThrowsArgumentException()
     {
         Ingredient i = new("egg", Units.Quantity);
-        Dictionary<Ingredient, double> dict = new();
-        dict.Add(i, 20);
+        List<MeasuredIngredient> dict = new();
+        dict.Add(new(i, 20));
         Recipe recipe = new("Test Recipe", new User("Bianca", new Password("123456789")), "Test Description", 30, 60, 4,
             new List<string> { "Step 1", "Step 2" }, dict, new List<string> { "Tag1", "Tag2" }, 2);
 
@@ -198,8 +198,8 @@ public class RecipesTest
     public void CookTimeMins_SetCookTimeNegative_ThrowsArgumentException()
     {
         Ingredient i = new("egg", Units.Quantity);
-        Dictionary<Ingredient, double> dict = new();
-        dict.Add(i, 20);
+        List<MeasuredIngredient> dict = new();
+        dict.Add(new(i, 20));
         Recipe recipe = new("Test Recipe", new User("Bianca", new Password("123456789")), "Test Description", 30, 60, 4,
             new List<string> { "Step 1", "Step 2" }, dict, new List<string> { "Tag1", "Tag2" }, 2);
 
@@ -213,8 +213,8 @@ public class RecipesTest
     public void TotalTimeMins_GetTotalTime_ReturnsTrue()
     {
         Ingredient i = new("egg", Units.Quantity);
-        Dictionary<Ingredient, double> dict = new();
-        dict.Add(i, 20);
+        List<MeasuredIngredient> dict = new();
+        dict.Add(new(i, 20));
         Recipe recipe = new("Test Recipe", new User("Bianca", new Password("123456789")), "Test Description", 30, 60, 4,
             new List<string> { "Step 1", "Step 2" }, dict, new List<string> { "Tag1", "Tag2" }, 2);
 
@@ -228,8 +228,8 @@ public class RecipesTest
     public void RateRecipe_AddValidRating_ReturnsTrue()
     {
         Ingredient i = new("egg", Units.Quantity);
-        Dictionary<Ingredient, double> dict = new();
-        dict.Add(i, 20);
+        List<MeasuredIngredient> dict = new();
+        dict.Add(new(i, 20));
         Recipe recipe = new("Test Recipe", new User("Bianca", new Password("123456789")), "Test Description", 30, 60, 4,
             new List<string> { "Step 1", "Step 2" }, dict, new List<string> { "Tag1", "Tag2" }, 2);
 
@@ -242,8 +242,8 @@ public class RecipesTest
     public void RateRecipe_AddSeveralRatings_ReturnsTrue()
     {
         Ingredient i = new("egg", Units.Quantity);
-        Dictionary<Ingredient, double> dict = new();
-        dict.Add(i, 20);
+        List<MeasuredIngredient> dict = new();
+        dict.Add(new(i, 20));
         Recipe recipe = new("Test Recipe", new User("Bianca", new Password("123456789")), "Test Description", 30, 60, 4,
             new List<string> { "Step 1", "Step 2" }, dict, new List<string> { "Tag1", "Tag2" }, 2);
 
@@ -259,8 +259,8 @@ public class RecipesTest
     public void RateRecipe_RateLessThan1_ThrowsArgumentException()
     {
         Ingredient i = new("egg", Units.Quantity);
-        Dictionary<Ingredient, double> dict = new();
-        dict.Add(i, 20);
+        List<MeasuredIngredient> dict = new();
+        dict.Add(new(i, 20));
         Recipe recipe = new("Test Recipe", new User("Bianca", new Password("123456789")), "Test Description", 30, 60, 4,
             new List<string> { "Step 1", "Step 2" }, dict, new List<string> { "Tag1", "Tag2" }, 2);
 
@@ -273,8 +273,8 @@ public class RecipesTest
     public void RateRecipe_GreaterThan5_ThrowsArgumentException()
     {
         Ingredient i = new("egg", Units.Quantity);
-        Dictionary<Ingredient, double> dict = new();
-        dict.Add(i, 20);
+        List<MeasuredIngredient> dict = new();
+        dict.Add(new(i, 20));
         Recipe recipe = new("Test Recipe", new User("Bianca", new Password("123456789")), "Test Description", 30, 60, 4,
             new List<string> { "Step 1", "Step 2" }, dict, new List<string> { "Tag1", "Tag2" }, 2);
 
@@ -288,8 +288,8 @@ public class RecipesTest
     public void RateDifficulty_AddValidRating_ReturnsTrue()
     {
         Ingredient i = new("egg", Units.Quantity);
-        Dictionary<Ingredient, double> dict = new();
-        dict.Add(i, 20);
+        List<MeasuredIngredient> dict = new();
+        dict.Add(new(i, 20));
         Recipe recipe = new("Test Recipe", new User("Bianca", new Password("123456789")), "Test Description", 30, 60, 4,
             new List<string> { "Step 1", "Step 2" }, dict, new List<string> { "Tag1", "Tag2" }, 2);
 
@@ -302,8 +302,8 @@ public class RecipesTest
     public void RateDifficulty_AddSeveralRatings_ReturnsTrue()
     {
         Ingredient i = new("egg", Units.Quantity);
-        Dictionary<Ingredient, double> dict = new();
-        dict.Add(i, 20);
+        List<MeasuredIngredient> dict = new();
+        dict.Add(new(i, 20));
         Recipe recipe = new("Test Recipe", new User("Bianca", new Password("123456789")), "Test Description", 30, 60, 4,
             new List<string> { "Step 1", "Step 2" }, dict, new List<string> { "Tag1", "Tag2" }, 2);
 
@@ -319,8 +319,8 @@ public class RecipesTest
     public void RateDifficulty_RateLessThan1_ThrowsArgumentException()
     {
         Ingredient i = new("egg", Units.Quantity);
-        Dictionary<Ingredient, double> dict = new();
-        dict.Add(i, 20);
+        List<MeasuredIngredient> dict = new();
+        dict.Add(new(i, 20));
         Recipe recipe = new("Test Recipe", new User("Bianca", new Password("123456789")), "Test Description", 30, 60, 4,
             new List<string> { "Step 1", "Step 2" }, dict, new List<string> { "Tag1", "Tag2" }, 2);
 
@@ -333,8 +333,8 @@ public class RecipesTest
     public void RateDifficulty_GreaterThan10_ThrowsArgumentException()
     {
         Ingredient i = new("egg", Units.Quantity);
-        Dictionary<Ingredient, double> dict = new();
-        dict.Add(i, 20);
+        List<MeasuredIngredient> dict = new();
+        dict.Add(new(i, 20));
         Recipe recipe = new("Test Recipe", new User("Bianca", new Password("123456789")), "Test Description", 30, 60, 4,
             new List<string> { "Step 1", "Step 2" }, dict, new List<string> { "Tag1", "Tag2" }, 2);
 
@@ -348,8 +348,8 @@ public class RecipesTest
     public void AddTag_CorrectTag_ReturnsTrue()
     {
         Ingredient i = new("egg", Units.Quantity);
-        Dictionary<Ingredient, double> dict = new();
-        dict.Add(i, 20);
+        List<MeasuredIngredient> dict = new();
+        dict.Add(new(i, 20));
         Recipe recipe = new("Test Recipe", new User("Bianca", new Password("123456789")), "Test Description", 30, 60, 4,
             new List<string> { "Step 1", "Step 2" }, dict, new List<string> { "Tag1", "Tag2" }, 2);
         List<string> correctTags = new() { "Tag1", "Tag2", "school lunch" };
@@ -363,8 +363,8 @@ public class RecipesTest
     public void AddTag_ExistingTag_DoesNotAddTag()
     {
         Ingredient i = new("egg", Units.Quantity);
-        Dictionary<Ingredient, double> dict = new();
-        dict.Add(i, 20);
+        List<MeasuredIngredient> dict = new();
+        dict.Add(new(i, 20));
         Recipe recipe = new("Test Recipe", new User("Bianca", new Password("123456789")), "Test Description", 30, 60, 4,
             new List<string> { "Step 1", "Step 2" }, dict, new List<string> { "Tag1", "Tag2" }, 2);
         List<string> correctTags = new() { "Tag1", "Tag2" };
@@ -378,8 +378,8 @@ public class RecipesTest
     public void AddTag_EmptyTag_ThrowsArgumentException()
     {
         Ingredient i = new("egg", Units.Quantity);
-        Dictionary<Ingredient, double> dict = new();
-        dict.Add(i, 20);
+        List<MeasuredIngredient> dict = new();
+        dict.Add(new(i, 20));
         Recipe recipe = new("Test Recipe", new User("Bianca", new Password("123456789")), "Test Description", 30, 60, 4,
             new List<string> { "Step 1", "Step 2" }, dict, new List<string> { "Tag1", "Tag2" }, 2);
         List<string> correctTags = new() { "Tag1", "Tag2" };
@@ -394,17 +394,17 @@ public class RecipesTest
     public void UpdateRecipe_CorrectParameters_UpdatesRecipesCorrectly()
     {
         Ingredient i = new("egg", Units.Quantity);
-        Dictionary<Ingredient, double> dict = new();
-        dict.Add(i, 20);
+        List<MeasuredIngredient> dict = new();
+        dict.Add(new(i, 20));
         Recipe recipe = new("Test Recipe", new User("Bianca", new Password("123456789")), "Test Description", 30, 60, 4,
             new List<string> { "Step 1", "Step 2" }, dict, new List<string> { "Tag1", "Tag2" }, 2);
 
         string newDescription = "Updated Description";
         int newPrepTime = 45;
         int newCookTime = 75;
-        Dictionary<Ingredient, double> newIngredients = new();
-        newIngredients.Add(new Ingredient("flour", Units.Mass), 300);
-        newIngredients.Add(new Ingredient("egg", Units.Quantity), 4);
+        List<MeasuredIngredient> newIngredients = new();
+        newIngredients.Add(new(new Ingredient("flour", Units.Mass), 300));
+        newIngredients.Add(new(new Ingredient("egg", Units.Quantity), 4));
         List<string> newTags = new List<string> { "NewTag1", "NewTag2" };
 
         recipe.UpdateRecipe(newDescription, newPrepTime, newCookTime, newIngredients, newTags);
@@ -421,16 +421,16 @@ public class RecipesTest
     {
         RecipeController instance = RecipeController.Instance;
         Ingredient i = new("egg", Units.Quantity);
-        Dictionary<Ingredient, double> dict = new();
-        dict.Add(i, 20);
+        List<MeasuredIngredient> dict = new();
+        dict.Add(new(i, 20));
         Recipe recipe = new("Test Recipe", new User("Bianca", new Password("123456789")), "Test Description", 30, 60, 4,
             new List<string> { "Step 1", "Step 2" }, dict, new List<string> { "Tag1", "Tag2" }, 2);
 
         string newDescription = "";
         int newPrepTime = 45;
         int newCookTime = 75;
-        Dictionary<Ingredient, double> newIngredients = new();
-        newIngredients.Add(new Ingredient("flour", Units.Mass), 300);
+        List<MeasuredIngredient> newIngredients = new();
+        newIngredients.Add(new(new Ingredient("flour", Units.Mass), 300));
         List<string> newTags = new List<string> { "NewTag1", "NewTag2" };
         List<Ingredient> ingredients = new() { new("egg", Units.Quantity), new Ingredient("flour", Units.Mass) };
 
@@ -447,16 +447,16 @@ public class RecipesTest
     public void UpdateRecipe_NegativePrepTime_ThrowsException()
     {
         Ingredient i = new("egg", Units.Quantity);
-        Dictionary<Ingredient, double> dict = new();
-        dict.Add(i, 20);
+        List<MeasuredIngredient> dict = new();
+        dict.Add(new(i, 20));
         Recipe recipe = new("Test Recipe", new User("Bianca", new Password("123456789")), "Test Description", 30, 60, 4,
             new List<string> { "Step 1", "Step 2" }, dict, new List<string> { "Tag1", "Tag2" }, 2);
 
         string newDescription = "Description";
         int newPrepTime = -12;
         int newCookTime = 75;
-        Dictionary<Ingredient, double> newIngredients = new();
-        newIngredients.Add(new Ingredient("flour", Units.Quantity), 300);
+        List<MeasuredIngredient> newIngredients = new();
+        newIngredients.Add(new(new Ingredient("flour", Units.Quantity), 300));
         List<string> newTags = new List<string> { "NewTag1", "NewTag2" };
 
         Action act = () => recipe.UpdateRecipe(newDescription, newPrepTime, newCookTime, newIngredients, newTags);
@@ -468,16 +468,16 @@ public class RecipesTest
     public void UpdateRecipe_PrepTimeTooLarge_ThrowsException()
     {
         Ingredient i = new("egg", Units.Quantity);
-        Dictionary<Ingredient, double> dict = new();
-        dict.Add(i, 20);
+        List<MeasuredIngredient> dict = new();
+        dict.Add(new(i, 20));
         Recipe recipe = new("Test Recipe", new User("Bianca", new Password("123456789")), "Test Description", 30, 60, 4,
             new List<string> { "Step 1", "Step 2" }, dict, new List<string> { "Tag1", "Tag2" }, 2);
 
         string newDescription = "Description";
         int newPrepTime = 500;
         int newCookTime = 75;
-        Dictionary<Ingredient, double> newIngredients = new();
-        newIngredients.Add(new Ingredient("flour", Units.Quantity), 300);
+        List<MeasuredIngredient> newIngredients = new();
+        newIngredients.Add(new(new Ingredient("flour", Units.Quantity), 300));
         List<string> newTags = new List<string> { "NewTag1", "NewTag2" };
 
         Action act = () => recipe.UpdateRecipe(newDescription, newPrepTime, newCookTime, newIngredients, newTags);
@@ -489,16 +489,16 @@ public class RecipesTest
     public void UpdateRecipe_CookTimeTooLarge_ThrowsException()
     {
         Ingredient i = new("egg", Units.Quantity);
-        Dictionary<Ingredient, double> dict = new();
-        dict.Add(i, 20);
+        List<MeasuredIngredient> dict = new();
+        dict.Add(new(i, 20));
         Recipe recipe = new("Test Recipe", new User("Bianca", new Password("123456789")), "Test Description", 30, 60, 4,
             new List<string> { "Step 1", "Step 2" }, dict, new List<string> { "Tag1", "Tag2" }, 2);
 
         string newDescription = "Description";
         int newPrepTime = 30;
         int newCookTime = 750;
-        Dictionary<Ingredient, double> newIngredients = new();
-        newIngredients.Add(new Ingredient("flour", Units.Quantity), 300);
+        List<MeasuredIngredient> newIngredients = new();
+        newIngredients.Add(new(new Ingredient("flour", Units.Quantity), 300));
         List<string> newTags = new List<string> { "NewTag1", "NewTag2" };
 
         Action act = () => recipe.UpdateRecipe(newDescription, newPrepTime, newCookTime, newIngredients, newTags);
@@ -510,16 +510,16 @@ public class RecipesTest
     public void UpdateRecipe_CookTimeNegative_ThrowsException()
     {
         Ingredient i = new("egg", Units.Quantity);
-        Dictionary<Ingredient, double> dict = new();
-        dict.Add(i, 20);
+        List<MeasuredIngredient> dict = new();
+        dict.Add(new(i, 20));
         Recipe recipe = new("Test Recipe", new User("Bianca", new Password("123456789")), "Test Description", 30, 60, 4,
             new List<string> { "Step 1", "Step 2" }, dict, new List<string> { "Tag1", "Tag2" }, 2);
 
         string newDescription = "Description";
         int newPrepTime = 30;
         int newCookTime = -10;
-        Dictionary<Ingredient, double> newIngredients = new();
-        newIngredients.Add(new Ingredient("flour", Units.Quantity), 300);
+        List<MeasuredIngredient> newIngredients = new();
+        newIngredients.Add(new(new Ingredient("flour", Units.Quantity), 300));
         List<string> newTags = new List<string> { "NewTag1", "NewTag2" };
 
         Action act = () => recipe.UpdateRecipe(newDescription, newPrepTime, newCookTime, newIngredients, newTags);
@@ -538,8 +538,8 @@ public class RecipesTest
         int newCookTime = 60;
         int numServings = 4;
         List<string> instructions = new List<string> { "Step 1", "Step 2" };
-        Dictionary<Ingredient, double> newIngredients = new();
-        newIngredients.Add(new Ingredient("flour", Units.Quantity), 300);
+        List<MeasuredIngredient> newIngredients = new();
+        newIngredients.Add(new(new Ingredient("flour", Units.Quantity), 300));
         List<string> newTags = new List<string> { "Tag1", "Tag2" };
         int budget = 2;
 
@@ -567,8 +567,8 @@ public class RecipesTest
         int newCookTime = 60;
         int numServings = 4;
         List<string> instructions = new List<string>();
-        Dictionary<Ingredient, double> newIngredients = new();
-        newIngredients.Add(new Ingredient("flour", Units.Quantity), 300);
+        List<MeasuredIngredient> newIngredients = new();
+        newIngredients.Add(new(new Ingredient("flour", Units.Quantity), 300));
         List<string> newTags = new List<string> { "Tag1", "Tag2" };
         int budget = 2;
 
@@ -587,7 +587,7 @@ public class RecipesTest
         int newCookTime = 60;
         int numServings = 4;
         List<string> instructions = new List<string> { "Step 1", "Step 2" };
-        Dictionary<Ingredient, double> newIngredients = new();
+        List<MeasuredIngredient> newIngredients = new();
         List<string> newTags = new List<string> { "Tag1", "Tag2" };
         int budget = 2;
 
@@ -606,8 +606,8 @@ public class RecipesTest
         int newCookTime = 60;
         int numServings = 4;
         List<string> instructions = new List<string> { "Step 1", "Step 2" };
-        Dictionary<Ingredient, double> newIngredients = new();
-        newIngredients.Add(new Ingredient("flour", Units.Quantity), 300);
+        List<MeasuredIngredient> newIngredients = new();
+        newIngredients.Add(new(new Ingredient("flour", Units.Quantity), 300));
         List<string> newTags = new List<string> { "Tag1", "Tag2" };
         int budget = 4;
 
@@ -626,8 +626,8 @@ public class RecipesTest
         int newCookTime = 60;
         int numServings = 4;
         List<string> instructions = new List<string> { "Step 1", "Step 2" };
-        Dictionary<Ingredient, double> newIngredients = new();
-        newIngredients.Add(new Ingredient("flour", Units.Quantity), 300);
+        List<MeasuredIngredient> newIngredients = new();
+        newIngredients.Add(new(new Ingredient("flour", Units.Quantity), 300));
         List<string> newTags = new List<string> { "Tag1", "Tag2" };
         int budget = 0;
 
@@ -647,8 +647,8 @@ public class RecipesTest
         int newCookTime = 60;
         int numServings = 4;
         List<string> instructions = new List<string> { "Step 1", "Step 2" };
-        Dictionary<Ingredient, double> newIngredients = new();
-        newIngredients.Add(new Ingredient("flour", Units.Quantity), 300);
+        List<MeasuredIngredient> newIngredients = new();
+        newIngredients.Add(new(new Ingredient("flour", Units.Quantity), 300));
         List<string> newTags = new List<string> { "Tag1", "Tag2" };
         int budget = 2;
         Recipe recipe = new(name, owner, newDescription, newPrepTime, newCookTime, numServings, instructions, newIngredients, newTags, budget);
