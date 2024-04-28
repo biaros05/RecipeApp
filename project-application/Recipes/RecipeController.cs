@@ -90,7 +90,7 @@ public class RecipeController
         {
             filter.FilterRecipes(recipeQuery);
         }
-        return filtered;
+        return recipeQuery.ToList<Recipe>();
     }
 
     // as the user adds a filter, this will accumilate the filters (will NOT add one if already there.)

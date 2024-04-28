@@ -16,11 +16,10 @@ public class FilterByRating : IFilterBy
     /// </summary>
     /// <param name="recipes">A given list of recipes to filter</param>
     /// <returns>A filtered list of recipes that matches the given star rating</returns>
-    public List<Recipe> FilterRecipes(List<Recipe> recipes)
+    public void FilterRecipes(IQueryable<Recipe> recipes)
     {
-        var filteredRecipes = recipes
+        recipes
             .Where(recipe => recipe.Rating >= Rating);
-        return filteredRecipes.ToList();
     }
 
     public override string ToString()
