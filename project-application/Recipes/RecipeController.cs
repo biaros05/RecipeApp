@@ -31,7 +31,7 @@ public class RecipeController
     }
 
     // will add the recipe to the list of all recipes
-    public static void CreateRecipe(Recipe recipe)
+    public void CreateRecipe(Recipe recipe)
     {
         using var context = new RecipesContext();
         List<Recipe> retrieveRecipes = context.RecipeManager_Recipes.ToList<Recipe>();
@@ -44,20 +44,19 @@ public class RecipeController
         {
             throw new ArgumentException("You cannot create a recipe that you are not the owner of");
         }
-
-        context.Add(recipe);
+        context.RecipeManager_Recipes.Add(recipe);
         context.SaveChanges();
 
     }
 
     // adds an ingredient to the list of ingredients available for selection
-    public static void AddIngredient(Ingredient ingredient)
+    public void AddIngredient(Ingredient ingredient)
     {
         using var context = new RecipesContext();
         List<Ingredient> retrieveIngredients = context.RecipeManager_Ingredients.ToList<Ingredient>();
         if (!retrieveIngredients.Contains(ingredient))
         {
-            context.Add(ingredient);
+            context.RecipeManager_Ingredients.Add(ingredient);
             context.SaveChanges();
         }
     }

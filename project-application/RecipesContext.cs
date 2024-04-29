@@ -31,7 +31,6 @@ public class RecipesContext : DbContext
         UserName = Environment.GetEnvironmentVariable("ORACLE_DB_USER")!;
 
         Password = Environment.GetEnvironmentVariable("ORACLE_DB_PASSWORD")!;
-        Console.WriteLine($"{HostName}, {Port}, {ServiceName}, {UserName}, {Password}");
     }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

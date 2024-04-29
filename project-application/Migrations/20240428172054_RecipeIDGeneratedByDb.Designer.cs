@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Oracle.EntityFrameworkCore.Metadata;
 
@@ -10,9 +11,11 @@ using Oracle.EntityFrameworkCore.Metadata;
 namespace project.Migrations
 {
     [DbContext(typeof(RecipesContext))]
-    partial class RecipesContextModelSnapshot : ModelSnapshot
+    [Migration("20240428172054_RecipeIDGeneratedByDb")]
+    partial class RecipeIDGeneratedByDb
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -131,11 +134,11 @@ namespace project.Migrations
 
             modelBuilder.Entity("recipes.Recipe", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int?>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("NUMBER(10)");
 
-                    OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<int?>("Id"));
 
                     b.Property<int>("CookTimeMins")
                         .HasColumnType("NUMBER(10)");
@@ -147,9 +150,6 @@ namespace project.Migrations
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("NVARCHAR2(2000)");
-
-                    b.Property<int>("NumberOfServings")
-                        .HasColumnType("NUMBER(10)");
 
                     b.Property<int>("OwnerId")
                         .HasColumnType("NUMBER(10)");

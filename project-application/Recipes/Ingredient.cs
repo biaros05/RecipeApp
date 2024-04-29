@@ -16,6 +16,11 @@ public class Ingredient
         this.Unit = (Units)unit;
     }
 
+    public Ingredient(int id, string? name, Units? unit): this(name, unit)
+    {
+        this.IngredientId = id;
+    }
+
     public Ingredient(){}
     public string Name { get; set; }
 

@@ -220,15 +220,17 @@ public class Program
         List<Tag> tags = FillTags();
         Console.WriteLine("Budget on a scale of 1-3:");
         int budget = ValidateInt();
-        Recipe newRecipe = new Recipe(name, owner, description, prepTimeMins, cookTimeMins, numberOfServings, instructions, ingredients, tags, budget, RecipeController.Instance.AllRecipes.Count);
+        Recipe newRecipe = new Recipe(name, owner, description, prepTimeMins, cookTimeMins, numberOfServings, instructions, ingredients, tags, budget);
 
         RecipeController.Instance.CreateRecipe(newRecipe);
     }
 
     private static void PrintRecipes()
     {
+        using var context = new RecipesContext();
+        List<Recipe> retrieveRecipes = context.RecipeManager_Recipes.ToList<Recipe>();
         int num = 1;
-        foreach (Recipe r in RecipeController.Instance.AllRecipes)
+        foreach (Recipe r in retrieveRecipes)
         {
             Console.WriteLine($"{num}. {r}");
             num++;
@@ -554,8 +556,10 @@ public class Program
     //return the correct object from the recipe list
     public static Recipe ReturnOneRecipe(int num)
     {
+        using var context = new RecipesContext();
+        List<Recipe> retrieveRecipes = context.RecipeManager_Recipes.ToList<Recipe>();
         int count = 0;
-        foreach (Recipe r in RecipeController.Instance.AllRecipes)
+        foreach (Recipe r in retrieveRecipes)
         {
             if (count == num)
             {
