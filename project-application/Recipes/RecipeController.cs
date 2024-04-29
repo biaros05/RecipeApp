@@ -33,8 +33,7 @@ public class RecipeController
     // will add the recipe to the list of all recipes
     public void CreateRecipe(Recipe recipe)
     {
-        using var context = new RecipesContext();
-        List<Recipe> retrieveRecipes = context.RecipeManager_Recipes.ToList<Recipe>();
+        List<Recipe> retrieveRecipes = RecipesContext.Instance.RecipeManager_Recipes.ToList<Recipe>();
         if (retrieveRecipes.Contains(recipe))
         {
             throw new ArgumentException("this recipe and name already exist in the database!");
@@ -44,8 +43,8 @@ public class RecipeController
         {
             throw new ArgumentException("You cannot create a recipe that you are not the owner of");
         }
-        context.RecipeManager_Recipes.Add(recipe);
-        context.SaveChanges();
+        RecipesContext.Instance.RecipeManager_Recipes.Add(recipe);
+        RecipesContext.Instance.SaveChanges();
 
     }
 
@@ -53,7 +52,7 @@ public class RecipeController
     public void AddIngredient(Ingredient ingredient)
     {
         using var context = new RecipesContext();
-        List<Ingredient> retrieveIngredients = context.RecipeManager_Ingredients.ToList<Ingredient>();
+        List<Ingredient> retrieveIngredients = RecipesContext.Instance.RecipeManager_Ingredients.ToList<Ingredient>();
         if (!retrieveIngredients.Contains(ingredient))
         {
             context.RecipeManager_Ingredients.Add(ingredient);

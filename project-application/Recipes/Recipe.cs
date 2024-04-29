@@ -228,12 +228,11 @@ public class Recipe
     // the system if they do not already exist
     private void UpdateIngredients(List<MeasuredIngredient> ingredients)
     {
-        using var context = new RecipesContext();
         List<MeasuredIngredient> newIngredients = new();
         foreach (MeasuredIngredient i in ingredients)
         {
             RecipeController.Instance.AddIngredient(i.Ingredient);
-            Ingredient? ingredient = context.RecipeManager_Ingredients.FirstOrDefault(ing => ing.Name == i.Ingredient.Name);
+            Ingredient? ingredient = RecipesContext.Instance.RecipeManager_Ingredients.FirstOrDefault(ing => ing.Name == i.Ingredient.Name);
             i.Ingredient = ingredient!;
             newIngredients.Add(i);
         }

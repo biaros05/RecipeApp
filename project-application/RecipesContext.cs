@@ -20,6 +20,21 @@ public class RecipesContext : DbContext
 
     public string Password { get; set; }
 
+    private static RecipesContext? _instance;
+
+
+    public static RecipesContext Instance
+    {
+        get
+        {
+            if (_instance == null)
+            {
+                _instance = new RecipesContext();
+            }
+            return _instance;
+        }
+    }
+
     public RecipesContext()
     {
         HostName = Environment.GetEnvironmentVariable("ORACLE_DB_HOST")!;
