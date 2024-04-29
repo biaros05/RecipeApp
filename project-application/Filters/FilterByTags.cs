@@ -12,11 +12,10 @@ public class FilterByTags : IFilterBy
         Tags = tags;
     }
     private List<Tag> Tags;
-    public List<Recipe> FilterRecipes(List<Recipe> recipes)
+    public void FilterRecipes(IQueryable<Recipe> recipes)
     {
-        var filteredRecipes = recipes
+        recipes
             .Where(recipe => recipe.Tags.Intersect(Tags).Any());
-        return filteredRecipes.ToList();
     }
 
     public override string ToString()

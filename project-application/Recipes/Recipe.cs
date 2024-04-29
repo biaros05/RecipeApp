@@ -18,7 +18,8 @@ public class Recipe
     [ForeignKey("OwnerId")]
     public User Owner {get; set;}
 
-    public int? Id { get; set;}
+    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+    public int Id { get; set;}
     private string? _name;
 
     // sets the name of the recipe, cannot be null or empty + additional validation for length added
@@ -123,11 +124,11 @@ public class Recipe
         }
     }
 
-    public int NumberOfServings { get; }
+    public int NumberOfServings { get; set;}
     public List<Instruction> Instructions { get; } = new();
     // contains the ingredient and its quantity for specified unit 
     public List<MeasuredIngredient> Ingredients { get; set; } = new();
-    private readonly List<double> _ratings = new(); // all the ratings given by users OUT OF FIVE STARS
+    private List<double> _ratings = new(); // all the ratings given by users OUT OF FIVE STARS
 
     // property calculates the average rating with rounding by 2 decimals
     public double? Rating
@@ -158,6 +159,7 @@ public class Recipe
             double averageDiff = difficulty / (double)this._difficulties.Count;
             return this._difficulties.Count != 0 ? (int)Math.Round(averageDiff, 0) : null;
         }
+        
     }
 
 
@@ -229,10 +231,10 @@ public class Recipe
         List<MeasuredIngredient> newIngredients = new();
         foreach (MeasuredIngredient i in ingredients)
         {
-            if (!newIngredients.Contains(i))
-            {
-                newIngredients.Add(i);
-            }
+            RecipeController.Instance.AddIngredient(i.Ingredient);
+            Ingredient? ingredient = RecipesContext.Instance.RecipeManager_Ingredients.FirstOrDefault(ing => ing.Name == i.Ingredient.Name);
+            i.Ingredient = ingredient!;
+            newIngredients.Add(i);
         }
 
         this.Ingredients = newIngredients;
@@ -246,19 +248,19 @@ public class Recipe
             return false;
         }
 
-        return this.Id != null ? ((Recipe)obj).Id == this.Id : ((Recipe)obj).Name.Equals(this.Name) && ((Recipe)obj).Owner.Equals(this.Owner);
+        return ((Recipe)obj).Name.Equals(this.Name) && ((Recipe)obj).Owner.Equals(this.Owner);
     }
 
     // copy constructor for Recipe class
     public Recipe(Recipe other)
-    : this(other.Name, other.Owner, other.Description, other.PrepTimeMins, other.CookTimeMins, other.NumberOfServings, other.Instructions, other.Ingredients, other.Tags, other.Budget.Length, other.Id)
+    : this(other.Name, other.Owner, other.Description, other.PrepTimeMins, other.CookTimeMins, other.NumberOfServings, other.Instructions, other.Ingredients, other.Tags, other.Budget.Length)
     {
         this._ratings = other._ratings;
         this._difficulties = other._difficulties;
     }
 
     // constructor for recipe with necessary validation
-    public Recipe(string name, User owner, string description, int prepTimeMins, int cookTimeMins, int numberOfServings, List<Instruction> instructions, List<MeasuredIngredient> ingredients, List<Tag> tags, int budget, int? id = null)
+    public Recipe(string name, User owner, string description, int prepTimeMins, int cookTimeMins, int numberOfServings, List<Instruction> instructions, List<MeasuredIngredient> ingredients, List<Tag> tags, int budget)
     {
         this.Owner = owner;
         this.Name = name;
@@ -267,7 +269,6 @@ public class Recipe
         this.PrepTimeMins = prepTimeMins;
         this.CookTimeMins = cookTimeMins;
         this.NumberOfServings = numberOfServings;
-        this.Id = id;
         if (instructions.Count == 0 || ingredients.Count == 0)
         {
             throw new ArgumentException("there must be a minimum of one ingredient and one instruction on each recipe");
@@ -288,7 +289,7 @@ public class Recipe
     // because those are my attributes of equality for recipe object
     public override int GetHashCode()
     {
-        return this.Id != null ? HashCode.Combine(this.Id) : HashCode.Combine(this.Name, this.Owner);
+        return HashCode.Combine(this.Id, this.Name, this.Owner);
     }
 
     // tostring override which includes basic information about the recipe

@@ -16,6 +16,11 @@ public class Ingredient
         this.Unit = (Units)unit;
     }
 
+    public Ingredient(int id, string? name, Units? unit): this(name, unit)
+    {
+        this.IngredientId = id;
+    }
+
     public Ingredient(){}
     public string Name { get; set; }
 
@@ -31,7 +36,7 @@ public class Ingredient
         {
             return false;
         }
-        return ((Ingredient)obj).Name.ToLower() == this.Name.ToLower();
+        return  ((Ingredient)obj).Name.ToLower() == this.Name.ToLower();
     }
 
     // gethashcode essential for the equality, uses the same property as the equals to get the

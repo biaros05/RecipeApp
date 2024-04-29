@@ -19,31 +19,11 @@ public class FilterByKeyword : IFilterBy
     /// <param name="recipes">given list of recipes</param>
     /// <returns>returns a list of filtered recipes where the name or description contains the keyword</returns>
     /// <exception cref="InvalidOperationException">When the given recipe has a null or empty name or description</exception>
-    public List<Recipe> FilterRecipes(List<Recipe> recipes)
+    public void FilterRecipes(IQueryable<Recipe> recipes)
     {
-        var filteredRecipes = recipes
+        recipes
             //finds if the recipe name contains the keyword
-            .Where(recipe =>
-            {
-                if (recipe.Name == null || recipe.Name == "")
-                {
-                    throw new InvalidOperationException("Recipe name is null or empty");
-                }
-                bool result = recipe.Name.Contains(Keyword);
-                if (result == false)
-                {
-                    if (recipe.Description == null || recipe.Description == "")
-                    {
-                        throw new InvalidOperationException("Recipe description is null or empty");
-                    }
-                    return recipe.Description.Contains(Keyword);
-                }
-                else
-                {
-                    return result;
-                }
-            });
-        return filteredRecipes.ToList();
+            .Where(recipe => recipe.Name.Contains(Keyword) || recipe.Description.Contains(Keyword));
     }
 
     public override string ToString()

@@ -14,11 +14,10 @@ public class FilterByOwner : IFilterBy
     /// </summary>
     /// <param name="recipes">A given list of recipes to filter</param>
     /// <returns>Returns a filtered list of recipes if the given user Owns that recipe</returns>
-    public List<Recipe> FilterRecipes(List<Recipe> recipes)
+    public void FilterRecipes(IQueryable<Recipe> recipes)
     {
-        var filteredRecipes = recipes
+        recipes
             .Where(recipe => recipe.Owner.Equals(Owner));
-        return filteredRecipes.ToList();
     }
 
     public override string ToString()

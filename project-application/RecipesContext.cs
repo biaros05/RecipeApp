@@ -20,6 +20,21 @@ public class RecipesContext : DbContext
 
     public string Password { get; set; }
 
+    private static RecipesContext? _instance;
+
+
+    public static RecipesContext Instance
+    {
+        get
+        {
+            if (_instance == null)
+            {
+                _instance = new RecipesContext();
+            }
+            return _instance;
+        }
+    }
+
     public RecipesContext()
     {
         HostName = Environment.GetEnvironmentVariable("ORACLE_DB_HOST")!;
@@ -31,7 +46,6 @@ public class RecipesContext : DbContext
         UserName = Environment.GetEnvironmentVariable("ORACLE_DB_USER")!;
 
         Password = Environment.GetEnvironmentVariable("ORACLE_DB_PASSWORD")!;
-        Console.WriteLine($"{HostName}, {Port}, {ServiceName}, {UserName}, {Password}");
     }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
