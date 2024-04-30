@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Oracle.EntityFrameworkCore.Metadata;
 
@@ -10,9 +11,11 @@ using Oracle.EntityFrameworkCore.Metadata;
 namespace project.Migrations
 {
     [DbContext(typeof(RecipesContext))]
-    partial class RecipesContextModelSnapshot : ModelSnapshot
+    [Migration("20240430204832_UpdatedRecipe")]
+    partial class UpdatedRecipe
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -20,43 +23,6 @@ namespace project.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             OracleModelBuilderExtensions.UseIdentityColumns(modelBuilder);
-
-            modelBuilder.Entity("DifficultyRating", b =>
-                {
-                    b.Property<int?>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("NUMBER(10)");
-
-                    OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<int?>("Id"));
-
-                    b.Property<int>("ScaleRating")
-                        .HasColumnType("NUMBER(10)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("RecipeManager_DifficultyRatings");
-                });
-
-            modelBuilder.Entity("Rating", b =>
-                {
-                    b.Property<int?>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("NUMBER(10)");
-
-                    OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<int?>("Id"));
-
-                    b.Property<int>("RecipeId")
-                        .HasColumnType("NUMBER(10)");
-
-                    b.Property<int>("StarRating")
-                        .HasColumnType("NUMBER(10)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("RecipeId");
-
-                    b.ToTable("RecipeManager_Ratings");
-                });
 
             modelBuilder.Entity("RecipeUser", b =>
                 {
@@ -92,7 +58,7 @@ namespace project.Migrations
 
                     b.HasIndex("RecipeId");
 
-                    b.ToTable("RecipeManager_Tags");
+                    b.ToTable("Tag");
                 });
 
             modelBuilder.Entity("recipes.Ingredient", b =>
@@ -222,17 +188,6 @@ namespace project.Migrations
                     b.HasKey("UserId");
 
                     b.ToTable("RecipeManager_Users");
-                });
-
-            modelBuilder.Entity("Rating", b =>
-                {
-                    b.HasOne("recipes.Recipe", "Recipe")
-                        .WithMany()
-                        .HasForeignKey("RecipeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Recipe");
                 });
 
             modelBuilder.Entity("RecipeUser", b =>

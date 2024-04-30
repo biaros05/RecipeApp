@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Oracle.EntityFrameworkCore.Metadata;
 
@@ -10,9 +11,11 @@ using Oracle.EntityFrameworkCore.Metadata;
 namespace project.Migrations
 {
     [DbContext(typeof(RecipesContext))]
-    partial class RecipesContextModelSnapshot : ModelSnapshot
+    [Migration("20240430205312_UpdatedRecipeAttempt2")]
+    partial class UpdatedRecipeAttempt2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -45,15 +48,10 @@ namespace project.Migrations
 
                     OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<int?>("Id"));
 
-                    b.Property<int>("RecipeId")
-                        .HasColumnType("NUMBER(10)");
-
                     b.Property<int>("StarRating")
                         .HasColumnType("NUMBER(10)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("RecipeId");
 
                     b.ToTable("RecipeManager_Ratings");
                 });
@@ -222,17 +220,6 @@ namespace project.Migrations
                     b.HasKey("UserId");
 
                     b.ToTable("RecipeManager_Users");
-                });
-
-            modelBuilder.Entity("Rating", b =>
-                {
-                    b.HasOne("recipes.Recipe", "Recipe")
-                        .WithMany()
-                        .HasForeignKey("RecipeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Recipe");
                 });
 
             modelBuilder.Entity("RecipeUser", b =>

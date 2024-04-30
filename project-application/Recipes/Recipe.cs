@@ -128,7 +128,7 @@ public class Recipe
     public List<Instruction> Instructions { get; } = new();
     // contains the ingredient and its quantity for specified unit 
     public List<MeasuredIngredient> Ingredients { get; set; } = new();
-    private List<double> _ratings = new(); // all the ratings given by users OUT OF FIVE STARS
+    private List<Rating> _ratings = new(); // all the ratings given by users OUT OF FIVE STARS
 
     // property calculates the average rating with rounding by 2 decimals
     public double? Rating
@@ -136,15 +136,15 @@ public class Recipe
         get
         {
             int totalRating = 0;
-            foreach (int r in this._ratings)
+            foreach (Rating r in this._ratings)
             {
-                totalRating += r;
+                totalRating += r.StarRating;
             }
             double rating = totalRating / (double)_ratings.Count;
             return this._ratings.Count != 0 ? Math.Round(rating, 2) : null;
         }
     } // sum of Ratings and get average.
-    private readonly List<int> _difficulties = new(); // all the difficulties given by users OUT OF 10
+    private readonly List<DifficultyRating> _difficulties = new(); // all the difficulties given by users OUT OF 10
 
     // property calculates the average difficulty with rounding by 2 decimals
     public int? DifficultyRating
@@ -152,9 +152,9 @@ public class Recipe
         get
         {
             int difficulty = 0;
-            foreach (int d in this._difficulties)
+            foreach (DifficultyRating d in this._difficulties)
             {
-                difficulty += d;
+                difficulty += d.ScaleRating;
             }
             double averageDiff = difficulty / (double)this._difficulties.Count;
             return this._difficulties.Count != 0 ? (int)Math.Round(averageDiff, 0) : null;
@@ -178,7 +178,7 @@ public class Recipe
         //TODO - possibily check that the user hasn't already given a rating
         using var context = new RecipesContext();
         Recipe retrieveRecipe = context.RecipeManager_Recipes.First(r => r.Id == Id);
-        retrieveRecipe._ratings.Add(rating);
+        retrieveRecipe._ratings.Add(new Rating(rating));
         context.SaveChanges();
     }
 
@@ -194,7 +194,7 @@ public class Recipe
         //TODO - possibily check that the user hasn't already given a rating
         using var context = new RecipesContext();
         Recipe retrieveRecipe = context.RecipeManager_Recipes.First(r => r.Id == Id);
-        retrieveRecipe._difficulties.Add(rating);
+        retrieveRecipe._difficulties.Add(new DifficultyRating(rating));
         context.SaveChanges();
     }
 
