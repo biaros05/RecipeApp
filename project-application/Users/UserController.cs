@@ -15,7 +15,9 @@ public class UserController
     // public void CreateAccount(User newUser){}
     public void CreateAccount(string username, string password, string description)
     {
-        filtering = new(AllUsers);
+        using var context = new RecipesContext();
+        filtering = new(context.RecipeManager_Users.AsQueryable());
+
         User result = filtering.FilterUsers(username);
         if (result != null)
         {
@@ -25,13 +27,14 @@ public class UserController
         {
             
             User user1 = new User(username, password);
-            AllUsers.Add(user1);
+            context.Add(user1);
         }
         else
         {
             User user1 = new User(username, password, description);
-            AllUsers.Add(user1);
+            context.Add(user1);
         }
+        context.SaveChanges();
     }
     // make sure the user exists in the database, and the hashed password matches 
     // the hashed password of the username 
@@ -39,7 +42,8 @@ public class UserController
     // update ActiveUser
     public bool AuthenticateUser(string username, string password)
     {
-        filtering = new(AllUsers);
+        using var context = new RecipesContext();
+        filtering = new(context.RecipeManager_Users.AsQueryable());
         User result = filtering.FilterUsers(username);
         if (result == null)
         {
@@ -59,9 +63,10 @@ public class UserController
         bool result = AuthenticateUser(username, password);
         if (result)
         {
-            filtering = new(AllUsers);
+            using var context = new RecipesContext();
+            filtering = new(context.RecipeManager_Users.AsQueryable());
             User user = filtering.FilterUsers(username);
-            AllUsers.Remove(user);
+            context.Remove(user);
         }
     }
 

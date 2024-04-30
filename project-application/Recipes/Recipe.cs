@@ -8,18 +8,18 @@ using users;
 
 public class Recipe
 {
-    public Recipe(){}
+    public Recipe() { }
     //public List<int> UserFavouriteId {get; set;}
-    public int OwnerId {get; set;}
+    public int OwnerId { get; set; }
 
     //[ForeignKey("UserFavouriteId")]
-    public ICollection<User> UserFavourite {get; set;}
+    public ICollection<User> UserFavourite { get; set; }
 
     [ForeignKey("OwnerId")]
-    public User Owner {get; set;}
+    public User Owner { get; set; }
 
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-    public int Id { get; set;}
+    public int Id { get; set; }
     private string? _name;
 
     // sets the name of the recipe, cannot be null or empty + additional validation for length added
@@ -124,7 +124,7 @@ public class Recipe
         }
     }
 
-    public int NumberOfServings { get; set;}
+    public int NumberOfServings { get; set; }
     public List<Instruction> Instructions { get; } = new();
     // contains the ingredient and its quantity for specified unit 
     public List<MeasuredIngredient> Ingredients { get; set; } = new();
@@ -159,7 +159,7 @@ public class Recipe
             double averageDiff = difficulty / (double)this._difficulties.Count;
             return this._difficulties.Count != 0 ? (int)Math.Round(averageDiff, 0) : null;
         }
-        
+
     }
 
 
@@ -167,26 +167,39 @@ public class Recipe
     public string Budget { get; }
 
     // allows user to add rating with necessary validation
+    //NOTE - doesnt exist
     public void RateRecipe(int rating)
     {
         if (rating < 1 || rating > 5)
         {
             throw new ArgumentOutOfRangeException("Rating must be between 1 and 5 stars");
         }
-        this._ratings.Add(rating);
+
+        //TODO - possibily check that the user hasn't already given a rating
+        using var context = new RecipesContext();
+        Recipe retrieveRecipe = context.RecipeManager_Recipes.First(r => r.Id == Id);
+        retrieveRecipe._ratings.Add(rating);
+        context.SaveChanges();
     }
 
     // allows the user to rate the difficulty of the recipe with necessary validation
+    //NOTE - Doesnt exist
     public void RateDifficulty(int rating)
     {
         if (rating < 1 || rating > 10)
         {
             throw new ArgumentOutOfRangeException("Rating must be between 1 and 10 stars");
         }
-        this._difficulties.Add(rating);
+
+        //TODO - possibily check that the user hasn't already given a rating
+        using var context = new RecipesContext();
+        Recipe retrieveRecipe = context.RecipeManager_Recipes.First(r => r.Id == Id);
+        retrieveRecipe._difficulties.Add(rating);
+        context.SaveChanges();
     }
 
     // this method will add a tag to the list of tags if it does not already exist
+    //NOTE - dead code? never used
     public void AddTag(string tag)
     {
         Tag t = new(tag);
@@ -194,14 +207,18 @@ public class Recipe
         {
             throw new ArgumentException("Your tag must have a value");
         }
-        if (!this.Tags.Contains(t))
-        {
-            this.Tags.Add(t);
-        }
 
+        using var context = new RecipesContext();
+        Recipe retrieveRecipe = context.RecipeManager_Recipes.First(r => r.Id == Id);
+        if (!retrieveRecipe.Tags.Contains(t))
+        {
+            retrieveRecipe.Tags.Add(t);
+        }
+        context.SaveChanges();
     }
 
     // will take all parameters for a recipe and update the necessary fields
+    //NOTE - never used either
     public void UpdateRecipe(
     string description, int preptimeMins, int cooktimeMins,
     List<MeasuredIngredient> ingredients, List<Tag> tags)
@@ -216,12 +233,14 @@ public class Recipe
             throw new ArgumentOutOfRangeException("Cook time cannot be less than 0 or greater than 4 hours");
         }
 
-        this.Description = description;
-        this.PrepTimeMins = preptimeMins;
-        this.CookTimeMins = cooktimeMins;
+        using var context = new RecipesContext();
+        Recipe retrieveRecipe = context.RecipeManager_Recipes.First(r => r.Id == Id);
+        retrieveRecipe.Description = description;
+        retrieveRecipe.PrepTimeMins = preptimeMins;
+        retrieveRecipe.CookTimeMins = cooktimeMins;
         UpdateIngredients(ingredients);
-        this.Tags = tags;
-
+        retrieveRecipe.Tags = tags;
+        context.SaveChanges();
     }
 
     // helper method that updates the list of ingredients in the recipe and also updates them in 
@@ -236,7 +255,6 @@ public class Recipe
             i.Ingredient = ingredient!;
             newIngredients.Add(i);
         }
-
         this.Ingredients = newIngredients;
     }
 
