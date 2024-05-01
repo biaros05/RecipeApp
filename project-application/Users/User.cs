@@ -20,7 +20,6 @@ public class User
     [InverseProperty("Owner")]
     public List<Recipe> UserCreatedRecipies { get; set; }
 
-    //[InverseProperty("UserFavourite")]
     public ICollection<Recipe> UserFavoriteRecipies { get; set; }
     private string username;
     public string Username
@@ -106,74 +105,119 @@ public class User
 
     public void UpdateUsername(string newUsername)
     {
+        using var context= new RecipesContext();
+
+        User user= context.RecipeManager_Users
+                    .Where(u=>u.username==newUsername)
+                    .First();
+
         if (newUsername.Length < 5 || newUsername.Length > 25 || newUsername == null)
         {
             throw new Exception("username doesnt meet requirements");
         }
-        Username = newUsername;
+
+        user.Username = newUsername;
+        context.SaveChanges();
     }
 
     public void UpdatePassword(string newPass)
     {
+        using var context= new RecipesContext();
+
         if (newPass.Length < 5 || newPass.Length > 50)
         {
             throw new Exception("password doesnt meet requirements");
         }
+        User user= context.RecipeManager_Users
+                    .Where(u=>u.username==this.Username)
+                    .First();
 
-        this.HashPass=Password.HashPassword(this.Salt,newPass);    
+        user.HashPass=Password.HashPassword(this.Salt,newPass);
+        context.SaveChanges();
     }
     public void UpdateFields(string newDescription, byte[] newImage)
     {
-        this.Description = newDescription;
-        this.Image = newImage;
+        using var context= new RecipesContext();
+        User user= context.RecipeManager_Users
+                    .Where(u=>u.username==this.Username)
+                    .First();
+
+        user.Description = newDescription;
+        user.Image = newImage;
+        context.SaveChanges();
     }
 
     // removes profile picture provided one exists
     public void RemoveProfilePicture()
     {
-        if (Image == null)
+        using var context= new RecipesContext();
+        User user= context.RecipeManager_Users
+                    .Where(u=>u.username==this.Username)
+                    .First();
+
+        if (user.Image == null)
         {
             throw new Exception("no picture to remove");
         }
-        this.Image = null;
+        user.Image = null;
+        context.SaveChanges();
     }
 
     // removes description provided one exists
     public void RemoveDescription()
     {
+        using var context= new RecipesContext();
+        User user= context.RecipeManager_Users
+                    .Where(u=>u.username==this.Username)
+                    .First();
+
         if (Description == null)
         {
             throw new Exception("no description to remove");
         }
-        this.Description = null;
+        
+        user.Description = null;
+        context.SaveChanges();
     }
 
     // take recipe, retrieve the list of recipes for user, add that recipe, send back to data layer
     public void AddToFavourites(Recipe recipe)
     {
+        using var context= new RecipesContext();
+        User user= context.RecipeManager_Users
+                    .Where(u=>u.username==this.Username)
+                    .First();
+
         if (recipe == null)
         {
             throw new ArgumentNullException("Recipe cannot be null");
         }
-        if (this.UserFavoriteRecipies.Contains(recipe))
+        if (user.UserFavoriteRecipies.Contains(recipe))
         {
             throw new ArgumentException("This recipe has already been added to favourites");
         }
-        UserFavoriteRecipies.Add(recipe);
+        user.UserFavoriteRecipies.Add(recipe);
+        context.SaveChanges();
     }
 
     // take recipe, retrieve the list of recipes for user, remove that recipe, send back to data layer
     public void RemoveFromFavourites(Recipe recipe)
     {
+        using var context= new RecipesContext();
+        User user= context.RecipeManager_Users
+                    .Where(u=>u.username==this.Username)
+                    .First();
+        
         if (recipe == null)
         {
             throw new ArgumentNullException("Recipe cannot be null");
         }
-        if (!this.UserFavoriteRecipies.Contains(recipe))
+        if (!user.UserFavoriteRecipies.Contains(recipe))
         {
             throw new ArgumentException("This recipe was never added to your favourites");
         }
-        UserFavoriteRecipies.Remove(recipe);
+        user.UserFavoriteRecipies.Remove(recipe);
+        context.SaveChanges();
     }
 
     public override string ToString()
