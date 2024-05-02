@@ -12,9 +12,9 @@ public class FilterByTags : IFilterBy
         Tags = tags;
     }
     private List<Tag> Tags;
-    public void FilterRecipes(IQueryable<Recipe> recipes)
+    public IQueryable<Recipe> FilterRecipes(IQueryable<Recipe> recipes)
     {
-        recipes
+        return recipes
             .Where(recipe => recipe.Tags.Intersect(Tags).Any());
     }
 

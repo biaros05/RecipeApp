@@ -16,9 +16,9 @@ public class FilterByRating : IFilterBy
     /// </summary>
     /// <param name="recipes">A given list of recipes to filter</param>
     /// <returns>A filtered list of recipes that matches the given star rating</returns>
-    public void FilterRecipes(IQueryable<Recipe> recipes)
+    public IQueryable<Recipe> FilterRecipes(IQueryable<Recipe> recipes)
     {
-        recipes
+        return recipes
             .Where(recipe => recipe.Rating >= Rating);
     }
 
