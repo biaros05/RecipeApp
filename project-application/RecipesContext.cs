@@ -7,7 +7,7 @@ public class RecipesContext : DbContext
     public virtual DbSet<Recipe> RecipeManager_Recipes {get; set;}
     public virtual DbSet<User> RecipeManager_Users {get; set;}
     public virtual DbSet<Ingredient> RecipeManager_Ingredients {get; set;}
-    
+    public virtual DbSet<Tag> RecipeManager_Tags {get; set;}
     public virtual DbSet<Instruction> RecipeManager_Instructions {get; set;}
     public virtual DbSet<MeasuredIngredient> RecipeManager_MeasuredIngredients {get; set;}
     public string HostName { get; set; }
@@ -20,7 +20,7 @@ public class RecipesContext : DbContext
 
     public string Password { get; set; }
 
-    private static RecipesContext? _instance;
+    private static RecipesContext? _instance {get; set;}
 
 
     public static RecipesContext Instance
@@ -32,6 +32,10 @@ public class RecipesContext : DbContext
                 _instance = new RecipesContext();
             }
             return _instance;
+        }
+        set
+        {
+            _instance = value;
         }
     }
 

@@ -33,7 +33,8 @@ public class RecipeController
     // will add the recipe to the list of all recipes
     public void CreateRecipe(Recipe recipe)
     {
-        List<Recipe> retrieveRecipes = RecipesContext.Instance.RecipeManager_Recipes.ToList<Recipe>();
+        var context = RecipesContext.Instance;
+        List<Recipe> retrieveRecipes = context.RecipeManager_Recipes.ToList<Recipe>();
         if (retrieveRecipes.Contains(recipe))
         {
             throw new ArgumentException("this recipe and name already exist in the database!");
@@ -43,15 +44,15 @@ public class RecipeController
         {
             throw new ArgumentException("You cannot create a recipe that you are not the owner of");
         }
-        RecipesContext.Instance.RecipeManager_Recipes.Add(recipe);
-        RecipesContext.Instance.SaveChanges();
+        context.RecipeManager_Recipes.Add(recipe);
+        context.SaveChanges();
 
     }
 
     // adds an ingredient to the list of ingredients available for selection
     public void AddIngredient(Ingredient ingredient)
     {
-        using var context = new RecipesContext();
+        var context = RecipesContext.Instance;
         List<Ingredient> retrieveIngredients = RecipesContext.Instance.RecipeManager_Ingredients.ToList<Ingredient>();
         if (!retrieveIngredients.Contains(ingredient))
         {
@@ -63,7 +64,7 @@ public class RecipeController
     // get list of recipes, and remove particular recipe. only allows owner to remove recipe
     public static void DeleteRecipe(Recipe recipe)
     {
-        using var context = new RecipesContext();
+        var context = RecipesContext.Instance;
         List<Recipe> retrieveRecipes = context.RecipeManager_Recipes.ToList<Recipe>();
         if (!retrieveRecipes.Contains(recipe))
         {
@@ -82,11 +83,11 @@ public class RecipeController
     // filters all recipes using the filters in the list **********
     public List<Recipe> FilterBy()
     {
-        using var context = new RecipesContext();
+        var context = RecipesContext.Instance;
         var recipeQuery = context.RecipeManager_Recipes.AsQueryable();
         foreach (IFilterBy filter in Filters)
         {
-            filter.FilterRecipes(recipeQuery);
+            recipeQuery = filter.FilterRecipes(recipeQuery);
         }
         return recipeQuery.ToList<Recipe>();
     }

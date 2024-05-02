@@ -19,10 +19,11 @@ public class FilterByTime : IFilterBy
     /// </summary>
     /// <param name="recipes">A given list of recipes to filter</param>
     /// <returns>returns a filtered list of recipes that are above the min time and under the max time</returns>
-    public void FilterRecipes(IQueryable<Recipe> recipes)
+    public IQueryable<Recipe>? FilterRecipes(IQueryable<Recipe> recipes)
     {
         var filteredRecipes = recipes
             .Where(recipe => (recipe.CookTimeMins + recipe.PrepTimeMins) >= MinTimeMins && (recipe.CookTimeMins + recipe.PrepTimeMins) <= MaxTimeMins);
+        return filteredRecipes;
     }
 
     public override string ToString()

@@ -3,6 +3,7 @@ namespace users;
 using filtering;
 using System.Net;
 using recipes;
+
 public class UserController
 {
     // currently logged on user
@@ -15,7 +16,9 @@ public class UserController
     // public void CreateAccount(User newUser){}
     public void CreateAccount(string username, string password, string description)
     {
-        filtering = new(AllUsers);
+        var context = RecipesContext.Instance;
+        var userQuery = context.RecipeManager_Users.AsQueryable();
+        filtering = new(userQuery);
         User result = filtering.FilterUsers(username);
         if (result != null)
         {
@@ -39,7 +42,9 @@ public class UserController
     // update ActiveUser
     public bool AuthenticateUser(string username, string password)
     {
-        filtering = new(AllUsers);
+        var context = RecipesContext.Instance;
+        var userQuery = context.RecipeManager_Users.AsQueryable();
+        filtering = new(userQuery);
         User result = filtering.FilterUsers(username);
         if (result == null)
         {
@@ -56,10 +61,12 @@ public class UserController
     // retrieve list of users from db, remove active user from list, sned back new list to data layer
     public void DeleteAccount(string username, string password)
     {
+        var context = RecipesContext.Instance;
+        var userQuery = context.RecipeManager_Users.AsQueryable();
         bool result = AuthenticateUser(username, password);
         if (result)
         {
-            filtering = new(AllUsers);
+            filtering = new(userQuery);
             User user = filtering.FilterUsers(username);
             AllUsers.Remove(user);
         }

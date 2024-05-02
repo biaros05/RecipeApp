@@ -3,5 +3,5 @@ using recipes;
 public interface IFilterBy
 {
     // returns sublist of recipes that match filter
-    void FilterRecipes(IQueryable<Recipe> recipes);
+    IQueryable<Recipe> FilterRecipes(IQueryable<Recipe> recipes);
 }

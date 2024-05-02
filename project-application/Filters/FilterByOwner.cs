@@ -14,9 +14,9 @@ public class FilterByOwner : IFilterBy
     /// </summary>
     /// <param name="recipes">A given list of recipes to filter</param>
     /// <returns>Returns a filtered list of recipes if the given user Owns that recipe</returns>
-    public void FilterRecipes(IQueryable<Recipe> recipes)
+    public IQueryable<Recipe> FilterRecipes(IQueryable<Recipe> recipes)
     {
-        recipes
+        return recipes
             .Where(recipe => recipe.Owner.Equals(Owner));
     }
 
