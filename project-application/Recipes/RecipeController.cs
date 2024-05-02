@@ -28,6 +28,10 @@ public class RecipeController
             }
             return _instance;
         }
+        set
+        {
+            _instance = value;
+        }
     }
 
     // will add the recipe to the list of all recipes
