@@ -15,8 +15,7 @@ public class UserController
     // public void CreateAccount(User newUser){}
     public void CreateAccount(string username, string password, string description)
     {
-        using var context = new RecipesContext();
-        filtering = new(context.RecipeManager_Users.AsQueryable());
+        filtering = new(RecipesContext.Instance.RecipeManager_Users.AsQueryable());
 
         User result = filtering.FilterUsers(username);
         if (result != null)
@@ -27,14 +26,14 @@ public class UserController
         {
             
             User user1 = new User(username, password);
-            context.Add(user1);
+            RecipesContext.Instance.Add(user1);
         }
         else
         {
             User user1 = new User(username, password, description);
-            context.Add(user1);
+            RecipesContext.Instance.Add(user1);
         }
-        context.SaveChanges();
+        RecipesContext.Instance.SaveChanges();
     }
     // make sure the user exists in the database, and the hashed password matches 
     // the hashed password of the username 
@@ -42,7 +41,7 @@ public class UserController
     // update ActiveUser
     public bool AuthenticateUser(string username, string password)
     {
-        using var context = new RecipesContext();
+        var context = RecipesContext.Instance;
         filtering = new(context.RecipeManager_Users.AsQueryable());
         User result = filtering.FilterUsers(username);
         if (result == null)
@@ -58,15 +57,17 @@ public class UserController
     }
 
     // retrieve list of users from db, remove active user from list, sned back new list to data layer
+    //FIXME - need to use fluent API to on cascade delete
     public void DeleteAccount(string username, string password)
     {
         bool result = AuthenticateUser(username, password);
         if (result)
         {
-            using var context = new RecipesContext();
+            var context = RecipesContext.Instance;
             filtering = new(context.RecipeManager_Users.AsQueryable());
             User user = filtering.FilterUsers(username);
             context.Remove(user);
+            context.SaveChanges();
         }
     }
 

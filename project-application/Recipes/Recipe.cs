@@ -168,7 +168,7 @@ public class Recipe
 
     // allows user to add rating with necessary validation
     //NOTE - doesnt exist
-    public void RateRecipe(int rating)
+    public void RateRecipe(int rating, User owner)
     {
         if (rating < 1 || rating > 5)
         {
@@ -176,15 +176,16 @@ public class Recipe
         }
 
         //TODO - possibily check that the user hasn't already given a rating
-        using var context = new RecipesContext();
+        var context = RecipesContext.Instance;  
         Recipe retrieveRecipe = context.RecipeManager_Recipes.First(r => r.Id == Id);
-        retrieveRecipe._ratings.Add(new Rating(rating));
+        retrieveRecipe._ratings.Add(new Rating(rating, owner));
+        context.RecipeManager_Ratings.Add(new Rating(rating, owner));
         context.SaveChanges();
     }
 
     // allows the user to rate the difficulty of the recipe with necessary validation
     //NOTE - Doesnt exist
-    public void RateDifficulty(int rating)
+    public void RateDifficulty(int rating, User owner)
     {
         if (rating < 1 || rating > 10)
         {
@@ -192,9 +193,10 @@ public class Recipe
         }
 
         //TODO - possibily check that the user hasn't already given a rating
-        using var context = new RecipesContext();
+        var context = RecipesContext.Instance;
         Recipe retrieveRecipe = context.RecipeManager_Recipes.First(r => r.Id == Id);
-        retrieveRecipe._difficulties.Add(new DifficultyRating(rating));
+        retrieveRecipe._difficulties.Add(new DifficultyRating(rating, owner));
+        context.RecipeManager_DifficultyRatings.Add(new DifficultyRating(rating, owner));
         context.SaveChanges();
     }
 
@@ -208,8 +210,9 @@ public class Recipe
             throw new ArgumentException("Your tag must have a value");
         }
 
-        using var context = new RecipesContext();
+        var context = RecipesContext.Instance;
         Recipe retrieveRecipe = context.RecipeManager_Recipes.First(r => r.Id == Id);
+        //FIXME - cant get tags
         if (!retrieveRecipe.Tags.Contains(t))
         {
             retrieveRecipe.Tags.Add(t);
@@ -233,7 +236,7 @@ public class Recipe
             throw new ArgumentOutOfRangeException("Cook time cannot be less than 0 or greater than 4 hours");
         }
 
-        using var context = new RecipesContext();
+        var context = RecipesContext.Instance;
         Recipe retrieveRecipe = context.RecipeManager_Recipes.First(r => r.Id == Id);
         retrieveRecipe.Description = description;
         retrieveRecipe.PrepTimeMins = preptimeMins;
@@ -247,6 +250,7 @@ public class Recipe
     // the system if they do not already exist
     private void UpdateIngredients(List<MeasuredIngredient> ingredients)
     {
+
         List<MeasuredIngredient> newIngredients = new();
         foreach (MeasuredIngredient i in ingredients)
         {
@@ -255,7 +259,9 @@ public class Recipe
             i.Ingredient = ingredient!;
             newIngredients.Add(i);
         }
+
         this.Ingredients = newIngredients;
+
     }
 
     // overriding the equals to check either ID or name + owner
@@ -293,7 +299,7 @@ public class Recipe
         }
 
         this.Instructions = instructions;
-        UpdateIngredients(ingredients);
+        this.Ingredients = ingredients;
         this.Tags = tags;
 
         if (budget < 1 || budget > 3)

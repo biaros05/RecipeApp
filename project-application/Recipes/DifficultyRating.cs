@@ -1,10 +1,14 @@
+using users;
+
 public class DifficultyRating
 {
     public int? Id {get; set;}
     public int ScaleRating {get; set;}
-    public DifficultyRating(int rating)
+    public User Owner {get; set;}
+    public DifficultyRating(int rating, User owner)
     {
         ScaleRating = rating;
+        Owner = owner;
     }
     public override bool Equals(object? obj)
     {

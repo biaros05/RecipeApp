@@ -529,8 +529,9 @@ public class Program
 
         Console.WriteLine("what would you like to rate this recipe out of 5?");
         int rating = Convert.ToInt32(Console.ReadLine());
-        recipe.RateRecipe(rating);
-
+        recipe.RateRecipe(rating, UserController.Instance.ActiveUser);
+        recipe.RateDifficulty(rating, UserController.Instance.ActiveUser);
+        recipe.AddTag("something");
         Console.WriteLine("the recipe rating has been updated");
         Console.WriteLine(recipe);
 
@@ -615,14 +616,19 @@ public class Program
     {
         var program = new Program();
         LoginOrRegister();
+        UserController.Instance.DeleteAccount("test user", "test user");
 
-        Ingredient i = new("egg", Units.Quantity);
-        Ingredient b = new("meat", Units.Mass);
-        Ingredient c = new("food", Units.Mass);
-        List<MeasuredIngredient> dict = new()
-        {
-            new(b, 30 )
-        };
+        // Ingredient i = new("egg", Units.Quantity);
+        // Ingredient b = new("meat", Units.Mass);
+        // Ingredient c = new("food", Units.Mass);
+        // List<MeasuredIngredient> dict = new()
+        // {
+        //     new(b, 30 )
+        // };
+        // Recipe recipe = new("Test Recipe", UserController.Instance.ActiveUser, "Test Description", 120, 60, 10,
+        //     new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict, new List<Tag> { new("Tag1"), new("Tag2") }, 2);
+        // RecipeController.Instance.CreateRecipe(recipe);
+
         // List<MeasuredIngredient> dict2 = new()
         // {
         //     new( i, 20 ),
@@ -635,19 +641,17 @@ public class Program
         //     new( b, 30 )
         // };
 
-        Recipe recipe = new("Test Recipe", UserController.Instance.ActiveUser, "Test Description", 120, 60, 10,
-            new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict, new List<Tag> { new("Tag1"), new("Tag2") }, 2);
+        
         // Recipe recipe2 = new("TEST RECIPE2 meat", UserController.Instance.ActiveUser, "Test Description", 30, 60, 4,
         //     new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict2, new List<Tag> { new("Tag3"), new("Tag2") }, 2);
         // Recipe recipe3 = new("GRRRRRRR meat", UserController.Instance.ActiveUser, "Test Description", 30, 60, 4,
         //     new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict3, new List<Tag> { new("Tag3"), new("Tag2") }, 2);
 
 
-
-        RecipeController.Instance.CreateRecipe(recipe);
+        
         // RecipeController.Instance.CreateRecipe(recipe2);
         // RecipeController.Instance.CreateRecipe(recipe3);
-
+        
         while (true)
         {
             MainMenuOption? chosenOption = ConsoleUtils.GetUserChoice(
