@@ -88,7 +88,7 @@ public class RecipeController
     public List<Recipe> FilterBy()
     {
         var context = RecipesContext.Instance;
-        var recipeQuery = context.RecipeManager_Recipes.AsQueryable();
+        IQueryable<Recipe> recipeQuery = context.RecipeManager_Recipes;
         foreach (IFilterBy filter in Filters)
         {
             recipeQuery = filter.FilterRecipes(recipeQuery);
