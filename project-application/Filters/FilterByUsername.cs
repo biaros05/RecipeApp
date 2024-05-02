@@ -3,8 +3,8 @@ using users;
 // this class will filter by username
 public class FilterByUsername
 {
-    private readonly List<User> Users;
-    public FilterByUsername(List<User> users)
+    private readonly IQueryable<User> Users;
+    public FilterByUsername(IQueryable<User> users)
     {
         if (users == null)
         {

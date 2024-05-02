@@ -5,48 +5,87 @@ using System.Runtime.InteropServices;
 using System.Threading.Tasks.Dataflow;
 using recipes;
 using users;
+using Moq;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 
 [TestClass]
 public class RecipeControllerTests
 {
-    // [TestMethod]
-    // public void FilterBy_MultipleFilters_FiltersCorrectly()
-    // {
-    //     //creating test data
-    //     UserController.ActiveUser = new User("Bianca", "Rossetti");
-    //     Ingredient a = new("Apple", Units.Quantity);
-    //     Ingredient b = new("Sugar", Units.Mass);
-    //     Dictionary<Ingredient, double> dict = new()
-    //         {
-    //             { a, 20 },
-    //         };
-    //     Dictionary<Ingredient, double> dict2 = new()
-    //         {
-    //             { b, 20 },
-    //         };
+    [TestCleanup()]
+    public void Cleanup()
+    {
+        RecipesContext.Instance = null;
+        RecipeController.Instance = null;
+    }
 
-    //     //creating expected data
-    //     List<Recipe> expected = new()
-    //         {
-    //             new("Test Recipe", UserController.ActiveUser, "Test Description", 30, 60, 4,
-    //             new List<string> { "Step 1", "Step 2" }, dict, new List<string> { "Tag1", "Tag2" }, 2),
-    //         };
-    //     expected[0].Id = 1;
-    //     IFilterBy filter = new FilterByServings(3, 6);
-    //     IFilterBy filter2 = new FilterByKeyword("Test");
-    //     RecipeController.Instance.AddFilter(filter);
-    //     RecipeController.Instance.AddFilter(filter2);
-    //     RecipeController.Instance.CreateRecipe(new("Test Recipe", UserController.ActiveUser, "Test Description", 30, 60, 4,
-    //         new List<string> { "Step 1", "Step 2" }, dict, new List<string> { "Tag1", "Tag2" }, 2));
-    //     RecipeController.Instance.AllRecipes[0].Id = 1;
-    //     RecipeController.Instance.CreateRecipe(new("Recipe need 10 characters", UserController.ActiveUser, "Description", 30, 60, 5,
-    //         new List<string> { "Step 1", "Step 2" }, dict2, new List<string> { "Tag1", "Tag2" }, 2));
-    //     RecipeController.Instance.AllRecipes[1].Id = 2;
+    private static void ConfigureDbSetMock<T>(
+    IQueryable<T> data, Mock<DbSet<T>> mockDbSet) where T : class
+    {
+        mockDbSet.As<IQueryable<T>>().Setup(mock => mock.Provider)
+        .Returns(data.Provider);
+        mockDbSet.As<IQueryable<T>>().Setup(mock => mock.Expression)
+        .Returns(data.Expression);
+        mockDbSet.As<IQueryable<T>>().Setup(mock => mock.ElementType)
+        .Returns(data.ElementType);
+        mockDbSet.As<IQueryable<T>>().Setup(mock => mock.GetEnumerator())
+        .Returns(data.GetEnumerator());
+    }
 
-    //     List<Recipe> filteredRecipes = RecipeController.Instance.FilterBy();
+    [TestMethod]
+    public void FilterBy_MultipleFilters_FiltersCorrectly()
+    {
+        var mockContext = new Mock<RecipesContext>();
 
-    //     CollectionAssert.AreEqual(expected, filteredRecipes);
-    // }
+        // basic setup
+        var mockSetRecipe = new Mock<DbSet<Recipe>>();
+        mockContext.Setup(m => m.RecipeManager_Recipes).Returns(mockSetRecipe.Object);
+        var mockSetIngredient = new Mock<DbSet<Ingredient>>();
+        mockContext.Setup(m => m.RecipeManager_Ingredients).Returns(mockSetIngredient.Object);
+
+        //creating test data
+        UserController.Instance.ActiveUser = new User("Bianca", "Rossetti");
+        Ingredient a = new("Apple", Units.Quantity);
+        Ingredient b = new("Sugar", Units.Mass);
+        List<MeasuredIngredient> dict = new()
+            {
+                new ( a, 20 )
+            };
+        List<MeasuredIngredient> dict2 = new()
+            {
+                new ( b, 20 )
+            };
+
+        //creating expected data
+        List<Recipe> expected = new()
+            {
+                new("Test Recipe", UserController.Instance.ActiveUser, "Test Description", 30, 60, 4,
+                new List<Instruction> { new(1, "Step 1"), new(2,"Step 2") }, dict, new List<Tag> { new("Tag1"), new("Tag2") }, 2),
+            };
+        
+        expected[0].Id = 1;
+        IFilterBy filter = new FilterByServings(3, 6);
+        IFilterBy filter2 = new FilterByKeyword("Test");
+        RecipeController.Instance.AddFilter(filter);
+        RecipeController.Instance.AddFilter(filter2);
+        RecipeController.Instance.CreateRecipe(new("Test Recipe", UserController.Instance.ActiveUser, "Test Description", 30, 60, 4,
+            new List<Instruction> { new(1, "Step 1"), new(2,"Step 2") }, dict, new List<Tag> { new("Tag1"), new("Tag2") }, 2));
+        RecipeController.Instance.CreateRecipe(new("Recipe need 10 characters", UserController.Instance.ActiveUser, "Description", 30, 60, 5,
+            new List<Instruction> { new(1, "Step 1"), new(2,"Step 2") }, dict2, new List<Tag> { new("Tag1"), new("Tag2") }, 2));
+
+        var data = RecipesContext.Instance.RecipeManager_Recipes.AsQueryable();
+        ConfigureDbSetMock<Recipe>(data, mockSetRecipe);
+        var ingredientsData = RecipesContext.Instance.RecipeManager_Recipes.SelectMany(recipe => recipe.Ingredients.Select(mi => mi.Ingredient)).Distinct().AsQueryable();
+        ConfigureDbSetMock<Ingredient>(ingredientsData, mockSetIngredient);
+
+        //finalize context
+        RecipesContext.Instance = mockContext.Object;
+        var service = RecipesContext.Instance;
+
+        List<Recipe> filteredRecipes = RecipeController.Instance.FilterBy();
+
+        CollectionAssert.AreEqual(expected, filteredRecipes);
+    }
     // cleanup static members after every test
 
     // TESTS FOR CREATERECIPE
