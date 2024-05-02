@@ -1,12 +1,36 @@
 namespace project_application_test;
 using users;
 using recipes;
+using Moq;
+using Microsoft.EntityFrameworkCore;
+using System.Diagnostics.Eventing.Reader;
 
 [TestClass]
 public class UsersTests
 {
-    // ANTHONY -------------------------------
-    // test the creation of EVERY FIELD.
+    private static (Mock<RecipesContext>, Mock<DbSet<User>>) GetMocks()
+    {
+    var mockContext = new Mock<RecipesContext>();
+    var mockUsers = new Mock<DbSet<User>>();
+    mockContext.Setup(mock => mock.RecipeManager_Users).Returns(mockUsers.Object);
+
+    return (mockContext, mockUsers);
+    }
+
+    private static void ConfigureDbSetMock<T>(
+    IQueryable<T> data, Mock<DbSet<T>> mockDbSet) where T : class
+    {
+    mockDbSet.As<IQueryable<T>>().Setup(mock => mock.Provider)
+      .Returns(data.Provider);
+    mockDbSet.As<IQueryable<T>>().Setup(mock => mock.Expression)
+      .Returns(data.Expression);
+    mockDbSet.As<IQueryable<T>>().Setup(mock => mock.ElementType)
+      .Returns(data.ElementType);
+    mockDbSet.As<IQueryable<T>>().Setup(mock => mock.GetEnumerator())
+      .Returns(data.GetEnumerator());
+    }
+
+
     [TestMethod]
     public void User_Test_Username()
     {
@@ -14,10 +38,9 @@ public class UsersTests
         string username = "testing";
         string passwrd = "password";
         string description = "description";
-        
+        User user1 = new(username,passwrd, description);
 
         //Act
-        User user1 = new(username,passwrd, description);
         //Assert
         Assert.AreEqual("testing", user1.Username);
     }
@@ -84,6 +107,8 @@ public class UsersTests
     public void User_Test_Description()
     {
         //Arrange
+
+
         string username = "testing";
         string passwrd = "password";
         string description = "description";
@@ -91,6 +116,10 @@ public class UsersTests
 
         //Act
         User user1 = new(username,passwrd, description);
+        // List<User> users = new List<User>();
+        // users.Add(user1);
+        // var userData = users.AsQueryable();
+
         //Assert
         Assert.AreEqual("description", user1.Description);
     }
@@ -129,11 +158,19 @@ public class UsersTests
     public void User_Tests_UpdateUsername()
     {
         //Arrange
+
         string username = "testing";
         string passwrd = "password";
         string description = "description";
         
         string newUsername = "updatedUser";
+
+        var mockContext=new Mock<RecipesContext>();
+        var mockUser= new Mock<DbSet<User>>();
+        mockContext.Setup(mock => mock.RecipeManager_Users).Returns(mockUser.Object);
+        RecipesContext.Instance= mockContext.Object;
+        var service=RecipesContext.Instance;
+        service.
         //Act
         User user1 = new(username,passwrd, description);
         user1.UpdateUsername(newUsername);

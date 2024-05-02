@@ -105,10 +105,17 @@ public class User
 
     public void UpdateUsername(string newUsername)
     {
-        using var context= new RecipesContext();
+        var context= RecipesContext.Instance;
 
         User user= context.RecipeManager_Users
                     .Where(u=>u.username==newUsername)
+                    .First();
+        if (user != null)
+        {
+            throw new Exception("this username is already taken");
+        }
+        user= context.RecipeManager_Users
+                    .Where(u=>u.username==this.Username)
                     .First();
 
         if (newUsername.Length < 5 || newUsername.Length > 25 || newUsername == null)
@@ -122,7 +129,7 @@ public class User
 
     public void UpdatePassword(string newPass)
     {
-        using var context= new RecipesContext();
+        var context= RecipesContext.Instance;
 
         if (newPass.Length < 5 || newPass.Length > 50)
         {
@@ -137,7 +144,7 @@ public class User
     }
     public void UpdateFields(string newDescription, byte[] newImage)
     {
-        using var context= new RecipesContext();
+        var context= RecipesContext.Instance;
         User user= context.RecipeManager_Users
                     .Where(u=>u.username==this.Username)
                     .First();
@@ -150,7 +157,7 @@ public class User
     // removes profile picture provided one exists
     public void RemoveProfilePicture()
     {
-        using var context= new RecipesContext();
+        var context= RecipesContext.Instance;
         User user= context.RecipeManager_Users
                     .Where(u=>u.username==this.Username)
                     .First();
@@ -166,7 +173,7 @@ public class User
     // removes description provided one exists
     public void RemoveDescription()
     {
-        using var context= new RecipesContext();
+        var context= RecipesContext.Instance;
         User user= context.RecipeManager_Users
                     .Where(u=>u.username==this.Username)
                     .First();
@@ -183,7 +190,7 @@ public class User
     // take recipe, retrieve the list of recipes for user, add that recipe, send back to data layer
     public void AddToFavourites(Recipe recipe)
     {
-        using var context= new RecipesContext();
+        var context= RecipesContext.Instance;
         User user= context.RecipeManager_Users
                     .Where(u=>u.username==this.Username)
                     .First();
@@ -197,13 +204,14 @@ public class User
             throw new ArgumentException("This recipe has already been added to favourites");
         }
         user.UserFavoriteRecipies.Add(recipe);
+        // context.Update(user);
         context.SaveChanges();
     }
 
     // take recipe, retrieve the list of recipes for user, remove that recipe, send back to data layer
     public void RemoveFromFavourites(Recipe recipe)
     {
-        using var context= new RecipesContext();
+        var context= RecipesContext.Instance;
         User user= context.RecipeManager_Users
                     .Where(u=>u.username==this.Username)
                     .First();
