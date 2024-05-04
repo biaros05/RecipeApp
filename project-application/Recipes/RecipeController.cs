@@ -35,7 +35,7 @@ public class RecipeController
     }
 
     // will add the recipe to the list of all recipes
-    public void CreateRecipe(Recipe recipe)
+    public static void CreateRecipe(Recipe recipe)
     {
         var context = RecipesContext.Instance;
         List<Recipe> retrieveRecipes = context.RecipeManager_Recipes.ToList<Recipe>();
@@ -54,10 +54,10 @@ public class RecipeController
     }
 
     // adds an ingredient to the list of ingredients available for selection
-    public void AddIngredient(Ingredient ingredient)
+    public static void AddIngredient(Ingredient ingredient)
     {
         var context = RecipesContext.Instance;
-        List<Ingredient> retrieveIngredients = RecipesContext.Instance.RecipeManager_Ingredients.ToList<Ingredient>();
+        List<Ingredient> retrieveIngredients = context.RecipeManager_Ingredients.ToList<Ingredient>();
         if (!retrieveIngredients.Contains(ingredient))
         {
             context.RecipeManager_Ingredients.Add(ingredient);
@@ -68,19 +68,20 @@ public class RecipeController
     // get list of recipes, and remove particular recipe. only allows owner to remove recipe
     public static void DeleteRecipe(Recipe recipe)
     {
-        var context = RecipesContext.Instance;
-        List<Recipe> retrieveRecipes = context.RecipeManager_Recipes.ToList<Recipe>();
-        if (!retrieveRecipes.Contains(recipe))
+
+        IQueryable<Recipe> retrieveRecipes = RecipesContext.Instance.RecipeManager_Recipes;
+        Recipe? toRemove = retrieveRecipes.FirstOrDefault(r => r.Name.Equals(recipe.Name) && r.Owner.Equals(recipe.Owner));
+        if (toRemove == null)
         {
             throw new ArgumentException("This recipe does not exist in the database");
         }
-        if (!recipe.Owner.Equals(UserController.Instance.ActiveUser))
+        if (!toRemove.Owner.Equals(UserController.Instance.ActiveUser))
         {
             throw new ArgumentException("Cannot delete the recipe you arent an owner of");
         }
 
-        context.Remove(recipe);
-        context.SaveChanges();
+        RecipesContext.Instance.Remove(toRemove);
+        RecipesContext.Instance.SaveChanges();
     }
 
 

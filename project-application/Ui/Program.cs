@@ -222,7 +222,7 @@ public class Program
         int budget = ValidateInt();
         Recipe newRecipe = new Recipe(name, owner, description, prepTimeMins, cookTimeMins, numberOfServings, instructions, ingredients, tags, budget);
 
-        RecipeController.Instance.CreateRecipe(newRecipe);
+        RecipeController.CreateRecipe(newRecipe);
     }
 
     private static void PrintRecipes()
@@ -614,6 +614,7 @@ public class Program
     public static void Main()
     {
         //LoginOrRegister();
+        UserController.Instance.ActiveUser = new User("Bianca", "Rossettiiiii");
 
         Ingredient i = new("egg", Units.Quantity);
         Ingredient b = new("meat", Units.Mass);
@@ -634,18 +635,20 @@ public class Program
             new( b, 30 )
         };
 
-        // Recipe recipe = new("Test Recipe", UserController.Instance.ActiveUser, "Test Description", 120, 60, 10,
-        //     new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict, new List<Tag> { new("Tag1"), new("Tag2") }, 2);
-        // Recipe recipe2 = new("TEST RECIPE2 meat", UserController.Instance.ActiveUser, "Test Description", 30, 60, 4,
-        //     new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict2, new List<Tag> { new("Tag3"), new("Tag2") }, 2);
-        // Recipe recipe3 = new("GRRRRRRR meat", UserController.Instance.ActiveUser, "Test Description", 30, 60, 4,
-        //     new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict3, new List<Tag> { new("Tag3"), new("Tag2") }, 2);
+        Recipe recipe = new("Test Recipe", UserController.Instance.ActiveUser, "Test Description", 120, 60, 10,
+            new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict, new List<Tag> { new("Tag1"), new("Tag2") }, 2);
+        Recipe recipe2 = new("TEST RECIPE2 meat", UserController.Instance.ActiveUser, "Test Description", 30, 60, 4,
+            new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict2, new List<Tag> { new("Tag3"), new("Tag2") }, 2);
+        Recipe recipe3 = new("GRRRRRRR meat", UserController.Instance.ActiveUser, "Test Description", 30, 60, 4,
+            new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict3, new List<Tag> { new("Tag3"), new("Tag2") }, 2);
 
 
 
-        // RecipeController.Instance.CreateRecipe(recipe);
-        // RecipeController.Instance.CreateRecipe(recipe2);
-        // RecipeController.Instance.CreateRecipe(recipe3);
+        RecipeController.CreateRecipe(recipe);
+        RecipeController.CreateRecipe(recipe2);
+        RecipeController.CreateRecipe(recipe3);
+
+        RecipeController.DeleteRecipe(recipe);
 
         while (true)
         {

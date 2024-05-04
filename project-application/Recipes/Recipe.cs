@@ -135,8 +135,8 @@ public class Recipe
     {
         get
         {
-            int totalRating = 0;
-            foreach (int r in this._ratings)
+            double totalRating = 0;
+            foreach (double r in this._ratings)
             {
                 totalRating += r;
             }
@@ -231,7 +231,7 @@ public class Recipe
         List<MeasuredIngredient> newIngredients = new();
         foreach (MeasuredIngredient i in ingredients)
         {
-            RecipeController.Instance.AddIngredient(i.Ingredient);
+            RecipeController.AddIngredient(i.Ingredient);
             Ingredient? ingredient = RecipesContext.Instance.RecipeManager_Ingredients.FirstOrDefault(ing => ing.Name == i.Ingredient.Name);
             i.Ingredient = ingredient!;
             newIngredients.Add(i);
