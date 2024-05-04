@@ -80,7 +80,7 @@ public class RecipeController
             throw new ArgumentException("Cannot delete the recipe you arent an owner of");
         }
 
-        RecipesContext.Instance.Remove(toRemove);
+        RecipesContext.Instance.RecipeManager_Recipes.Remove(toRemove);
         RecipesContext.Instance.SaveChanges();
     }
 
