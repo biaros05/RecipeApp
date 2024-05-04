@@ -19,9 +19,9 @@ public class FilterByKeyword : IFilterBy
     /// <param name="recipes">given list of recipes</param>
     /// <returns>returns a list of filtered recipes where the name or description contains the keyword</returns>
     /// <exception cref="InvalidOperationException">When the given recipe has a null or empty name or description</exception>
-    public void FilterRecipes(IQueryable<Recipe> recipes)
+    public IQueryable<Recipe> FilterRecipes(IQueryable<Recipe> recipes)
     {
-        recipes
+        return recipes
             //finds if the recipe name contains the keyword
             .Where(recipe => recipe.Name.Contains(Keyword) || recipe.Description.Contains(Keyword));
     }

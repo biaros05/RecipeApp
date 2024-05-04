@@ -23,7 +23,7 @@ public class RecipesContext : DbContext
 
     public string Password { get; set; }
 
-    private static RecipesContext? _instance;
+    private static RecipesContext? _instance {get; set;}
 
 
     public static RecipesContext Instance
@@ -35,6 +35,10 @@ public class RecipesContext : DbContext
                 _instance = new RecipesContext();
             }
             return _instance;
+        }
+        set
+        {
+            _instance = value;
         }
     }
 

@@ -29,6 +29,10 @@ public class RecipeController
             }
             return _instance;
         }
+        set
+        {
+            _instance = value;
+        }
     }
 
     // will add the recipe to the list of all recipes
@@ -54,7 +58,7 @@ public class RecipeController
     public void AddIngredient(Ingredient ingredient)
     {
         var context = RecipesContext.Instance;
-        List<Ingredient> retrieveIngredients = context.RecipeManager_Ingredients.ToList<Ingredient>();
+        List<Ingredient> retrieveIngredients = RecipesContext.Instance.RecipeManager_Ingredients.ToList<Ingredient>();
         if (!retrieveIngredients.Contains(ingredient))
         {
             context.RecipeManager_Ingredients.Add(ingredient);
@@ -85,6 +89,7 @@ public class RecipeController
     public List<Recipe> FilterBy()
     {
         var context = RecipesContext.Instance;
+<<<<<<< HEAD
         var recipeQuery = context.RecipeManager_Recipes
             .Include(recipe => recipe.Tags)
             .Include(recipe => recipe._ratings)
@@ -94,9 +99,12 @@ public class RecipeController
             .Include(recipe => recipe.Instructions)
             .Include(recipe => recipe.UserFavourite)
             .AsQueryable();
+=======
+        IQueryable<Recipe> recipeQuery = context.RecipeManager_Recipes;
+>>>>>>> b8ca8257495daaf8c0850d1832ca8cb9464c3816
         foreach (IFilterBy filter in Filters)
         {
-            filter.FilterRecipes(recipeQuery);
+            recipeQuery = filter.FilterRecipes(recipeQuery);
         }
         return recipeQuery.ToList<Recipe>();
     }

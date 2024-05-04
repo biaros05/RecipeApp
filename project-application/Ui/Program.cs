@@ -628,8 +628,7 @@ public class Program
 
     public static void Main()
     {
-        var program = new Program();
-        LoginOrRegister();
+        //LoginOrRegister();
 
 
         // Ingredient i = new("egg", Units.Quantity);

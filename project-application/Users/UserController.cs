@@ -3,6 +3,7 @@ namespace users;
 using filtering;
 using System.Net;
 using recipes;
+
 public class UserController
 {
     // currently logged on user
@@ -15,8 +16,9 @@ public class UserController
     // public void CreateAccount(User newUser){}
     public void CreateAccount(string username, string password, string description)
     {
-        filtering = new(RecipesContext.Instance.RecipeManager_Users.AsQueryable());
-
+        var context = RecipesContext.Instance;
+        var userQuery = context.RecipeManager_Users.AsQueryable();
+        filtering = new(userQuery);
         User result = filtering.FilterUsers(username);
         if (result != null)
         {
@@ -42,7 +44,8 @@ public class UserController
     public bool AuthenticateUser(string username, string password)
     {
         var context = RecipesContext.Instance;
-        filtering = new(context.RecipeManager_Users.AsQueryable());
+        var userQuery = context.RecipeManager_Users.AsQueryable();
+        filtering = new(userQuery);
         User result = filtering.FilterUsers(username);
         if (result == null)
         {
@@ -60,11 +63,12 @@ public class UserController
     //FIXME - need to use fluent API to on cascade delete
     public void DeleteAccount(string username, string password)
     {
+        var context = RecipesContext.Instance;
+        var userQuery = context.RecipeManager_Users.AsQueryable();
         bool result = AuthenticateUser(username, password);
         if (result)
         {
-            var context = RecipesContext.Instance;
-            filtering = new(context.RecipeManager_Users.AsQueryable());
+            filtering = new(userQuery);
             User user = filtering.FilterUsers(username);
             context.Remove(user);
             context.SaveChanges();

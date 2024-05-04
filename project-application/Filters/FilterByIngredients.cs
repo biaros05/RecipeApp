@@ -34,9 +34,9 @@ public class FilterByIngredients : IFilterBy
     /// </summary>
     /// <param name="recipes">A given list of recipes to filter</param>
     /// <returns>A filtered list of recipes if they have the looked for ingredient</returns>
-    public void FilterRecipes(IQueryable<Recipe> recipes)
+    public IQueryable<Recipe> FilterRecipes(IQueryable<Recipe> recipes)
     {
-        recipes
+        return recipes
             .Where(recipe => ContainsIngredient(new List<Ingredient>(recipe.Ingredients.Select(measured => measured.Ingredient))));
     }
 

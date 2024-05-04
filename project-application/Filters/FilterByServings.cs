@@ -19,9 +19,9 @@ public class FilterByServings : IFilterBy
     /// </summary>
     /// <param name="recipes">a given list of recipes to filter</param>
     /// <returns>a list of filtered recipes that fit into the minimum and maximum amount of serving</returns>
-    public void FilterRecipes(IQueryable<Recipe> recipes)
+    public IQueryable<Recipe> FilterRecipes(IQueryable<Recipe> recipes)
     {
-        var filteredRecipes = recipes
+        return recipes
             .Where(recipe => recipe.NumberOfServings >= MinServings && recipe.NumberOfServings <= MaxServings);
     }
 
