@@ -5,6 +5,8 @@ public class DifficultyRating
     public int? Id {get; set;}
     public int ScaleRating {get; set;}
     public User Owner {get; set;}
+
+    
     public DifficultyRating(int rating, User owner)
     {
         ScaleRating = rating;

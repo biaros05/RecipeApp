@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Net;
 using filtering;
 using users;
+using Microsoft.EntityFrameworkCore;
 [assembly: InternalsVisibleTo("project-application-test")]
 
 namespace recipes;
@@ -84,7 +85,15 @@ public class RecipeController
     public List<Recipe> FilterBy()
     {
         var context = RecipesContext.Instance;
-        var recipeQuery = context.RecipeManager_Recipes.AsQueryable();
+        var recipeQuery = context.RecipeManager_Recipes
+            .Include(recipe => recipe.Tags)
+            .Include(recipe => recipe._ratings)
+            .Include(recipe => recipe._difficulties)
+            .Include(recipe => recipe.Owner)
+            .Include(recipe => recipe.Ingredients)
+            .Include(recipe => recipe.Instructions)
+            .Include(recipe => recipe.UserFavourite)
+            .AsQueryable();
         foreach (IFilterBy filter in Filters)
         {
             filter.FilterRecipes(recipeQuery);

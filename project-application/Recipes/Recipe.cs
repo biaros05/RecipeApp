@@ -3,9 +3,11 @@ namespace recipes;
 
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Diagnostics.Metrics;
+using System.Dynamic;
+using System.Reflection.Metadata.Ecma335;
 using System.Timers;
+using Microsoft.EntityFrameworkCore;
 using users;
-
 public class Recipe
 {
     public Recipe() { }
@@ -128,7 +130,7 @@ public class Recipe
     public List<Instruction> Instructions { get; } = new();
     // contains the ingredient and its quantity for specified unit 
     public List<MeasuredIngredient> Ingredients { get; set; } = new();
-    private List<Rating> _ratings = new(); // all the ratings given by users OUT OF FIVE STARS
+    public List<Rating> _ratings {get; set;}= new(); // all the ratings given by users OUT OF FIVE STARS
 
     // property calculates the average rating with rounding by 2 decimals
     public double? Rating
@@ -144,7 +146,7 @@ public class Recipe
             return this._ratings.Count != 0 ? Math.Round(rating, 2) : null;
         }
     } // sum of Ratings and get average.
-    private readonly List<DifficultyRating> _difficulties = new(); // all the difficulties given by users OUT OF 10
+    public  List<DifficultyRating> _difficulties {get; set;} = new(); // all the difficulties given by users OUT OF 10
 
     // property calculates the average difficulty with rounding by 2 decimals
     public int? DifficultyRating
@@ -162,9 +164,8 @@ public class Recipe
 
     }
 
-
-    public List<Tag> Tags { get; private set; }
-    public string Budget { get; }
+    public List<Tag> Tags { get; set; }
+    public string Budget { get; set;}
 
     // allows user to add rating with necessary validation
     //NOTE - doesnt exist
@@ -174,10 +175,15 @@ public class Recipe
         {
             throw new ArgumentOutOfRangeException("Rating must be between 1 and 5 stars");
         }
-
-        //TODO - possibily check that the user hasn't already given a rating
         var context = RecipesContext.Instance;  
         Recipe retrieveRecipe = context.RecipeManager_Recipes.First(r => r.Id == Id);
+        foreach (Rating r in retrieveRecipe._ratings)
+        {
+            if (r.Owner == owner)
+            {
+                throw new Exception("You cannot rate the same recipe twice");
+            }
+        }
         retrieveRecipe._ratings.Add(new Rating(rating, owner));
         context.RecipeManager_Ratings.Add(new Rating(rating, owner));
         context.SaveChanges();
@@ -191,17 +197,21 @@ public class Recipe
         {
             throw new ArgumentOutOfRangeException("Rating must be between 1 and 10 stars");
         }
-
-        //TODO - possibily check that the user hasn't already given a rating
         var context = RecipesContext.Instance;
         Recipe retrieveRecipe = context.RecipeManager_Recipes.First(r => r.Id == Id);
+        foreach (DifficultyRating r in retrieveRecipe._difficulties)
+        {
+            if (r.Owner == owner)
+            {
+                throw new Exception("You cannot rate the same recipe twice");
+            }
+        }
         retrieveRecipe._difficulties.Add(new DifficultyRating(rating, owner));
         context.RecipeManager_DifficultyRatings.Add(new DifficultyRating(rating, owner));
         context.SaveChanges();
     }
 
     // this method will add a tag to the list of tags if it does not already exist
-    //NOTE - dead code? never used
     public void AddTag(string tag)
     {
         Tag t = new(tag);
@@ -211,11 +221,11 @@ public class Recipe
         }
 
         var context = RecipesContext.Instance;
-        Recipe retrieveRecipe = context.RecipeManager_Recipes.First(r => r.Id == Id);
+        Recipe recipe = context.RecipeManager_Recipes.First(r => r.Id == Id);
         //FIXME - cant get tags
-        if (!retrieveRecipe.Tags.Contains(t))
+        if (!recipe.Tags.Contains(t))
         {
-            retrieveRecipe.Tags.Add(t);
+            recipe.Tags.Add(t);
         }
         context.SaveChanges();
     }

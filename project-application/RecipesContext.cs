@@ -65,6 +65,9 @@ public class RecipesContext : DbContext
         modelBuilder.Entity<User>()
             .HasMany(bc => bc.UserFavoriteRecipies)
             .WithMany(c => c.UserFavourite);
+        modelBuilder.Entity<User>()
+            .HasMany(r => r.UserCreatedRecipies)
+            .WithOne( u => u.Owner)
+            .OnDelete(DeleteBehavior.Cascade);
     }
-
 }
