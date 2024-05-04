@@ -10,12 +10,26 @@ using recipes;
 
 public class User
 {
+    private byte[]? image;
+    private string hashPass;
     public User(){}
     public int UserId {get; set;}
 
-    public string HashPass;
+    public string HashPass{
+        get{
+            return this.hashPass;
+        }
+        set{
+            if (value.Length < 5 || value.Length > 50)
+        {
+            throw new Exception("password doesnt meet requirements");
+        }
+            this.hashPass=Password.HashPassword(this.Salt,value);
+        }
+    }
 
-    public byte[] Salt;
+    public byte[] Salt{get; set;}
+    
 
     [InverseProperty("Owner")]
     public List<Recipe> UserCreatedRecipies { get; set; }
@@ -41,7 +55,13 @@ public class User
             this.username = value;
         }
     }
-    public byte[]? Image { get; set; }
+    public byte[]? Image { 
+        get{
+            return this.image;
+        } 
+        set{
+            this.image=null;
+        } }
     private string? description;
     public string? Description
     {
@@ -77,23 +97,25 @@ public class User
 
     // this constructor sets the username, hashes password and saves it
     //, byte[] salt
-    public User(string username, string password, string description)
+    public User(string username, string password, string description,byte[] image=null)
     {
         this.Username = username;
         this.Salt=Password.GenerateSalt();
-        this.HashPass=Password.HashPassword(this.Salt,password);
+        this.HashPass=password;
+        this.Image=image;
+
 
         this.Description = description;
         UserCreatedRecipies = new();
         UserFavoriteRecipies = new List<Recipe>();
-        //Image need to be here as a byte[]
     }
 
     public User(string username, string password)
     {
         this.Username = username;
         this.Salt=Password.GenerateSalt();
-        this.HashPass=Password.HashPassword(this.Salt,password);
+        this.HashPass=password;
+        this.Image=null;
 
         this.Description = null;
         UserCreatedRecipies = new();
@@ -103,89 +125,90 @@ public class User
 
     }
 
-    public void UpdateUsername(string newUsername)
-    {
-        var context= RecipesContext.Instance;
+    // public void UpdateUsername(string newUsername)
+    // {
+    //     var context= RecipesContext.Instance;
 
-        User user= context.RecipeManager_Users
-                    .Where(u=>u.username==newUsername)
-                    .First();
-        if (user != null)
-        {
-            throw new Exception("this username is already taken");
-        }
-        user= context.RecipeManager_Users
-                    .Where(u=>u.username==this.Username)
-                    .First();
+    //     int total= context.RecipeManager_Users
+    //                 .Where(u=> u.username==newUsername)
+    //                 .Count();
+        
+    //     if (total != 0)
+    //     {
+    //         throw new Exception("this username is already taken");
+    //     }
+    //     // user= context.RecipeManager_Users
+    //     //             .Where(u=>u.username==this.Username)
+    //     //             .First();
 
-        if (newUsername.Length < 5 || newUsername.Length > 25 || newUsername == null)
-        {
-            throw new Exception("username doesnt meet requirements");
-        }
+    //     if (newUsername.Length < 5 || newUsername.Length > 25 || newUsername == null)
+    //     {
+    //         throw new Exception("username doesnt meet requirements");
+    //     }
 
-        user.Username = newUsername;
-        context.SaveChanges();
-    }
+    //     this.Username = newUsername;
+    //     context.SaveChanges();
+    // }
 
-    public void UpdatePassword(string newPass)
-    {
-        var context= RecipesContext.Instance;
+    // public void UpdatePassword(string newPass)
+    // {
+    //     var context= RecipesContext.Instance;
 
-        if (newPass.Length < 5 || newPass.Length > 50)
-        {
-            throw new Exception("password doesnt meet requirements");
-        }
-        User user= context.RecipeManager_Users
-                    .Where(u=>u.username==this.Username)
-                    .First();
+    //     if (newPass.Length < 5 || newPass.Length > 50)
+    //     {
+    //         throw new Exception("password doesnt meet requirements");
+    //     }
+    //     User user= context.RecipeManager_Users
+    //                 .Where(u=>u.username==this.Username)
+    //                 .First();
 
-        user.HashPass=Password.HashPassword(this.Salt,newPass);
-        context.SaveChanges();
-    }
-    public void UpdateFields(string newDescription, byte[] newImage)
-    {
-        var context= RecipesContext.Instance;
-        User user= context.RecipeManager_Users
-                    .Where(u=>u.username==this.Username)
-                    .First();
+    //     user.HashPass=Password.HashPassword(this.Salt,newPass);
+    //     context.SaveChanges();
+    // }
+    // public void UpdateFields(string newDescription, byte[] newImage)
+    // {
+    //     var context= RecipesContext.Instance;
+    //     // User user= context.RecipeManager_Users
+    //     //             .Where(u=>u.username==this.Username)
+    //     //             .First();
 
-        user.Description = newDescription;
-        user.Image = newImage;
-        context.SaveChanges();
-    }
+    //     this.Description = newDescription;
+    //     this.Image = newImage;
+    //     context.SaveChanges();
+    // }
 
     // removes profile picture provided one exists
-    public void RemoveProfilePicture()
-    {
-        var context= RecipesContext.Instance;
-        User user= context.RecipeManager_Users
-                    .Where(u=>u.username==this.Username)
-                    .First();
+    // public void RemoveProfilePicture()
+    // {
+    //     var context= RecipesContext.Instance;
+    //     User user= context.RecipeManager_Users
+    //                 .Where(u=>u.username==this.Username)
+    //                 .First();
 
-        if (user.Image == null)
-        {
-            throw new Exception("no picture to remove");
-        }
-        user.Image = null;
-        context.SaveChanges();
-    }
+    //     if (user.Image == null)
+    //     {
+    //         throw new Exception("no picture to remove");
+    //     }
+    //     user.Image = null;
+    //     context.SaveChanges();
+    // }
 
     // removes description provided one exists
-    public void RemoveDescription()
-    {
-        var context= RecipesContext.Instance;
-        User user= context.RecipeManager_Users
-                    .Where(u=>u.username==this.Username)
-                    .First();
+    // public void RemoveDescription()
+    // {
+    //     var context= RecipesContext.Instance;
+    //     User user= context.RecipeManager_Users
+    //                 .Where(u=>u.username==this.Username)
+    //                 .First();
 
-        if (Description == null)
-        {
-            throw new Exception("no description to remove");
-        }
+    //     if (Description == null)
+    //     {
+    //         throw new Exception("no description to remove");
+    //     }
         
-        user.Description = null;
-        context.SaveChanges();
-    }
+    //     user.Description = null;
+    //     context.SaveChanges();
+    // }
 
     // take recipe, retrieve the list of recipes for user, add that recipe, send back to data layer
     public void AddToFavourites(Recipe recipe)
@@ -232,8 +255,4 @@ public class User
     {
         return this.Username + this.Image + this.Description;
     }
-
-    // ad hash and salt to constructor
-
-
 }

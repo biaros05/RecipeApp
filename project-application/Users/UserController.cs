@@ -72,6 +72,36 @@ public class UserController
         }
     }
 
+    public void UpdateUser(string username, string description, byte[] image, string hashpass )
+    {
+        var context =RecipesContext.Instance;
+
+        int total= context.RecipeManager_Users
+                    .Where(u=> u.Username==username)
+                    .Count();
+        
+        if (total != 0)
+        {
+            throw new Exception("this username is already taken");
+        }
+
+        User user= context.RecipeManager_Users
+                    .Where(u=> u.Username==this.ActiveUser.Username)
+                    .First();
+
+        this.ActiveUser.Description=description;
+        this.ActiveUser.Image=image;
+        this.ActiveUser.Username=username;
+        this.ActiveUser.HashPass=hashpass;
+
+        user.Description=description;
+        user.Image=image;
+        user.Username=username;
+        user.HashPass=hashpass;
+
+        context.SaveChanges();
+    }
+
     private static UserController? _instance;
 
         private UserController() { }
