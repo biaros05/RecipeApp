@@ -112,6 +112,7 @@ public class RecipeController
             .Include(recipe => recipe._difficulties)
             .Include(recipe => recipe.Owner)
             .Include(recipe => recipe.Ingredients)
+                .ThenInclude(measuredIngredient => measuredIngredient.Ingredient)
             .Include(recipe => recipe.Instructions)
             .Include(recipe => recipe.UserFavourite)
             .AsQueryable();

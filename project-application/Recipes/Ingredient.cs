@@ -21,6 +21,10 @@ public class Ingredient
         this.IngredientId = id;
     }
 
+    public Ingredient(Ingredient i): this(i.Name, i.Unit)
+    {
+    }
+
     public Ingredient(){}
     public string Name { get; set; }
 

@@ -38,7 +38,7 @@ public class FilterByIngredients : IFilterBy
     {
         List<Recipe> recipesList = recipes.ToList();
         var query = recipesList
-            .Where(recipe => ContainsIngredient(new List<Ingredient>(recipe.Ingredients.Select(measured => measured.Ingredient))));
+            .Where(recipe => ContainsIngredient(new List<Ingredient>(recipe.Ingredients.Select(measured => new Ingredient(measured.Ingredient)))));
         return query.AsQueryable();
     }
 
