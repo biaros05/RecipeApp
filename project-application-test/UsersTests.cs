@@ -414,7 +414,7 @@ public class UsersTests
         //Arrange
         var data = new List<User>()
         {
-            new("testing","password","description"),
+            new("testing","password","description",null),
             new("user2","password2","description2"),
             new( "user3","password3","description3"),
         }.AsQueryable();

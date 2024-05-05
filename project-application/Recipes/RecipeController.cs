@@ -89,19 +89,7 @@ public class RecipeController
     public List<Recipe> FilterBy()
     {
         var context = RecipesContext.Instance;
-<<<<<<< HEAD
-        var recipeQuery = context.RecipeManager_Recipes
-            .Include(recipe => recipe.Tags)
-            .Include(recipe => recipe._ratings)
-            .Include(recipe => recipe._difficulties)
-            .Include(recipe => recipe.Owner)
-            .Include(recipe => recipe.Ingredients)
-            .Include(recipe => recipe.Instructions)
-            .Include(recipe => recipe.UserFavourite)
-            .AsQueryable();
-=======
         IQueryable<Recipe> recipeQuery = context.RecipeManager_Recipes;
->>>>>>> b8ca8257495daaf8c0850d1832ca8cb9464c3816
         foreach (IFilterBy filter in Filters)
         {
             recipeQuery = filter.FilterRecipes(recipeQuery);

@@ -64,7 +64,8 @@ public class UserControllerTests
         UserController.Instance.UpdateUser(newUsername,newDescription,byteArray,newPass);
 
         //Assert
-        Assert.AreNotEqual("updatedUser", user1.Username);
+        Assert.AreEqual("updatedUser", user1.Username);
+        mockContext.Verify(mock => mock.Update(It.IsAny<User>()), Times.Once);
         mockContext.Verify(mock => mock.SaveChanges(), Times.Once());
 
     }
