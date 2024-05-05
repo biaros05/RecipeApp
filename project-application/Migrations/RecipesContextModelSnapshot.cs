@@ -32,7 +32,7 @@ namespace project.Migrations
                     b.Property<int>("OwnerUserId")
                         .HasColumnType("NUMBER(10)");
 
-                    b.Property<int?>("RecipeId")
+                    b.Property<int>("RecipeId")
                         .HasColumnType("NUMBER(10)");
 
                     b.Property<int>("ScaleRating")
@@ -58,7 +58,7 @@ namespace project.Migrations
                     b.Property<int>("OwnerUserId")
                         .HasColumnType("NUMBER(10)");
 
-                    b.Property<int?>("RecipeId")
+                    b.Property<int>("RecipeId")
                         .HasColumnType("NUMBER(10)");
 
                     b.Property<int>("StarRating")
@@ -259,11 +259,15 @@ namespace project.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("recipes.Recipe", null)
+                    b.HasOne("recipes.Recipe", "Recipe")
                         .WithMany("_difficulties")
-                        .HasForeignKey("RecipeId");
+                        .HasForeignKey("RecipeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Owner");
+
+                    b.Navigation("Recipe");
                 });
 
             modelBuilder.Entity("Rating", b =>
@@ -274,11 +278,15 @@ namespace project.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("recipes.Recipe", null)
+                    b.HasOne("recipes.Recipe", "Recipe")
                         .WithMany("_ratings")
-                        .HasForeignKey("RecipeId");
+                        .HasForeignKey("RecipeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Owner");
+
+                    b.Navigation("Recipe");
                 });
 
             modelBuilder.Entity("RecipeUser", b =>

@@ -43,11 +43,6 @@ public class Ingredient
     // hashcode (the name of the ingredient)
     public override int GetHashCode()
     {
-        int hash = 17;//prime num
-        unchecked
-        {
-            hash = hash * 31 + this.Name.GetHashCode();
-            return hash;
-        }
+        return HashCode.Combine(this.Name.ToLower());
     }
 }

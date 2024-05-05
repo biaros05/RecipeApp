@@ -214,8 +214,9 @@ public class Program
         int cookTimeMins = ValidateInt();
         Console.WriteLine("Number of servings:");
         int numberOfServings = ValidateInt();
-        Console.WriteLine("List the instrucrions:");
+        Console.WriteLine("List the ingredients:");
         List<MeasuredIngredient> ingredients = FillIngredients();
+        Console.WriteLine("List the instructions:");
         List<Instruction> instructions = FillInstructions();
         Console.WriteLine("Add Tags to recipe:");
         List<Tag> tags = FillTags();
@@ -232,6 +233,7 @@ public class Program
         Console.WriteLine("Enter the recipe you would like to edit");
         int num = ValidateInt();
         Recipe toEdit = ReturnOneRecipe(num);
+        Console.WriteLine("Enter the new description");
         string description = Console.ReadLine();
         Console.WriteLine("Prep time of Recipe (in minutes):");
         int prepTimeMins = ValidateInt();
@@ -250,6 +252,7 @@ public class Program
         {
             Console.WriteLine(e.Message);
         }
+        ConsoleUtils.WaitUserPressKey();
 
     }
 
@@ -276,7 +279,7 @@ public class Program
 
     private static void PrintUsers()
     {
-        using var context = new RecipesContext();
+        var context = RecipesContext.Instance;
         List<User> retrieveUsers = context.RecipeManager_Users.ToList<User>();
         int num = 1;
         foreach (User u in retrieveUsers)
@@ -581,9 +584,9 @@ public class Program
         Console.WriteLine("what would you like to rate this recipe out of 5?");
         int rating = Convert.ToInt32(Console.ReadLine());
         recipe.RateRecipe(rating, UserController.Instance.ActiveUser);
-        Console.WriteLine(recipe.Rating);
+        // Console.WriteLine(recipe.Rating);
         Console.WriteLine("the recipe rating has been updated");
-        Console.WriteLine(recipe);
+        // Console.WriteLine(recipe);
 
         ConsoleUtils.WaitUserPressKey();
     }
@@ -607,7 +610,7 @@ public class Program
     //return the correct object from the recipe list
     public static Recipe ReturnOneRecipe(int num)
     {
-        using var context = new RecipesContext();
+        var context = RecipesContext.Instance;
         List<Recipe> retrieveRecipes = context.RecipeManager_Recipes.Include(recipe => recipe.Tags)
             .Include(recipe => recipe.Tags)
             .Include(recipe => recipe._ratings)
@@ -618,15 +621,7 @@ public class Program
             .Include(recipe => recipe.UserFavourite)
             .ToList<Recipe>();
         int count = 0;
-        foreach (Recipe r in retrieveRecipes)
-        {
-            if (count == num)
-            {
-                return r;
-            }
-            count++;
-        }
-        throw new Exception("no item in current position");
+        return retrieveRecipes[num];
     }
     //return the correct object from the user favorite recipe list
     public static Recipe ReturnOneRecipeFromFave(int num)

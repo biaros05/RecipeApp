@@ -11,8 +11,8 @@ using Oracle.EntityFrameworkCore.Metadata;
 namespace project.Migrations
 {
     [DbContext(typeof(RecipesContext))]
-    [Migration("20240505183016_TestMigration")]
-    partial class TestMigration
+    [Migration("20240505195022_FixedPreviousMigration")]
+    partial class FixedPreviousMigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -35,7 +35,7 @@ namespace project.Migrations
                     b.Property<int>("OwnerUserId")
                         .HasColumnType("NUMBER(10)");
 
-                    b.Property<int?>("RecipeId")
+                    b.Property<int>("RecipeId")
                         .HasColumnType("NUMBER(10)");
 
                     b.Property<int>("ScaleRating")
@@ -61,7 +61,7 @@ namespace project.Migrations
                     b.Property<int>("OwnerUserId")
                         .HasColumnType("NUMBER(10)");
 
-                    b.Property<int?>("RecipeId")
+                    b.Property<int>("RecipeId")
                         .HasColumnType("NUMBER(10)");
 
                     b.Property<int>("StarRating")
@@ -262,11 +262,15 @@ namespace project.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("recipes.Recipe", null)
+                    b.HasOne("recipes.Recipe", "Recipe")
                         .WithMany("_difficulties")
-                        .HasForeignKey("RecipeId");
+                        .HasForeignKey("RecipeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Owner");
+
+                    b.Navigation("Recipe");
                 });
 
             modelBuilder.Entity("Rating", b =>
@@ -277,11 +281,15 @@ namespace project.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("recipes.Recipe", null)
+                    b.HasOne("recipes.Recipe", "Recipe")
                         .WithMany("_ratings")
-                        .HasForeignKey("RecipeId");
+                        .HasForeignKey("RecipeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Owner");
+
+                    b.Navigation("Recipe");
                 });
 
             modelBuilder.Entity("RecipeUser", b =>

@@ -291,11 +291,6 @@ public class RecipeControllerTests
                 new List<Instruction> { new(1, "Step 1"), new(2,"Step 2") }, dict2, new List<Tag> { new("Tag1"), new("Tag2") }, 2))
         }.AsQueryable();
 
-        List<MeasuredIngredient> newIngredient = new()
-        {
-            new ( new("Caramel", Units.Quantity), 20 )
-        };
-
 
         IFilterBy filter = new FilterByServings(3, 6);
         IFilterBy filter2 = new FilterByKeyword("Test");
@@ -314,6 +309,11 @@ public class RecipeControllerTests
         ConfigureDbSetMock(recipes, mockSetRecipe);
         mockContext.Setup(m => m.RecipeManager_Recipes).Returns(mockSetRecipe.Object);
 
+        List<MeasuredIngredient> newIngredient = new()
+        {
+            new ( new("Caramel", Units.Quantity), 20 )
+        };
+
         //creating expected data
         Recipe r = new("New created recipe!", UserController.Instance.ActiveUser, "Test Description", 30, 60, 4,
             new List<Instruction> { new(1, "Step 1"), new(2,"Step 2") }, newIngredient, new List<Tag> { new("Tag1"), new("Tag2") }, 2);
@@ -321,7 +321,7 @@ public class RecipeControllerTests
 
         mockSetRecipe.Verify(mock => mock.Add(It.Is<Recipe>(
             actual => r.Equals(actual))), Times.Once);
-        mockSetIngredient.Verify(mock => mock.Add(It.IsAny<Ingredient>()), Times.AtLeastOnce);
+        mockSetIngredient.Verify(mock => mock.Add(It.IsAny<Ingredient>()), Times.Once);
         mockContext.Verify(mock => mock.SaveChanges(), Times.AtLeastOnce);
     }
 

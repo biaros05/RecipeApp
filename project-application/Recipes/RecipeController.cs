@@ -120,7 +120,7 @@ public class RecipeController
         {
             recipeQuery = filter.FilterRecipes(recipeQuery);
         }
-        return recipeQuery.ToList<Recipe>();
+        return recipeQuery.ToList();
     }
 
     /// <summary>
