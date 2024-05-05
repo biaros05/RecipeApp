@@ -155,6 +155,42 @@ public class UsersTests
     }
 
     [TestMethod]
+    public void UserController_UpdateUser()
+    {
+        //Arrange
+    var data = new List<User>()
+    {
+        new User("testing","password","description"),
+        new User("user2","password2","description2"),
+        new User( "user3","password3","description3"),
+    }.AsQueryable();
+
+
+        string username = "testing";
+        string passwrd = "password";
+        string description = "description";
+        
+        string newUsername = "updatedUser";
+
+        var mockContext=new Mock<RecipesContext>();
+        var mockUser= new Mock<DbSet<User>>();
+        ConfigureDbSetMock(data,mockUser);
+        mockContext.Setup(mock => mock.RecipeManager_Users).Returns(mockUser.Object);
+        RecipesContext.Instance.= mockContext.Object;
+        var service=RecipesContext.Instance;
+
+
+        //Act
+        User user1 = new(username,passwrd, description);
+        user1.UpdateUsername(newUsername);
+
+        //Assert
+        Assert.AreEqual("updatedUser", user1.Username);
+        mockContext.Verify(mock => mock.SaveChanges(), Times.Once());
+
+    }
+
+    [TestMethod]
     public void User_Tests_UpdateUsername()
     {
         //Arrange
