@@ -116,7 +116,6 @@ public class RecipeController
             .Include(recipe => recipe.Instructions)
             .Include(recipe => recipe.UserFavourite)
             .AsQueryable();
-        // IQueryable<Recipe> recipeQuery = context.RecipeManager_Recipes;
         foreach (IFilterBy filter in Filters)
         {
             recipeQuery = filter.FilterRecipes(recipeQuery);

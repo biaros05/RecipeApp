@@ -265,9 +265,10 @@ public class Program
             .Include(recipe => recipe._difficulties)
             .Include(recipe => recipe.Owner)
             .Include(recipe => recipe.Ingredients)
+                .ThenInclude(measuredIngredient => measuredIngredient.Ingredient)
             .Include(recipe => recipe.Instructions)
             .Include(recipe => recipe.UserFavourite)
-            .ToList<Recipe>();
+            .ToList();
         int num = 1;
         foreach (Recipe r in retrieveRecipes)
         {
@@ -580,7 +581,7 @@ public class Program
         PrintRecipes();
         Console.WriteLine("which recipie would you like to rate");
         int num = Convert.ToInt32(Console.ReadLine());
-        Recipe recipe = ReturnOneRecipe(num - 1);
+        Recipe recipe = ReturnOneRecipe(num);
         Console.WriteLine("what would you like to rate this recipe out of 5?");
         int rating = Convert.ToInt32(Console.ReadLine());
         recipe.RateRecipe(rating, UserController.Instance.ActiveUser);
@@ -597,7 +598,7 @@ public class Program
         Console.WriteLine("which recipie would you like to add to your favorite list");
         int num = Convert.ToInt32(Console.ReadLine());
 
-        Recipe recipe = ReturnOneRecipe(num - 1);
+        Recipe recipe = ReturnOneRecipe(num);
 
         UserController.Instance.ActiveUser.AddToFavourites(recipe);
 
@@ -611,17 +612,18 @@ public class Program
     public static Recipe ReturnOneRecipe(int num)
     {
         var context = RecipesContext.Instance;
-        List<Recipe> retrieveRecipes = context.RecipeManager_Recipes.Include(recipe => recipe.Tags)
+        
+        List<Recipe> retrieveRecipes = context.RecipeManager_Recipes
             .Include(recipe => recipe.Tags)
             .Include(recipe => recipe._ratings)
             .Include(recipe => recipe._difficulties)
             .Include(recipe => recipe.Owner)
             .Include(recipe => recipe.Ingredients)
+                .ThenInclude(measuredIngredient => measuredIngredient.Ingredient)
             .Include(recipe => recipe.Instructions)
             .Include(recipe => recipe.UserFavourite)
-            .ToList<Recipe>();
-        int count = 0;
-        return retrieveRecipes[num];
+            .ToList();
+        return retrieveRecipes[num - 1];
     }
     //return the correct object from the user favorite recipe list
     public static Recipe ReturnOneRecipeFromFave(int num)
@@ -644,7 +646,7 @@ public class Program
         Console.WriteLine("which recipie would you like to add to your favorite list");
         int num = System.Convert.ToInt32(Console.ReadLine());
 
-        Recipe recipe = ReturnOneRecipeFromFave(num - 1);
+        Recipe recipe = ReturnOneRecipeFromFave(num);
 
         UserController.Instance.ActiveUser.RemoveFromFavourites(recipe);
 
