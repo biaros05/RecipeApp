@@ -13,9 +13,9 @@ public class User
     public User(){}
     public int UserId {get; set;}
 
-    public string HashPass;
+    public string HashPass {get; set;}
 
-    public byte[] Salt;
+    public byte[] Salt {get; set;}
 
     [InverseProperty("Owner")]
     public List<Recipe> UserCreatedRecipies { get; set; }

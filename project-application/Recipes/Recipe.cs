@@ -3,23 +3,25 @@ namespace recipes;
 
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Diagnostics.Metrics;
+using System.Dynamic;
+using System.Reflection.Metadata.Ecma335;
 using System.Timers;
+using Microsoft.EntityFrameworkCore;
 using users;
-
 public class Recipe
 {
-    public Recipe(){}
+    public Recipe() { }
     //public List<int> UserFavouriteId {get; set;}
-    public int OwnerId {get; set;}
+    public int OwnerId { get; set; }
 
     //[ForeignKey("UserFavouriteId")]
-    public ICollection<User> UserFavourite {get; set;}
+    public ICollection<User> UserFavourite { get; set; }
 
     [ForeignKey("OwnerId")]
-    public User Owner {get; set;}
+    public User Owner { get; set; }
 
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-    public int Id { get; set;}
+    public int Id { get; set; }
     private string? _name;
 
     // sets the name of the recipe, cannot be null or empty + additional validation for length added
@@ -124,11 +126,11 @@ public class Recipe
         }
     }
 
-    public int NumberOfServings { get; set;}
+    public int NumberOfServings { get; set; }
     public List<Instruction> Instructions { get; } = new();
     // contains the ingredient and its quantity for specified unit 
     public List<MeasuredIngredient> Ingredients { get; set; } = new();
-    private List<double> _ratings = new(); // all the ratings given by users OUT OF FIVE STARS
+    public List<Rating> _ratings {get; set;}= new(); // all the ratings given by users OUT OF FIVE STARS
 
     // property calculates the average rating with rounding by 2 decimals
     public double? Rating
@@ -136,15 +138,15 @@ public class Recipe
         get
         {
             int totalRating = 0;
-            foreach (int r in this._ratings)
+            foreach (Rating r in this._ratings)
             {
-                totalRating += r;
+                totalRating += r.StarRating;
             }
             double rating = totalRating / (double)_ratings.Count;
             return this._ratings.Count != 0 ? Math.Round(rating, 2) : null;
         }
     } // sum of Ratings and get average.
-    private readonly List<int> _difficulties = new(); // all the difficulties given by users OUT OF 10
+    public  List<DifficultyRating> _difficulties {get; set;} = new(); // all the difficulties given by users OUT OF 10
 
     // property calculates the average difficulty with rounding by 2 decimals
     public int? DifficultyRating
@@ -152,38 +154,61 @@ public class Recipe
         get
         {
             int difficulty = 0;
-            foreach (int d in this._difficulties)
+            foreach (DifficultyRating d in this._difficulties)
             {
-                difficulty += d;
+                difficulty += d.ScaleRating;
             }
             double averageDiff = difficulty / (double)this._difficulties.Count;
             return this._difficulties.Count != 0 ? (int)Math.Round(averageDiff, 0) : null;
         }
-        
+
     }
 
-
-    public List<Tag> Tags { get; private set; }
-    public string Budget { get; }
+    public List<Tag> Tags { get; set; }
+    public string Budget { get; set;}
 
     // allows user to add rating with necessary validation
-    public void RateRecipe(int rating)
+    //NOTE - doesnt exist
+    public void RateRecipe(int rating, User owner)
     {
         if (rating < 1 || rating > 5)
         {
             throw new ArgumentOutOfRangeException("Rating must be between 1 and 5 stars");
         }
-        this._ratings.Add(rating);
+        var context = RecipesContext.Instance;  
+        Recipe retrieveRecipe = context.RecipeManager_Recipes.First(r => r.Id == Id);
+        foreach (Rating r in retrieveRecipe._ratings)
+        {
+            if (r.Owner == owner)
+            {
+                throw new Exception("You cannot rate the same recipe twice");
+            }
+        }
+        retrieveRecipe._ratings.Add(new Rating(rating, owner));
+        context.RecipeManager_Ratings.Add(new Rating(rating, owner));
+        context.SaveChanges();
     }
 
     // allows the user to rate the difficulty of the recipe with necessary validation
-    public void RateDifficulty(int rating)
+    //NOTE - Doesnt exist
+    public void RateDifficulty(int rating, User owner)
     {
         if (rating < 1 || rating > 10)
         {
             throw new ArgumentOutOfRangeException("Rating must be between 1 and 10 stars");
         }
-        this._difficulties.Add(rating);
+        var context = RecipesContext.Instance;
+        Recipe retrieveRecipe = context.RecipeManager_Recipes.First(r => r.Id == Id);
+        foreach (DifficultyRating r in retrieveRecipe._difficulties)
+        {
+            if (r.Owner == owner)
+            {
+                throw new Exception("You cannot rate the same recipe twice");
+            }
+        }
+        retrieveRecipe._difficulties.Add(new DifficultyRating(rating, owner));
+        context.RecipeManager_DifficultyRatings.Add(new DifficultyRating(rating, owner));
+        context.SaveChanges();
     }
 
     // this method will add a tag to the list of tags if it does not already exist
@@ -194,14 +219,19 @@ public class Recipe
         {
             throw new ArgumentException("Your tag must have a value");
         }
-        if (!this.Tags.Contains(t))
-        {
-            this.Tags.Add(t);
-        }
 
+        var context = RecipesContext.Instance;
+        Recipe recipe = context.RecipeManager_Recipes.First(r => r.Id == Id);
+        //FIXME - cant get tags
+        if (!recipe.Tags.Contains(t))
+        {
+            recipe.Tags.Add(t);
+        }
+        context.SaveChanges();
     }
 
     // will take all parameters for a recipe and update the necessary fields
+    //NOTE - never used either
     public void UpdateRecipe(
     string description, int preptimeMins, int cooktimeMins,
     List<MeasuredIngredient> ingredients, List<Tag> tags)
@@ -216,18 +246,21 @@ public class Recipe
             throw new ArgumentOutOfRangeException("Cook time cannot be less than 0 or greater than 4 hours");
         }
 
-        this.Description = description;
-        this.PrepTimeMins = preptimeMins;
-        this.CookTimeMins = cooktimeMins;
+        var context = RecipesContext.Instance;
+        Recipe retrieveRecipe = context.RecipeManager_Recipes.First(r => r.Id == Id);
+        retrieveRecipe.Description = description;
+        retrieveRecipe.PrepTimeMins = preptimeMins;
+        retrieveRecipe.CookTimeMins = cooktimeMins;
         UpdateIngredients(ingredients);
-        this.Tags = tags;
-
+        retrieveRecipe.Tags = tags;
+        context.SaveChanges();
     }
 
     // helper method that updates the list of ingredients in the recipe and also updates them in 
     // the system if they do not already exist
     private void UpdateIngredients(List<MeasuredIngredient> ingredients)
     {
+
         List<MeasuredIngredient> newIngredients = new();
         foreach (MeasuredIngredient i in ingredients)
         {
@@ -238,6 +271,7 @@ public class Recipe
         }
 
         this.Ingredients = newIngredients;
+
     }
 
     // overriding the equals to check either ID or name + owner
@@ -275,7 +309,7 @@ public class Recipe
         }
 
         this.Instructions = instructions;
-        UpdateIngredients(ingredients);
+        this.Ingredients = ingredients;
         this.Tags = tags;
 
         if (budget < 1 || budget > 3)

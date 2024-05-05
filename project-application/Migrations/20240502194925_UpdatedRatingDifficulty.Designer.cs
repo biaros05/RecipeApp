@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Oracle.EntityFrameworkCore.Metadata;
 
@@ -10,9 +11,11 @@ using Oracle.EntityFrameworkCore.Metadata;
 namespace project.Migrations
 {
     [DbContext(typeof(RecipesContext))]
-    partial class RecipesContextModelSnapshot : ModelSnapshot
+    [Migration("20240502194925_UpdatedRatingDifficulty")]
+    partial class UpdatedRatingDifficulty
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -96,7 +99,7 @@ namespace project.Migrations
 
                     OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<int?>("Id"));
 
-                    b.Property<int>("RecipeId")
+                    b.Property<int?>("RecipeId")
                         .HasColumnType("NUMBER(10)");
 
                     b.Property<string>("TagName")
@@ -298,13 +301,9 @@ namespace project.Migrations
 
             modelBuilder.Entity("Tag", b =>
                 {
-                    b.HasOne("recipes.Recipe", "Recipe")
+                    b.HasOne("recipes.Recipe", null)
                         .WithMany("Tags")
-                        .HasForeignKey("RecipeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Recipe");
+                        .HasForeignKey("RecipeId");
                 });
 
             modelBuilder.Entity("recipes.Instruction", b =>
