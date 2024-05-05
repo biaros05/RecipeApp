@@ -102,7 +102,7 @@ public class UserController
         user.Username=username;
         user.HashPass=hashpass;
 
-        context.Update(user);
+        context.Update(user); 
         context.SaveChanges();
     }
 
