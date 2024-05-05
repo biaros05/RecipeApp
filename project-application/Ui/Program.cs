@@ -629,15 +629,7 @@ public class Program
     public static Recipe ReturnOneRecipeFromFave(int num)
     {
         int count = 0;
-        foreach (Recipe r in UserController.Instance.ActiveUser.UserFavoriteRecipies)
-        {
-            if (count == num)
-            {
-                return r;
-            }
-            count++;
-        }
-        throw new Exception("no item in current position");
+        return UserController.Instance.ActiveUser.UserFavoriteRecipies.ToList()[num - 1];
     }
 
     private static void RemoveRecipeFromFavourites()
