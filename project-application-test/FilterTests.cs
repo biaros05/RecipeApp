@@ -289,8 +289,8 @@ public class FilterTests
                 new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict2, new List<Tag> { new("Tag1"), new("Tag2") }, 2)
             };
         //rate the first recipe 3 star and second 0
-        recipes[0].RateRecipe(3);
-        recipes[1].RateRecipe(1);
+        recipes[0].RateRecipe(3, UserController.Instance.ActiveUser);
+        recipes[1].RateRecipe(1, UserController.Instance.ActiveUser);
 
         //create expected results
         List<Recipe> expected = new()

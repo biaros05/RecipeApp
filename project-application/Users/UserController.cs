@@ -28,13 +28,14 @@ public class UserController
         {
             
             User user1 = new User(username, password);
-            AllUsers.Add(user1);
+            RecipesContext.Instance.Add(user1);
         }
         else
         {
             User user1 = new User(username, password, description);
-            AllUsers.Add(user1);
+            RecipesContext.Instance.Add(user1);
         }
+        RecipesContext.Instance.SaveChanges();
     }
     // make sure the user exists in the database, and the hashed password matches 
     // the hashed password of the username 
@@ -59,6 +60,7 @@ public class UserController
     }
 
     // retrieve list of users from db, remove active user from list, sned back new list to data layer
+    //FIXME - need to use fluent API to on cascade delete
     public void DeleteAccount(string username, string password)
     {
         var context = RecipesContext.Instance;
@@ -68,7 +70,8 @@ public class UserController
         {
             filtering = new(userQuery);
             User user = filtering.FilterUsers(username);
-            AllUsers.Remove(user);
+            context.Remove(user);
+            context.SaveChanges();
         }
     }
 

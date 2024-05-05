@@ -5,6 +5,7 @@ using System.Globalization;
 using filtering;
 using System.Xml;
 using System.Reflection.Metadata.Ecma335;
+using Microsoft.EntityFrameworkCore;
 namespace Ui;
 
 public class Program
@@ -254,8 +255,16 @@ public class Program
 
     private static void PrintRecipes()
     {
-        using var context = new RecipesContext();
-        List<Recipe> retrieveRecipes = context.RecipeManager_Recipes.ToList<Recipe>();
+        var context = RecipesContext.Instance;
+        List<Recipe> retrieveRecipes = context.RecipeManager_Recipes
+            .Include(recipe => recipe.Tags)
+            .Include(recipe => recipe._ratings)
+            .Include(recipe => recipe._difficulties)
+            .Include(recipe => recipe.Owner)
+            .Include(recipe => recipe.Ingredients)
+            .Include(recipe => recipe.Instructions)
+            .Include(recipe => recipe.UserFavourite)
+            .ToList<Recipe>();
         int num = 1;
         foreach (Recipe r in retrieveRecipes)
         {
@@ -568,13 +577,11 @@ public class Program
         PrintRecipes();
         Console.WriteLine("which recipie would you like to rate");
         int num = Convert.ToInt32(Console.ReadLine());
-
         Recipe recipe = ReturnOneRecipe(num - 1);
-
         Console.WriteLine("what would you like to rate this recipe out of 5?");
         int rating = Convert.ToInt32(Console.ReadLine());
-        recipe.RateRecipe(rating);
-
+        recipe.RateRecipe(rating, UserController.Instance.ActiveUser);
+        Console.WriteLine(recipe.Rating);
         Console.WriteLine("the recipe rating has been updated");
         Console.WriteLine(recipe);
 
@@ -601,7 +608,15 @@ public class Program
     public static Recipe ReturnOneRecipe(int num)
     {
         using var context = new RecipesContext();
-        List<Recipe> retrieveRecipes = context.RecipeManager_Recipes.ToList<Recipe>();
+        List<Recipe> retrieveRecipes = context.RecipeManager_Recipes.Include(recipe => recipe.Tags)
+            .Include(recipe => recipe.Tags)
+            .Include(recipe => recipe._ratings)
+            .Include(recipe => recipe._difficulties)
+            .Include(recipe => recipe.Owner)
+            .Include(recipe => recipe.Ingredients)
+            .Include(recipe => recipe.Instructions)
+            .Include(recipe => recipe.UserFavourite)
+            .ToList<Recipe>();
         int count = 0;
         foreach (Recipe r in retrieveRecipes)
         {
@@ -659,40 +674,42 @@ public class Program
     {
         LoginOrRegister();
 
-        Ingredient i = new("egg", Units.Quantity);
-        Ingredient b = new("meat", Units.Mass);
-        Ingredient c = new("food", Units.Mass);
-        List<MeasuredIngredient> dict = new()
-        {
-            new(b, 30 )
-        };
-        List<MeasuredIngredient> dict2 = new()
-        {
-            new( i, 20 ),
-            new( c, 10 )
-        };
-        List<MeasuredIngredient> dict3 = new()
-        {
-            new( c, 10 ),
-            new( i, 20 ),
-            new( b, 30 )
-        };
 
-        Recipe recipe = new("Test Recipe", UserController.Instance.ActiveUser, "Test Description", 120, 60, 10,
-            new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict, new List<Tag> { new("Tag1"), new("Tag2") }, 2);
-        Recipe recipe2 = new("TEST RECIPE2 meat", UserController.Instance.ActiveUser, "Test Description", 30, 60, 4,
-            new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict2, new List<Tag> { new("Tag3"), new("Tag2") }, 2);
-        Recipe recipe3 = new("GRRRRRRR meat", UserController.Instance.ActiveUser, "Test Description", 30, 60, 4,
-            new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict3, new List<Tag> { new("Tag3"), new("Tag2") }, 2);
+        // Ingredient i = new("egg", Units.Quantity);
+        // Ingredient b = new("meat", Units.Mass);
+        // Ingredient c = new("food", Units.Mass);
+        // List<MeasuredIngredient> dict = new()
+        // {
+        //     new(b, 30 )
+        // };
+        // Recipe recipe = new("Test Recipe", UserController.Instance.ActiveUser, "Test Description", 120, 60, 10,
+        //     new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict, new List<Tag> { new("Tag1"), new("Tag2") }, 2);
+        // RecipeController.Instance.CreateRecipe(recipe);
+
+        // List<MeasuredIngredient> dict2 = new()
+        // {
+        //     new( i, 20 ),
+        //     new( c, 10 )
+        // };
+        // List<MeasuredIngredient> dict3 = new()
+        // {
+        //     new( c, 10 ),
+        //     new( i, 20 ),
+        //     new( b, 30 )
+        // };
 
 
+        // Recipe recipe2 = new("TEST RECIPE2 meat", UserController.Instance.ActiveUser, "Test Description", 30, 60, 4,
+        //     new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict2, new List<Tag> { new("Tag3"), new("Tag2") }, 2);
+        // Recipe recipe3 = new("GRRRRRRR meat", UserController.Instance.ActiveUser, "Test Description", 30, 60, 4,
+        //     new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict3, new List<Tag> { new("Tag3"), new("Tag2") }, 2);
 
-        RecipeController.CreateRecipe(recipe);
-        RecipeController.CreateRecipe(recipe2);
-        RecipeController.CreateRecipe(recipe3);
 
-        RecipeController.DeleteRecipe(recipe);
 
+        // RecipeController.Instance.CreateRecipe(recipe2);
+        // RecipeController.Instance.CreateRecipe(recipe3);
+
+        // UserController.Instance.DeleteAccount("test user", "test user");
         while (true)
         {
             MainMenuOption? chosenOption = ConsoleUtils.GetUserChoice(

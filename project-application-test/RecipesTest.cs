@@ -2,12 +2,41 @@ namespace project_application_test;
 
 using System.Runtime.InteropServices;
 using System.Threading.Tasks.Dataflow;
+using filtering;
+using Microsoft.EntityFrameworkCore;
+using Moq;
 using recipes;
 using users;
 
 [TestClass]
 public class RecipesTest
 {
+    // private static (Mock<RecipesContext>, Mock<DbSet<Recipe>>) GetMocks()
+    // {
+    //     var mockContext = new Mock<RecipesContext>();
+    //     var mockRecipes = new Mock<DbSet<Recipe>>();
+    //     mockContext.Setup(mock => mock.RecipeManager_Recipes).Returns(mockRecipes.Object);
+
+    //     return (mockContext, mockRecipes);
+    // }
+    private static void ConfigureDbSetMock<T>(
+    IQueryable<T> data, Mock<DbSet<T>> mockDbSet) where T : class
+    {
+        mockDbSet.As<IQueryable<T>>().Setup(mock => mock.Provider)
+        .Returns(data.Provider);
+        mockDbSet.As<IQueryable<T>>().Setup(mock => mock.Expression)
+        .Returns(data.Expression);
+        mockDbSet.As<IQueryable<T>>().Setup(mock => mock.ElementType)
+        .Returns(data.ElementType);
+        mockDbSet.As<IQueryable<T>>().Setup(mock => mock.GetEnumerator())
+        .Returns(data.GetEnumerator());
+    }
+
+    [TestCleanup()]
+    public void Cleanup()
+    {
+        RecipesContext.Instance = null;
+    }
     // TESTS FOR NAME PROPERTY
     [TestMethod]
     public void Name_SetValidName_SetsNameCorrectly()
@@ -227,45 +256,111 @@ public class RecipesTest
     [TestMethod]
     public void RateRecipe_AddValidRating_ReturnsTrue()
     {
+        //test data
+        UserController.Instance.ActiveUser = new User("Bianca", "123456789");
         Ingredient i = new("egg", Units.Quantity);
-        List<MeasuredIngredient> dict = new();
-        dict.Add(new(i, 20));
-        Recipe recipe = new("Test Recipe", new User("Bianca", "123456789"), "Test Description", 30, 60, 4,
-            new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict, new List<Tag> { new("Tag1"), new("Tag2") }, 2);
+        List<MeasuredIngredient> dict = new()
+        {
+            new(i, 20)
+        };
+        var recipes = new List<Recipe>
+        {
+            new Recipe("Test Recipe", UserController.Instance.ActiveUser, "Test Description", 30, 60, 4,
+            new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict, new List<Tag> { new("Tag1"), new("Tag2") }, 2)
+        }.AsQueryable();
 
-        recipe.RateRecipe(4);
+        // act 
+        var mockContext = new Mock<RecipesContext>();
+        RecipesContext.Instance = mockContext.Object;
+        var mockSetRecipe = new Mock<DbSet<Recipe>>();
+        ConfigureDbSetMock(recipes, mockSetRecipe);
+        mockContext.Setup(m => m.RecipeManager_Recipes).Returns(mockSetRecipe.Object);
 
-        Assert.AreEqual(4, recipe.Rating);
+        RecipesContext.Instance.RecipeManager_Recipes.First().RateRecipe(4, UserController.Instance.ActiveUser);
+
+        //expected data
+        Recipe expected = new Recipe("Test Recipe", UserController.Instance.ActiveUser, "Test Description", 30, 60, 4,
+            new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict, new List<Tag> { new("Tag1"), new("Tag2") }, 2)
+        {
+            _ratings = new List<Rating>{
+            new(4, UserController.Instance.ActiveUser)
+        }
+        };
+        mockSetRecipe.Verify(mock => mock.Update(It.Is<Recipe>(
+            actual => expected.Equals(actual))), Times.Once);
+        mockContext.Verify(mock => mock.SaveChanges(), Times.Once);
     }
 
     [TestMethod]
     public void RateRecipe_AddSeveralRatings_ReturnsTrue()
     {
+        //test data
+        UserController.Instance.ActiveUser = new User("Bianca", "123456789");
         Ingredient i = new("egg", Units.Quantity);
-        List<MeasuredIngredient> dict = new();
-        dict.Add(new(i, 20));
-        Recipe recipe = new("Test Recipe", new User("Bianca", "123456789"), "Test Description", 30, 60, 4,
-            new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict, new List<Tag> { new("Tag1"), new("Tag2") }, 2);
+        List<MeasuredIngredient> dict = new()
+        {
+            new(i, 20)
+        };
+        var recipes = new List<Recipe>
+        {
+            new Recipe("Test Recipe", UserController.Instance.ActiveUser, "Test Description", 30, 60, 4,
+            new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict, new List<Tag> { new("Tag1"), new("Tag2") }, 2)
+        }.AsQueryable();
 
-        recipe.RateRecipe(4);
-        recipe.RateRecipe(5);
-        recipe.RateRecipe(5);
-        recipe.RateRecipe(3);
+        // act 
+        var mockContext = new Mock<RecipesContext>();
+        RecipesContext.Instance = mockContext.Object;
+        var mockSetRecipe = new Mock<DbSet<Recipe>>();
+        ConfigureDbSetMock(recipes, mockSetRecipe);
+        mockContext.Setup(m => m.RecipeManager_Recipes).Returns(mockSetRecipe.Object);
 
-        Assert.AreEqual(4.25, recipe.Rating);
+        RecipesContext.Instance.RecipeManager_Recipes.First().RateRecipe(4, UserController.Instance.ActiveUser);
+        RecipesContext.Instance.RecipeManager_Recipes.First().RateRecipe(5, new User("user1", "123456789"));
+        RecipesContext.Instance.RecipeManager_Recipes.First().RateRecipe(5, new User("user2", "123456789"));
+        RecipesContext.Instance.RecipeManager_Recipes.First().RateRecipe(3, new User("user3", "123456789"));
+
+        //expected data
+        Recipe expected = new Recipe("Test Recipe", UserController.Instance.ActiveUser, "Test Description", 30, 60, 4,
+            new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict, new List<Tag> { new("Tag1"), new("Tag2") }, 2)
+        {
+            _ratings = new List<Rating>{
+            new(4, UserController.Instance.ActiveUser),
+            new(5, new User("user1", "123456789")),
+            new(5, new User("user2", "123456789")),
+            new(3, new User("user3", "123456789"))
+        }
+        };
+        mockSetRecipe.Verify(mock => mock.Update(It.Is<Recipe>(
+            actual => expected.Equals(actual))), Times.Exactly(4));
+        mockContext.Verify(mock => mock.SaveChanges(), Times.Exactly(4));
     }
 
     [TestMethod]
     public void RateRecipe_RateLessThan1_ThrowsArgumentException()
     {
+        //test data
+        UserController.Instance.ActiveUser = new User("Bianca", "123456789");
         Ingredient i = new("egg", Units.Quantity);
-        List<MeasuredIngredient> dict = new();
-        dict.Add(new(i, 20));
-        Recipe recipe = new("Test Recipe", new User("Bianca", "123456789"), "Test Description", 30, 60, 4,
-            new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict, new List<Tag> { new("Tag1"), new("Tag2") }, 2);
+        List<MeasuredIngredient> dict = new()
+        {
+            new(i, 20)
+        };
+        var recipes = new List<Recipe>
+        {
+            new Recipe("Test Recipe", UserController.Instance.ActiveUser, "Test Description", 30, 60, 4,
+            new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict, new List<Tag> { new("Tag1"), new("Tag2") }, 2)
+        }.AsQueryable();
 
-        Action act = () => recipe.RateRecipe(-4);
+        // act 
+        var mockContext = new Mock<RecipesContext>();
+        RecipesContext.Instance = mockContext.Object;
+        var mockSetRecipe = new Mock<DbSet<Recipe>>();
+        ConfigureDbSetMock(recipes, mockSetRecipe);
+        mockContext.Setup(m => m.RecipeManager_Recipes).Returns(mockSetRecipe.Object);
 
+        Action act = () => RecipesContext.Instance.RecipeManager_Recipes.First().RateRecipe(-4, new User("Bianca", "123456789"));
+
+        
         Assert.ThrowsException<ArgumentOutOfRangeException>(act, "Rating cannot be less than 1");
     }
 
@@ -278,7 +373,7 @@ public class RecipesTest
         Recipe recipe = new("Test Recipe", new User("Bianca", "123456789"), "Test Description", 30, 60, 4,
             new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict, new List<Tag> { new("Tag1"), new("Tag2") }, 2);
 
-        Action act = () => recipe.RateRecipe(6);
+        Action act = () => recipe.RateRecipe(6, new User("Bianca", "123456789"));
 
         Assert.ThrowsException<ArgumentOutOfRangeException>(act, "Rating cannot be greater than 5");
     }
@@ -287,32 +382,83 @@ public class RecipesTest
     [TestMethod]
     public void RateDifficulty_AddValidRating_ReturnsTrue()
     {
+         //test data
+        UserController.Instance.ActiveUser = new User("Bianca", "123456789");
         Ingredient i = new("egg", Units.Quantity);
-        List<MeasuredIngredient> dict = new();
-        dict.Add(new(i, 20));
-        Recipe recipe = new("Test Recipe", new User("Bianca", "123456789"), "Test Description", 30, 60, 4,
-            new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict, new List<Tag> { new("Tag1"), new("Tag2") }, 2);
+        List<MeasuredIngredient> dict = new()
+        {
+            new(i, 20)
+        };
+        var recipes = new List<Recipe>
+        {
+            new Recipe("Test Recipe", UserController.Instance.ActiveUser, "Test Description", 30, 60, 4,
+            new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict, new List<Tag> { new("Tag1"), new("Tag2") }, 2)
+        }.AsQueryable();
 
-        recipe.RateDifficulty(4);
+        // act 
+        var mockContext = new Mock<RecipesContext>();
+        RecipesContext.Instance = mockContext.Object;
+        var mockSetRecipe = new Mock<DbSet<Recipe>>();
+        ConfigureDbSetMock(recipes, mockSetRecipe);
+        mockContext.Setup(m => m.RecipeManager_Recipes).Returns(mockSetRecipe.Object);
 
-        Assert.AreEqual(4, recipe.DifficultyRating);
+        RecipesContext.Instance.RecipeManager_Recipes.First().RateDifficulty(4, new User("Bianca", "123456789"));
+
+        //expected data
+        Recipe expected = new Recipe("Test Recipe", UserController.Instance.ActiveUser, "Test Description", 30, 60, 4,
+            new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict, new List<Tag> { new("Tag1"), new("Tag2") }, 2)
+        {
+            _difficulties = new List<DifficultyRating>{
+            new(4, UserController.Instance.ActiveUser)
+        }
+        };
+        mockSetRecipe.Verify(mock => mock.Update(It.Is<Recipe>(
+            actual => expected.Equals(actual))), Times.Once);
+        mockContext.Verify(mock => mock.SaveChanges(), Times.Once);
     }
 
     [TestMethod]
     public void RateDifficulty_AddSeveralRatings_ReturnsTrue()
     {
+        //test data
+        UserController.Instance.ActiveUser = new User("Bianca", "123456789");
         Ingredient i = new("egg", Units.Quantity);
-        List<MeasuredIngredient> dict = new();
-        dict.Add(new(i, 20));
-        Recipe recipe = new("Test Recipe", new User("Bianca", "123456789"), "Test Description", 30, 60, 4,
-            new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict, new List<Tag> { new("Tag1"), new("Tag2") }, 2);
+        List<MeasuredIngredient> dict = new()
+        {
+            new(i, 20)
+        };
+        var recipes = new List<Recipe>
+        {
+            new Recipe("Test Recipe", UserController.Instance.ActiveUser, "Test Description", 30, 60, 4,
+            new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict, new List<Tag> { new("Tag1"), new("Tag2") }, 2)
+        }.AsQueryable();
 
-        recipe.RateDifficulty(4);
-        recipe.RateDifficulty(10);
-        recipe.RateDifficulty(8);
-        recipe.RateDifficulty(5);
+        // act 
+        var mockContext = new Mock<RecipesContext>();
+        RecipesContext.Instance = mockContext.Object;
+        var mockSetRecipe = new Mock<DbSet<Recipe>>();
+        ConfigureDbSetMock(recipes, mockSetRecipe);
+        mockContext.Setup(m => m.RecipeManager_Recipes).Returns(mockSetRecipe.Object);
 
-        Assert.AreEqual(7, recipe.DifficultyRating);
+        RecipesContext.Instance.RecipeManager_Recipes.First().RateDifficulty(4, UserController.Instance.ActiveUser);
+        RecipesContext.Instance.RecipeManager_Recipes.First().RateDifficulty(6, new User("user1", "123456789"));
+        RecipesContext.Instance.RecipeManager_Recipes.First().RateDifficulty(7, new User("user2", "123456789"));
+        RecipesContext.Instance.RecipeManager_Recipes.First().RateDifficulty(3, new User("user3", "123456789"));
+
+        //expected data
+        Recipe expected = new Recipe("Test Recipe", UserController.Instance.ActiveUser, "Test Description", 30, 60, 4,
+            new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict, new List<Tag> { new("Tag1"), new("Tag2") }, 2)
+        {
+            _difficulties = new List<DifficultyRating>{
+            new(4, UserController.Instance.ActiveUser),
+            new(6, new User("user1", "123456789")),
+            new(7, new User("user2", "123456789")),
+            new(3, new User("user3", "123456789"))
+        }
+        };
+        mockSetRecipe.Verify(mock => mock.Update(It.Is<Recipe>(
+            actual => expected.Equals(actual))), Times.Exactly(4));
+        mockContext.Verify(mock => mock.SaveChanges(), Times.Exactly(4));
     }
 
     [TestMethod]
@@ -324,7 +470,7 @@ public class RecipesTest
         Recipe recipe = new("Test Recipe", new User("Bianca", "123456789"), "Test Description", 30, 60, 4,
             new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict, new List<Tag> { new("Tag1"), new("Tag2") }, 2);
 
-        Action act = () => recipe.RateDifficulty(-4);
+        Action act = () => recipe.RateDifficulty(-4, new User("Bianca", "123456789"));
 
         Assert.ThrowsException<ArgumentOutOfRangeException>(act, "Difficulty rating cannot be less than 1");
     }
@@ -338,7 +484,7 @@ public class RecipesTest
         Recipe recipe = new("Test Recipe", new User("Bianca", "123456789"), "Test Description", 30, 60, 4,
             new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict, new List<Tag> { new("Tag1"), new("Tag2") }, 2);
 
-        Action act = () => recipe.RateDifficulty(11);
+        Action act = () => recipe.RateDifficulty(11, new User("Bianca", "123456789"));
 
         Assert.ThrowsException<ArgumentOutOfRangeException>(act, "Rating cannot be greater than 10");
     }
@@ -347,16 +493,35 @@ public class RecipesTest
     [TestMethod]
     public void AddTag_CorrectTag_ReturnsTrue()
     {
+        //test data
+        UserController.Instance.ActiveUser = new User("Bianca", "123456789");
         Ingredient i = new("egg", Units.Quantity);
-        List<MeasuredIngredient> dict = new();
-        dict.Add(new(i, 20));
-        Recipe recipe = new("Test Recipe", new User("Bianca", "123456789"), "Test Description", 30, 60, 4,
-            new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict, new List<Tag> { new("Tag1"), new("Tag2") }, 2);
-        List<string> correctTags = new() { "Tag1", "Tag2", "school lunch" };
+        List<MeasuredIngredient> dict = new()
+        {
+            new(i, 20)
+        };
+        var recipes = new List<Recipe>
+        {
+            new Recipe("Test Recipe", UserController.Instance.ActiveUser, "Test Description", 30, 60, 4,
+            new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict, new List<Tag> { new("Tag1"), new("Tag2") }, 2)
+        }.AsQueryable();
 
-        recipe.AddTag("school lunch");
+        // act 
+        var mockContext = new Mock<RecipesContext>();
+        RecipesContext.Instance = mockContext.Object;
+        var mockSetRecipe = new Mock<DbSet<Recipe>>();
+        ConfigureDbSetMock(recipes, mockSetRecipe);
+        mockContext.Setup(m => m.RecipeManager_Recipes).Returns(mockSetRecipe.Object);
 
-        CollectionAssert.AreEqual(correctTags, recipe.Tags);
+        RecipesContext.Instance.RecipeManager_Recipes.First().AddTag("school lunch");
+
+        //expected data
+        Recipe expected = new Recipe("Test Recipe", UserController.Instance.ActiveUser, "Test Description", 30, 60, 4,
+            new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict, new List<Tag> { new("Tag1"), new("Tag2"), new("school lunch") }, 2);
+
+        mockSetRecipe.Verify(mock => mock.Update(It.Is<Recipe>(
+            actual => expected.Equals(actual))), Times.Once);
+        mockContext.Verify(mock => mock.SaveChanges(), Times.Once);
     }
 
     [TestMethod]
@@ -393,54 +558,105 @@ public class RecipesTest
     [TestMethod]
     public void UpdateRecipe_CorrectParameters_UpdatesRecipesCorrectly()
     {
+        //test data
+        UserController.Instance.ActiveUser = new User("Bianca", "123456789");
         Ingredient i = new("egg", Units.Quantity);
-        List<MeasuredIngredient> dict = new();
-        dict.Add(new(i, 20));
-        Recipe recipe = new("Test Recipe", new User("Bianca", "123456789"), "Test Description", 30, 60, 4,
-            new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict, new List<Tag> { new("Tag1"), new("Tag2") }, 2);
+        List<MeasuredIngredient> dict = new()
+        {
+            new(i, 20)
+        };
+        var ing = new List<Ingredient>()
+        {
+            i
+        }.AsQueryable();
+        var recipes = new List<Recipe>
+        {
+            new Recipe("Test Recipe", UserController.Instance.ActiveUser, "Test Description", 30, 60, 4,
+            new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict, new List<Tag> { new("Tag1"), new("Tag2") }, 2)
+        }.AsQueryable();
+
+        // act 
+        var mockContext = new Mock<RecipesContext>();
+        RecipesContext.Instance = mockContext.Object;
+        var mockSetRecipe = new Mock<DbSet<Recipe>>();
+        ConfigureDbSetMock(recipes, mockSetRecipe);
+        mockContext.Setup(m => m.RecipeManager_Recipes).Returns(mockSetRecipe.Object);
+        
+        var mockSetIngredients = new Mock<DbSet<Ingredient>>();
+        ConfigureDbSetMock(ing, mockSetIngredients);
+        mockContext.Setup(m => m.RecipeManager_Ingredients).Returns(mockSetIngredients.Object);
 
         string newDescription = "Updated Description";
         int newPrepTime = 45;
         int newCookTime = 75;
-        List<MeasuredIngredient> newIngredients = new();
-        newIngredients.Add(new(new Ingredient("flour", Units.Mass), 300));
-        newIngredients.Add(new(new Ingredient("egg", Units.Quantity), 4));
-        List<Tag> newTags = new List<Tag>{ new("NewTag1"), new("NewTag2" )};
+        List<MeasuredIngredient> newIngredients = new()
+        {
+            new(new Ingredient("flour", Units.Mass), 300),
+            new(new Ingredient("egg", Units.Quantity), 4)
+        };
+        List<Tag> newTags = new List<Tag> { new("NewTag1"), new("NewTag2") };
 
-        recipe.UpdateRecipe(newDescription, newPrepTime, newCookTime, newIngredients, newTags);
+        RecipesContext.Instance.RecipeManager_Recipes.First().UpdateRecipe(newDescription, newPrepTime, newCookTime, newIngredients, newTags);
 
-        Assert.AreEqual(newDescription, recipe.Description);
-        Assert.AreEqual(newPrepTime, recipe.PrepTimeMins);
-        Assert.AreEqual(newCookTime, recipe.CookTimeMins);
-        CollectionAssert.AreEquivalent(newIngredients, recipe.Ingredients);
-        CollectionAssert.AreEquivalent(newTags, recipe.Tags);
+        //expected data
+        Recipe expected = new Recipe("Test Recipe", UserController.Instance.ActiveUser, "Updated Description", 45, 75, 4,
+            new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, newIngredients, newTags, 2);
+
+        mockSetRecipe.Verify(mock => mock.Update(It.Is<Recipe>(
+            actual => expected.Equals(actual))), Times.Once);
+        mockContext.Verify(mock => mock.SaveChanges(), Times.AtLeastOnce);
     }
 
     [TestMethod]
     public void UpdateRecipe_EmptyDescription_UpdatesRecipesCorrectly()
     {
-        RecipeController instance = RecipeController.Instance;
+        //test data
+        UserController.Instance.ActiveUser = new User("Bianca", "123456789");
         Ingredient i = new("egg", Units.Quantity);
-        List<MeasuredIngredient> dict = new();
-        dict.Add(new(i, 20));
-        Recipe recipe = new("Test Recipe", new User("Bianca", "123456789"), "Test Description", 30, 60, 4,
-            new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict, new List<Tag> { new("Tag1"), new("Tag2") }, 2);
+        List<MeasuredIngredient> dict = new()
+        {
+            new(i, 20)
+        };
+        var ing = new List<Ingredient>()
+        {
+            i
+        }.AsQueryable();
+        var recipes = new List<Recipe>
+        {
+            new Recipe("Test Recipe", UserController.Instance.ActiveUser, "Test Description", 30, 60, 4,
+            new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict, new List<Tag> { new("Tag1"), new("Tag2") }, 2)
+        }.AsQueryable();
+
+        // act 
+        var mockContext = new Mock<RecipesContext>();
+        RecipesContext.Instance = mockContext.Object;
+        var mockSetRecipe = new Mock<DbSet<Recipe>>();
+        ConfigureDbSetMock(recipes, mockSetRecipe);
+        mockContext.Setup(m => m.RecipeManager_Recipes).Returns(mockSetRecipe.Object);
+        
+        var mockSetIngredients = new Mock<DbSet<Ingredient>>();
+        ConfigureDbSetMock(ing, mockSetIngredients);
+        mockContext.Setup(m => m.RecipeManager_Ingredients).Returns(mockSetIngredients.Object);
 
         string newDescription = "";
         int newPrepTime = 45;
         int newCookTime = 75;
-        List<MeasuredIngredient> newIngredients = new();
-        newIngredients.Add(new(new Ingredient("flour", Units.Mass), 300));
-        List<Tag> newTags = new List<Tag>{ new("NewTag1"), new("NewTag2" )};
-        List<Ingredient> ingredients = new() { new("egg", Units.Quantity), new Ingredient("flour", Units.Mass) };
+        List<MeasuredIngredient> newIngredients = new()
+        {
+            new(new Ingredient("flour", Units.Mass), 300),
+            new(new Ingredient("egg", Units.Quantity), 4)
+        };
+        List<Tag> newTags = new List<Tag> { new("NewTag1"), new("NewTag2") };
 
-        recipe.UpdateRecipe(newDescription, newPrepTime, newCookTime, newIngredients, newTags);
+        RecipesContext.Instance.RecipeManager_Recipes.First().UpdateRecipe(newDescription, newPrepTime, newCookTime, newIngredients, newTags);
 
-        Assert.AreEqual("Test Recipe", recipe.Description);
-        Assert.AreEqual(newPrepTime, recipe.PrepTimeMins);
-        Assert.AreEqual(newCookTime, recipe.CookTimeMins);
-        CollectionAssert.AreEquivalent(newIngredients, recipe.Ingredients);
-        CollectionAssert.AreEquivalent(newTags, recipe.Tags);
+        //expected data
+        Recipe expected = new Recipe("Test Recipe", UserController.Instance.ActiveUser, "", 45, 75, 4,
+            new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, newIngredients, newTags, 2);
+
+        mockSetRecipe.Verify(mock => mock.Update(It.Is<Recipe>(
+            actual => expected.Equals(actual))), Times.Once);
+        mockContext.Verify(mock => mock.SaveChanges(), Times.AtLeastOnce);
     }
 
     [TestMethod]
@@ -457,7 +673,7 @@ public class RecipesTest
         int newCookTime = 75;
         List<MeasuredIngredient> newIngredients = new();
         newIngredients.Add(new(new Ingredient("flour", Units.Quantity), 300));
-        List<Tag> newTags = new List<Tag>{ new("NewTag1"), new("NewTag2" )};
+        List<Tag> newTags = new List<Tag> { new("NewTag1"), new("NewTag2") };
 
         Action act = () => recipe.UpdateRecipe(newDescription, newPrepTime, newCookTime, newIngredients, newTags);
 
@@ -478,7 +694,7 @@ public class RecipesTest
         int newCookTime = 75;
         List<MeasuredIngredient> newIngredients = new();
         newIngredients.Add(new(new Ingredient("flour", Units.Quantity), 300));
-        List<Tag> newTags = new List<Tag>{ new("NewTag1"), new("NewTag2" )};
+        List<Tag> newTags = new List<Tag> { new("NewTag1"), new("NewTag2") };
 
         Action act = () => recipe.UpdateRecipe(newDescription, newPrepTime, newCookTime, newIngredients, newTags);
 
@@ -499,7 +715,7 @@ public class RecipesTest
         int newCookTime = 750;
         List<MeasuredIngredient> newIngredients = new();
         newIngredients.Add(new(new Ingredient("flour", Units.Quantity), 300));
-        List<Tag> newTags = new List<Tag>{ new("NewTag1"), new("NewTag2" )};
+        List<Tag> newTags = new List<Tag> { new("NewTag1"), new("NewTag2") };
 
         Action act = () => recipe.UpdateRecipe(newDescription, newPrepTime, newCookTime, newIngredients, newTags);
 
@@ -520,7 +736,7 @@ public class RecipesTest
         int newCookTime = -10;
         List<MeasuredIngredient> newIngredients = new();
         newIngredients.Add(new(new Ingredient("flour", Units.Quantity), 300));
-        List<Tag> newTags = new List<Tag>{ new("NewTag1"), new("NewTag2" )};
+        List<Tag> newTags = new List<Tag> { new("NewTag1"), new("NewTag2") };
 
         Action act = () => recipe.UpdateRecipe(newDescription, newPrepTime, newCookTime, newIngredients, newTags);
 
@@ -540,7 +756,7 @@ public class RecipesTest
         List<MeasuredIngredient> newIngredients = new();
         newIngredients.Add(new(new Ingredient("flour", Units.Quantity), 300));
         List<Instruction> instructions = new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") };
-        List<Tag> newTags = new List<Tag>{ new("Tag1"), new("Tag2") };
+        List<Tag> newTags = new List<Tag> { new("Tag1"), new("Tag2") };
         int budget = 2;
 
         Recipe recipe = new(name, owner, newDescription, newPrepTime, newCookTime, numServings, instructions, newIngredients, newTags, budget);
@@ -571,7 +787,7 @@ public class RecipesTest
         newIngredients.Add(new(new Ingredient("flour", Units.Quantity), 300));
         List<Instruction> instructions = new();
 
-        List<Tag> newTags = new List<Tag> {new( "Tag1"), new("Tag2") };
+        List<Tag> newTags = new List<Tag> { new("Tag1"), new("Tag2") };
         int budget = 2;
 
         Action act = () => new Recipe(name, owner, newDescription, newPrepTime, newCookTime, numServings, instructions, newIngredients, newTags, budget);
@@ -590,7 +806,7 @@ public class RecipesTest
         int numServings = 4;
         List<MeasuredIngredient> newIngredients = new();
         List<Instruction> instructions = new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") };
-        List<Tag> newTags = new List<Tag> {new( "Tag1"), new("Tag2") };
+        List<Tag> newTags = new List<Tag> { new("Tag1"), new("Tag2") };
         int budget = 2;
 
         Action act = () => new Recipe(name, owner, newDescription, newPrepTime, newCookTime, numServings, instructions, newIngredients, newTags, budget);
@@ -610,7 +826,7 @@ public class RecipesTest
         List<MeasuredIngredient> newIngredients = new();
         newIngredients.Add(new(new Ingredient("flour", Units.Quantity), 300));
         List<Instruction> instructions = new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") };
-        List<Tag> newTags = new List<Tag> {new( "Tag1"), new("Tag2") };
+        List<Tag> newTags = new List<Tag> { new("Tag1"), new("Tag2") };
         int budget = 4;
 
         Action act = () => new Recipe(name, owner, newDescription, newPrepTime, newCookTime, numServings, instructions, newIngredients, newTags, budget);
@@ -630,7 +846,7 @@ public class RecipesTest
         List<MeasuredIngredient> newIngredients = new();
         newIngredients.Add(new(new Ingredient("flour", Units.Quantity), 300));
         List<Instruction> instructions = new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") };
-        List<Tag> newTags = new List<Tag> {new( "Tag1"), new("Tag2") };
+        List<Tag> newTags = new List<Tag> { new("Tag1"), new("Tag2") };
         int budget = 0;
 
         Action act = () => new Recipe(name, owner, newDescription, newPrepTime, newCookTime, numServings, instructions, newIngredients, newTags, budget);
@@ -651,7 +867,7 @@ public class RecipesTest
         List<MeasuredIngredient> newIngredients = new();
         newIngredients.Add(new(new Ingredient("flour", Units.Quantity), 300));
         List<Instruction> instructions = new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") };
-        List<Tag> newTags = new List<Tag> {new( "Tag1"), new("Tag2") };
+        List<Tag> newTags = new List<Tag> { new("Tag1"), new("Tag2") };
         int budget = 2;
         Recipe recipe = new(name, owner, newDescription, newPrepTime, newCookTime, numServings, instructions, newIngredients, newTags, budget);
 

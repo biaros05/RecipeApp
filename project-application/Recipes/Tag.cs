@@ -1,8 +1,12 @@
-
+using System.ComponentModel.DataAnnotations.Schema;
+using recipes;
 public class Tag
 {
     public int? Id {get; set;}
     public string TagName {get; set;}
+
+    public Recipe Recipe {get; set;}
+
     public Tag(string tag)
     {
         this.TagName = tag;
