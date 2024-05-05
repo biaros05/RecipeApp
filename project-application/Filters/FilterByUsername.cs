@@ -6,15 +6,11 @@ public class FilterByUsername
     private readonly IQueryable<User> Users;
     public FilterByUsername(IQueryable<User> users)
     {
-        if (users == null)
-        {
-            throw new InvalidOperationException("List of users cannot be null");
-        }
-        Users = users;
+        Users = users ?? throw new InvalidOperationException("IQueryable of users cannot be null");
     }
 
     /// <summary>
-    /// Filters the list of users created in constructor by the given username
+    /// Filters the IQueryable of users created in constructor by the given username
     /// </summary>
     /// <param name="username">given user name to filter by</param>
     /// <returns>ONE filtered user object that matches</returns>

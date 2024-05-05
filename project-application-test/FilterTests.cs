@@ -75,15 +75,14 @@ public class FilterTests
                 new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict2, new List<Tag> { new("Tag4"), new("Tag6") }, 2)
             };
 
+        // //finalize context
+        RecipesContext.Instance = mockContext.Object;
+
         // set up queryable data
         var data = recipes.AsQueryable();
         ConfigureDbSetMock<Recipe>(data, mockSetRecipe);
         var ingredientsData = recipes.SelectMany(recipe => recipe.Ingredients.Select(mi => mi.Ingredient)).Distinct().AsQueryable();
         ConfigureDbSetMock<Ingredient>(ingredientsData, mockSetIngredient);
-
-        // //finalize context
-        RecipesContext.Instance = mockContext.Object;
-        var service = RecipesContext.Instance;
 
         //filter & obtain query results
         IFilterBy filter = new FilterByTime(75, 130);
@@ -166,15 +165,14 @@ public class FilterTests
                 new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict2, new List<Tag> { new("Tag1"), new("Tag2") }, 2)
             };
 
+        // //finalize context
+        RecipesContext.Instance = mockContext.Object;
+
         // set up queryable data
         var data = recipes.AsQueryable();
         ConfigureDbSetMock<Recipe>(data, mockSetRecipe);
         var ingredientsData = recipes.SelectMany(recipe => recipe.Ingredients.Select(mi => mi.Ingredient)).Distinct().AsQueryable();
         ConfigureDbSetMock<Ingredient>(ingredientsData, mockSetIngredient);
-
-        //finalize context
-        RecipesContext.Instance = mockContext.Object;
-        var service = RecipesContext.Instance;
 
         IFilterBy filter = new FilterByKeyword("Test");
         IQueryable<Recipe> filteredRecipes = filter.FilterRecipes(data);
@@ -234,15 +232,14 @@ public class FilterTests
                 new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict, new List<Tag> { new("Tag1"), new("Tag2") }, 2)
             };
 
+        // //finalize context
+        RecipesContext.Instance = mockContext.Object;
+
         // set up queryable data
         var data = recipes.AsQueryable();
         ConfigureDbSetMock<Recipe>(data, mockSetRecipe);
         var ingredientsData = recipes.SelectMany(recipe => recipe.Ingredients.Select(mi => mi.Ingredient)).Distinct().AsQueryable();
         ConfigureDbSetMock<Ingredient>(ingredientsData, mockSetIngredient);
-
-        //finalize context
-        RecipesContext.Instance = mockContext.Object;
-        var service = RecipesContext.Instance;
 
         // calling filtering
         IFilterBy filter = new FilterByIngredients(lookingForIngredient);
@@ -302,15 +299,14 @@ public class FilterTests
                 new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict, new List<Tag> { new("Tag1"), new("Tag2") }, 2),
             };
 
+            // //finalize context
+        RecipesContext.Instance = mockContext.Object;
+
         // set up queryable data
         var data = recipes.AsQueryable();
         ConfigureDbSetMock<Recipe>(data, mockSetRecipe);
         var ingredientsData = recipes.SelectMany(recipe => recipe.Ingredients.Select(mi => mi.Ingredient)).Distinct().AsQueryable();
         ConfigureDbSetMock<Ingredient>(ingredientsData, mockSetIngredient);
-
-        //finalize context
-        RecipesContext.Instance = mockContext.Object;
-        var service = RecipesContext.Instance;
 
         IFilterBy filter = new FilterByRating(3);
         IQueryable<Recipe> filteredRecipes = filter.FilterRecipes(data);
@@ -388,15 +384,14 @@ public class FilterTests
             new("Tag2")
         };
 
+        //finalize context
+        RecipesContext.Instance = mockContext.Object;
+
         // set up queryable data
         var data = recipes.AsQueryable();
         ConfigureDbSetMock<Recipe>(data, mockSetRecipe);
         var ingredientsData = recipes.SelectMany(recipe => recipe.Ingredients.Select(mi => mi.Ingredient)).Distinct().AsQueryable();
         ConfigureDbSetMock<Ingredient>(ingredientsData, mockSetIngredient);
-
-        //finalize context
-        RecipesContext.Instance = mockContext.Object;
-        var service = RecipesContext.Instance;
 
         IFilterBy filter = new FilterByTags(tags);
         IQueryable<Recipe> filteredRecipes = filter.FilterRecipes(data);
@@ -453,6 +448,9 @@ public class FilterTests
                 new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict, new List<Tag> { new("Tag1"), new("Tag2") }, 2),
             };
 
+        //finalize context
+        RecipesContext.Instance = mockContext.Object;
+
         // set up queryable data
         var data = recipes.AsQueryable();
         ConfigureDbSetMock<Recipe>(data, mockSetRecipe);
@@ -460,10 +458,6 @@ public class FilterTests
         ConfigureDbSetMock<User>(usersData, mockSetUser);
         var ingredientsData = recipes.SelectMany(recipe => recipe.Ingredients.Select(mi => mi.Ingredient)).Distinct().AsQueryable();
         ConfigureDbSetMock<Ingredient>(ingredientsData, mockSetIngredient);
-
-        //finalize context
-        RecipesContext.Instance = mockContext.Object;
-        var service = RecipesContext.Instance;
 
         IFilterBy filter = new FilterByOwner(new User("Bianca", "123456789"));
         IQueryable<Recipe> filteredRecipes = filter.FilterRecipes(data);
@@ -522,15 +516,14 @@ public class FilterTests
                 new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict2, new List<Tag> { new("Tag1"), new("Tag2") }, 2)
             };
 
+        //finalize context
+        RecipesContext.Instance = mockContext.Object;
+
         // set up queryable data
         var data = recipes.AsQueryable();
         ConfigureDbSetMock<Recipe>(data, mockSetRecipe);
         var ingredientsData = recipes.SelectMany(recipe => recipe.Ingredients.Select(mi => mi.Ingredient)).Distinct().AsQueryable();
         ConfigureDbSetMock<Ingredient>(ingredientsData, mockSetIngredient);
-
-        //finalize context
-        RecipesContext.Instance = mockContext.Object;
-        var service = RecipesContext.Instance;
 
         //filter
         IFilterBy filter = new FilterByServings(3, 6);
@@ -575,13 +568,12 @@ public class FilterTests
             new User("Doeey", "123456789")
         };
 
+        //finalize context
+        RecipesContext.Instance = mockContext.Object;
+
         // set up queryable data
         var data = users.AsQueryable();
         ConfigureDbSetMock<User>(data, mockSetUsers);
-
-        //finalize context
-        RecipesContext.Instance = mockContext.Object;
-        var service = RecipesContext.Instance;
 
         // filter the users
         FilterByUsername filter = new FilterByUsername(data);
@@ -597,18 +589,16 @@ public class FilterTests
     {
         var mockContext = new Mock<RecipesContext>();
 
-        // basic setup
-        var mockSetUsers = new Mock<DbSet<User>>();
-        mockContext.Setup(m => m.RecipeManager_Users).Returns(mockSetUsers.Object);
-
-        // creating new test data
         List<User> users = new() { };
-        var data = users.AsQueryable();
-        ConfigureDbSetMock<User>(data, mockSetUsers);
 
         //finalize context
         RecipesContext.Instance = mockContext.Object;
-        var service = RecipesContext.Instance;
+
+        // creating new test data
+        var mockSetUsers = new Mock<DbSet<User>>();
+        mockContext.Setup(m => m.RecipeManager_Users).Returns(mockSetUsers.Object);
+        var data = users.AsQueryable();
+        ConfigureDbSetMock<User>(data, mockSetUsers);
 
         // filter the users
         FilterByUsername filter = new FilterByUsername(data);
