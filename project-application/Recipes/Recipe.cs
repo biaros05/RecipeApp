@@ -201,7 +201,6 @@ public class Recipe
 
     }
 
-    // will take all parameters for a recipe and update the necessary fields
     public void UpdateRecipe(
     string description, int preptimeMins, int cooktimeMins,
     List<MeasuredIngredient> ingredients, List<Tag> tags)

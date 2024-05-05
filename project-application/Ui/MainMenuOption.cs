@@ -6,10 +6,13 @@ namespace Ui;
 enum MainMenuOption
 {
   CreateRecipe,
+  UpdateRecipe,
   FilterRecipeSearch,
   AddRecipeToFavourites,
   RateRecipe,
   ViewRecipes,
   RemoveFromFavourites,
-  ViewFavoriteRecipes
+  ViewFavoriteRecipes,
+  DeleteAccount,
+  Logout
 }

@@ -9,7 +9,7 @@ using users;
 namespace recipes;
 public class RecipeController
 {
-    public List<IFilterBy> Filters { get; set;} = new();
+    public List<IFilterBy> Filters { get; set; } = new();
     public List<Recipe> AllRecipes { get; } = new();
     public List<Ingredient> Ingredients { get; } = new();
 
@@ -34,7 +34,11 @@ public class RecipeController
         }
     }
 
-    // will add the recipe to the list of all recipes
+    /// <summary>
+    /// this method will add the new recipe to the database. 
+    /// it will check that it doesnt yet exist and will also make sure the proper user is logged in before creating
+    /// </summary>
+    /// <param name="recipe">The recipe to create</param>
     public static void CreateRecipe(Recipe recipe)
     {
         var context = RecipesContext.Instance;
@@ -53,7 +57,11 @@ public class RecipeController
 
     }
 
-    // adds an ingredient to the list of ingredients available for selection
+    /// <summary>
+    ///  this will add am ingredient to the database. 
+    /// if it already exists, it will refrain from adding
+    /// </summary>
+    /// <param name="ingredient">The ingredient to add</param>
     public static void AddIngredient(Ingredient ingredient)
     {
         var context = RecipesContext.Instance;
@@ -65,7 +73,11 @@ public class RecipeController
         }
     }
 
-    // get list of recipes, and remove particular recipe. only allows owner to remove recipe
+    /// <summary>
+    /// this method will delete a recipe from the database. if the recipe does not exist
+    /// or if the logged in user is not the recipe's owner, it will throw an exception
+    /// </summary>
+    /// <param name="recipe">The recipe to delete</param>
     public static void DeleteRecipe(Recipe recipe)
     {
 
@@ -85,7 +97,11 @@ public class RecipeController
     }
 
 
-    // filters all recipes using the filters in the list **********
+    /// <summary>
+    /// this method will apply all the filters in the current Filters list 
+    /// and filter the recipes in the database, returning a list of recipes
+    /// </summary>
+    /// <returns>List of filtered recipes</returns>
     public List<Recipe> FilterBy()
     {
         var context = RecipesContext.Instance;
@@ -97,8 +113,10 @@ public class RecipeController
         return recipeQuery.ToList<Recipe>();
     }
 
-    // as the user adds a filter, this will accumilate the filters (will NOT add one if already there.)
-
+    /// <summary>
+    /// this method will add a filter to the list if it does not already exits
+    /// </summary>
+    /// <param name="filter">The filter to add</param>
     public void AddFilter(IFilterBy filter)
     {
         if (Filters.Contains(filter))
@@ -108,6 +126,10 @@ public class RecipeController
         Filters.Add(filter);
     }
 
+    /// <summary>
+    /// this method will remove a filter from the list if it exists
+    /// </summary>
+    /// <param name="filter">The filter to remove</param>
     public void RemoveFilter(IFilterBy filter)
     {
         if (!Filters.Contains(filter))
@@ -117,6 +139,9 @@ public class RecipeController
         Filters.Remove(filter);
     }
 
+    /// <summary>
+    /// this method effectively clears all the filters from the Filters list
+    /// </summary>
     public void RemoveAllFilters()
     {
         Filters = new();

@@ -225,6 +225,33 @@ public class Program
         RecipeController.CreateRecipe(newRecipe);
     }
 
+    private static void EditRecipe()
+    {
+        PrintRecipes();
+        Console.WriteLine("Enter the recipe you would like to edit");
+        int num = ValidateInt();
+        Recipe toEdit = ReturnOneRecipe(num);
+        string description = Console.ReadLine();
+        Console.WriteLine("Prep time of Recipe (in minutes):");
+        int prepTimeMins = ValidateInt();
+        Console.WriteLine("Cook time of Recipe (in minutes):");
+        int cookTimeMins = ValidateInt();
+        Console.WriteLine("List the ingredients:");
+        List<MeasuredIngredient> ingredients = FillIngredients();
+        Console.WriteLine("Add Tags to recipe:");
+        List<Tag> tags = FillTags();
+
+        try
+        {
+            toEdit.UpdateRecipe(description, prepTimeMins, cookTimeMins, ingredients, tags);
+        }
+        catch (ArgumentException e)
+        {
+            Console.WriteLine(e.Message);
+        }
+
+    }
+
     private static void PrintRecipes()
     {
         using var context = new RecipesContext();
@@ -233,6 +260,19 @@ public class Program
         foreach (Recipe r in retrieveRecipes)
         {
             Console.WriteLine($"{num}. {r}");
+            num++;
+        }
+        ConsoleUtils.WaitUserPressKey();
+    }
+
+    private static void PrintUsers()
+    {
+        using var context = new RecipesContext();
+        List<User> retrieveUsers = context.RecipeManager_Users.ToList<User>();
+        int num = 1;
+        foreach (User u in retrieveUsers)
+        {
+            Console.WriteLine($"{num}. {u}");
             num++;
         }
         ConsoleUtils.WaitUserPressKey();
@@ -326,6 +366,7 @@ public class Program
         {
             try
             {
+                PrintUsers();
                 Console.WriteLine("Enter a username who's recipes you would like to search for:");
                 string? username = Console.ReadLine();
                 if (username == null || username == "")
@@ -334,7 +375,10 @@ public class Program
                 }
                 Console.WriteLine("Filtering by user " + username + " will be added. Press Enter to continue");
                 Console.ReadLine();
-                return new User(username, "test123"); //creates a "fake" user object
+                IQueryable<User> userQuery = RecipesContext.Instance.RecipeManager_Users;
+                FilterByUsername filter = new FilterByUsername(userQuery);
+                User toSearch = filter.FilterUsers(username);
+                return toSearch;
             }
             catch (Exception)
             {
@@ -613,8 +657,7 @@ public class Program
 
     public static void Main()
     {
-        //LoginOrRegister();
-        UserController.Instance.ActiveUser = new User("Bianca", "Rossettiiiii");
+        LoginOrRegister();
 
         Ingredient i = new("egg", Units.Quantity);
         Ingredient b = new("meat", Units.Mass);
@@ -665,6 +708,9 @@ public class Program
                 case MainMenuOption.CreateRecipe:
                     CreateRecipe();
                     break;
+                case MainMenuOption.UpdateRecipe:
+                    EditRecipe();
+                    break;
                 case MainMenuOption.FilterRecipeSearch:
                     FilterRecipeSearch();
                     break;
@@ -682,6 +728,16 @@ public class Program
                     break;
                 case MainMenuOption.ViewFavoriteRecipes:
                     PrintFavoriteList();
+                    break;
+                case MainMenuOption.DeleteAccount:
+                    Console.WriteLine("Enter your password");
+                    string password = Console.ReadLine();
+                    UserController.Instance.DeleteAccount(UserController.Instance.ActiveUser.Username, password);
+                    LoginOrRegister();
+                    break;
+                case MainMenuOption.Logout:
+                    UserController.Instance.ActiveUser = null;
+                    LoginOrRegister();
                     break;
             }
         }
