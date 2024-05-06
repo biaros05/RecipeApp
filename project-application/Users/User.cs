@@ -60,8 +60,13 @@ public class User
             return this.image;
         } 
         set{
-            this.image=null;
-        } }
+            if (value==null)
+            {
+                this.image=null;
+            }
+            this.image=value;
+        } 
+    }
     private string? description;
     public string? Description
     {
@@ -97,7 +102,7 @@ public class User
 
     // this constructor sets the username, hashes password and saves it
     //, byte[] salt
-    public User(string username, string password, string description,byte[] image=null)
+    public User(string username, string password, string description=null,byte[] image=null)
     {
         this.Username = username;
         this.Salt=Password.GenerateSalt();
@@ -110,20 +115,20 @@ public class User
         UserFavoriteRecipies = new List<Recipe>();
     }
 
-    public User(string username, string password)
-    {
-        this.Username = username;
-        this.Salt=Password.GenerateSalt();
-        this.HashPass=password;
-        this.Image=null;
+    // public User(string username, string password)
+    // {
+    //     this.Username = username;
+    //     this.Salt=Password.GenerateSalt();
+    //     this.HashPass=password;
+    //     this.Image=null;
 
-        this.Description = null;
-        UserCreatedRecipies = new();
-        UserFavoriteRecipies = new List<Recipe>();
-        //Image need to be here as a byte[]
-        //asign default pic
+    //     this.Description = null;
+    //     UserCreatedRecipies = new();
+    //     UserFavoriteRecipies = new List<Recipe>();
+    //     //Image need to be here as a byte[]
+    //     //asign default pic
 
-    }
+    // }
 
     // public void UpdateUsername(string newUsername)
     // {
@@ -228,6 +233,7 @@ public class User
         }
         user.UserFavoriteRecipies.Add(recipe);
         // context.Update(user);
+        this.UserFavoriteRecipies.Add(recipe);
         context.SaveChanges();
     }
 
@@ -248,6 +254,7 @@ public class User
             throw new ArgumentException("This recipe was never added to your favourites");
         }
         user.UserFavoriteRecipies.Remove(recipe);
+        this.UserFavoriteRecipies.Remove(recipe); 
         context.SaveChanges();
     }
 

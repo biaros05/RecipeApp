@@ -31,8 +31,14 @@ public class UserControllerTests
         .Returns(data.GetEnumerator());
     }
     
+    [TestCleanup()]
+    public void Cleanup()
+    {
+        RecipesContext.Instance = null;
+    }
+
     [TestMethod]
-    public void UserController_UpdateUser()
+    public void UserController_UpdateUser_username_validate()
     {
         //Arrange
     var data = new List<User>()
@@ -72,10 +78,83 @@ public class UserControllerTests
     }
 
 
-    [TestCleanup()]
-    public void Cleanup()
+    [TestMethod]
+    public void UserController_UpdateUser_description_valid()
     {
-        RecipesContext.Instance = null;
+        //Arrange
+    var data = new List<User>()
+    {
+        new User("testing","password","description"),
+        new User("user2","password2","description2"),
+        new User( "user3","password3","description3"),
+    }.AsQueryable();
+
+
+        string username = "testing";
+        string passwrd = "password";
+        string description = "description";
+        
+        string newUsername = "updatedUser";
+        string newDescription="some sort of new description";
+        byte[] byteArray = new byte[] { 0x01, 0x23, 0x45, 0x67, 0x89, 0xAB, 0xCD, 0xEF };
+        string newPass="newPassword";
+
+        var mockContext=new Mock<RecipesContext>();
+        var mockUser= new Mock<DbSet<User>>();
+        ConfigureDbSetMock(data,mockUser);
+        mockContext.Setup(mock => mock.RecipeManager_Users).Returns(mockUser.Object);
+        RecipesContext.Instance= mockContext.Object;
+        var service=RecipesContext.Instance;
+
+        //Act
+        User user1 = new(username,passwrd, description);
+        UserController.Instance.ActiveUser=user1;
+        UserController.Instance.UpdateUser(newUsername,newDescription,byteArray,newPass);
+
+        //Assert
+        Assert.AreEqual(newDescription, user1.Description);
+        mockContext.Verify(mock => mock.Update(It.IsAny<User>()), Times.Once);
+        mockContext.Verify(mock => mock.SaveChanges(), Times.Once());
+
+    }
+
+    [TestMethod]
+    public void UserController_UpdateUser_Image_valid()
+    {
+        //Arrange
+    var data = new List<User>()
+    {
+        new User("testing","password","description"),
+        new User("user2","password2","description2"),
+        new User( "user3","password3","description3"),
+    }.AsQueryable();
+
+
+        string username = "testing";
+        string passwrd = "password";
+        string description = "description";
+        
+        string newUsername = "updatedUser";
+        string newDescription="some sort of new description";
+        byte[] byteArray = new byte[] { 0x01, 0x23, 0x45, 0x67, 0x89, 0xAB, 0xCD, 0xEF };
+        string newPass="newPassword";
+
+        var mockContext=new Mock<RecipesContext>();
+        var mockUser= new Mock<DbSet<User>>();
+        ConfigureDbSetMock(data,mockUser);
+        mockContext.Setup(mock => mock.RecipeManager_Users).Returns(mockUser.Object);
+        RecipesContext.Instance= mockContext.Object;
+        var service=RecipesContext.Instance;
+
+        //Act
+        User user1 = new(username,passwrd, description);
+        UserController.Instance.ActiveUser=user1;
+        UserController.Instance.UpdateUser(newUsername,newDescription,byteArray,newPass);
+
+        //Assert
+        Assert.AreEqual(byteArray, user1.Image);
+        mockContext.Verify(mock => mock.Update(It.IsAny<User>()), Times.Once);
+        mockContext.Verify(mock => mock.SaveChanges(), Times.Once());
     }
 
     // test CreateAccount

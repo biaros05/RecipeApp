@@ -30,6 +30,11 @@ public class UsersTests
       .Returns(data.GetEnumerator());
     }
 
+    [TestCleanup()]
+    public void Cleanup()
+    {
+        RecipesContext.Instance = null;
+    }
 
     [TestMethod]
     public void User_Test_Username()
@@ -354,53 +359,28 @@ public class UsersTests
     [TestMethod]
     public void User_Tests_Equals_correct()
     {
-        //remove db stuff bec im checking the toString
         //Arrange
-        var data = new List<User>()
-        {
-            new("testing","password","description"),
-            new("user2","password2","description2"),
-            new( "user3","password3","description3"),
-        }.AsQueryable();
 
         string username = "testing";
         string passwrd = "password";
         string description = "description";
         
-        var mockContext=new Mock<RecipesContext>();
-        var mockUser= new Mock<DbSet<User>>();
-        mockContext.Setup(mock => mock.RecipeManager_Users).Returns(mockUser.Object);
-        RecipesContext.Instance= mockContext.Object;
-        var service=RecipesContext.Instance;
         //Act
         User user1 = new(username,passwrd, description);
-        bool result = user1.Username.Equals("testing");
+        bool result = user1.Username.Equals(username);
         //Assert
         Assert.IsTrue(result);
-
-        mockContext.Verify(mock => mock.SaveChanges(), Times.Once());
     }
 
     [TestMethod]
     public void User_Tests_Equals_Incorrect()
     {
         //Arrange
-        var data = new List<User>()
-        {
-            new("testing","password","description"),
-            new("user2","password2","description2"),
-            new( "user3","password3","description3"),
-        }.AsQueryable();
 
         string username = "testing";
         string passwrd = "password";
         string description = "description";
         
-        var mockContext=new Mock<RecipesContext>();
-        var mockUser= new Mock<DbSet<User>>();
-        mockContext.Setup(mock => mock.RecipeManager_Users).Returns(mockUser.Object);
-        RecipesContext.Instance= mockContext.Object;
-        var service=RecipesContext.Instance;
         //Act
         User user1 = new(username,passwrd, description);
         bool result = user1.Username.Equals("wrong");
@@ -414,7 +394,7 @@ public class UsersTests
         //Arrange
         var data = new List<User>()
         {
-            new("testing","password","description",null),
+            new("testing","password","description"),
             new("user2","password2","description2"),
             new( "user3","password3","description3"),
         }.AsQueryable();
@@ -431,6 +411,7 @@ public class UsersTests
         
         var mockContext=new Mock<RecipesContext>();
         var mockUser= new Mock<DbSet<User>>();
+        ConfigureDbSetMock(data,mockUser);
         mockContext.Setup(mock => mock.RecipeManager_Users).Returns(mockUser.Object);
         RecipesContext.Instance= mockContext.Object;
         var service=RecipesContext.Instance;
@@ -459,7 +440,6 @@ public class UsersTests
         dict.Add(new(i, 20));
         Recipe recipe = new("Test Recipe", new User("Bianca", "123456789"), "Test Description", 30, 60, 4,
             new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict, new List<Tag> { new("Tag1"), new("Tag2") }, 2);
-
         //Recipe recipe2 = new("Test Recipe2", new User("Bianca", "123456789"), "Test Description", 30, 60, 4,
         //    new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict, new List<string> { "Tag1", "Tag2" }, 2);
 
@@ -469,6 +449,7 @@ public class UsersTests
         
         var mockContext=new Mock<RecipesContext>();
         var mockUser= new Mock<DbSet<User>>();
+        ConfigureDbSetMock(data,mockUser);
         mockContext.Setup(mock => mock.RecipeManager_Users).Returns(mockUser.Object);
         RecipesContext.Instance= mockContext.Object;
         var service=RecipesContext.Instance;
@@ -481,7 +462,7 @@ public class UsersTests
         //Assert
         Assert.IsFalse(user1.UserFavoriteRecipies.Contains(recipe));
 
-        mockContext.Verify(mock => mock.SaveChanges(), Times.Once());
+        mockContext.Verify(mock => mock.SaveChanges(), Times.Exactly(2));
     }
 
     // [TestMethod]

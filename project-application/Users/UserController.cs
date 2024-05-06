@@ -92,15 +92,15 @@ public class UserController
                     .Where(u=> u.Username==this.ActiveUser.Username)
                     .First();
 
-        this.ActiveUser.Description=description;
-        this.ActiveUser.Image=image;
-        this.ActiveUser.Username=username;
-        this.ActiveUser.HashPass=hashpass;
+        this.ActiveUser.Description=description==null?this.ActiveUser.Description:description;
+        this.ActiveUser.Image=image==null?this.ActiveUser.Image:image;
+        this.ActiveUser.Username=username==null?this.ActiveUser.Username:username;
+        this.ActiveUser.HashPass=hashpass==null?this.ActiveUser.HashPass:hashpass;
 
-        user.Description=description;
-        user.Image=image;
-        user.Username=username;
-        user.HashPass=hashpass;
+        user.Description=description==null?this.ActiveUser.Description:description;
+        user.Image=image==null?this.ActiveUser.Image:image;
+        user.Username=username==null?this.ActiveUser.Username:username;
+        user.HashPass=hashpass==null?this.ActiveUser.HashPass:hashpass;
 
         context.Update(user); 
         context.SaveChanges();
