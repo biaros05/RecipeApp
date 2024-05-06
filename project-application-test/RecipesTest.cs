@@ -11,14 +11,6 @@ using users;
 [TestClass]
 public class RecipesTest
 {
-    // private static (Mock<RecipesContext>, Mock<DbSet<Recipe>>) GetMocks()
-    // {
-    //     var mockContext = new Mock<RecipesContext>();
-    //     var mockRecipes = new Mock<DbSet<Recipe>>();
-    //     mockContext.Setup(mock => mock.RecipeManager_Recipes).Returns(mockRecipes.Object);
-
-    //     return (mockContext, mockRecipes);
-    // }
     private static void ConfigureDbSetMock<T>(
     IQueryable<T> data, Mock<DbSet<T>> mockDbSet) where T : class
     {

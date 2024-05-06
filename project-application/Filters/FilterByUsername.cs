@@ -17,7 +17,7 @@ public class FilterByUsername
     public User FilterUsers(string username)
     {
         var filteredUser = Users
-            .Where(user => user.Username == username)
+            .Where(user => user.Username.Equals(username))
             .SingleOrDefault();
         return filteredUser!; // returns null if user is now found
     }
