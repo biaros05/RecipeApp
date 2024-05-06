@@ -214,8 +214,9 @@ public class Program
         int cookTimeMins = ValidateInt();
         Console.WriteLine("Number of servings:");
         int numberOfServings = ValidateInt();
-        Console.WriteLine("List the instrucrions:");
+        Console.WriteLine("List the ingredients:");
         List<MeasuredIngredient> ingredients = FillIngredients();
+        Console.WriteLine("List the instructions:");
         List<Instruction> instructions = FillInstructions();
         Console.WriteLine("Add Tags to recipe:");
         List<Tag> tags = FillTags();
@@ -223,7 +224,37 @@ public class Program
         int budget = ValidateInt();
         Recipe newRecipe = new Recipe(name, owner, description, prepTimeMins, cookTimeMins, numberOfServings, instructions, ingredients, tags, budget);
 
-        RecipeController.Instance.CreateRecipe(newRecipe);
+        RecipeController.CreateRecipe(newRecipe);
+
+    }
+
+    private static void EditRecipe()
+    {
+        PrintRecipes();
+        Console.WriteLine("Enter the recipe you would like to edit");
+        int num = ValidateInt();
+        Recipe toEdit = ReturnOneRecipe(num);
+        Console.WriteLine("Enter the new description");
+        string description = Console.ReadLine();
+        Console.WriteLine("Prep time of Recipe (in minutes):");
+        int prepTimeMins = ValidateInt();
+        Console.WriteLine("Cook time of Recipe (in minutes):");
+        int cookTimeMins = ValidateInt();
+        Console.WriteLine("List the ingredients:");
+        List<MeasuredIngredient> ingredients = FillIngredients();
+        Console.WriteLine("Add Tags to recipe:");
+        List<Tag> tags = FillTags();
+
+        try
+        {
+            toEdit.UpdateRecipe(description, prepTimeMins, cookTimeMins, ingredients, tags);
+        }
+        catch (ArgumentException e)
+        {
+            Console.WriteLine(e.Message);
+        }
+        ConsoleUtils.WaitUserPressKey();
+
     }
 
     private static void PrintRecipes()
@@ -235,13 +266,27 @@ public class Program
             .Include(recipe => recipe._difficulties)
             .Include(recipe => recipe.Owner)
             .Include(recipe => recipe.Ingredients)
+                .ThenInclude(measuredIngredient => measuredIngredient.Ingredient)
             .Include(recipe => recipe.Instructions)
             .Include(recipe => recipe.UserFavourite)
-            .ToList<Recipe>();
+            .ToList();
         int num = 1;
         foreach (Recipe r in retrieveRecipes)
         {
             Console.WriteLine($"{num}. {r}");
+            num++;
+        }
+        ConsoleUtils.WaitUserPressKey();
+    }
+
+    private static void PrintUsers()
+    {
+        var context = RecipesContext.Instance;
+        List<User> retrieveUsers = context.RecipeManager_Users.ToList<User>();
+        int num = 1;
+        foreach (User u in retrieveUsers)
+        {
+            Console.WriteLine($"{num}. {u}");
             num++;
         }
         ConsoleUtils.WaitUserPressKey();
@@ -335,6 +380,7 @@ public class Program
         {
             try
             {
+                PrintUsers();
                 Console.WriteLine("Enter a username who's recipes you would like to search for:");
                 string? username = Console.ReadLine();
                 if (username == null || username == "")
@@ -343,7 +389,10 @@ public class Program
                 }
                 Console.WriteLine("Filtering by user " + username + " will be added. Press Enter to continue");
                 Console.ReadLine();
-                return new User(username, "test123"); //creates a "fake" user object
+                IQueryable<User> userQuery = RecipesContext.Instance.RecipeManager_Users;
+                FilterByUsername filter = new FilterByUsername(userQuery);
+                User toSearch = filter.FilterUsers(username);
+                return toSearch;
             }
             catch (Exception)
             {
@@ -533,13 +582,13 @@ public class Program
         PrintRecipes();
         Console.WriteLine("which recipie would you like to rate");
         int num = Convert.ToInt32(Console.ReadLine());
-        Recipe recipe = ReturnOneRecipe(num - 1);
+        Recipe recipe = ReturnOneRecipe(num);
         Console.WriteLine("what would you like to rate this recipe out of 5?");
         int rating = Convert.ToInt32(Console.ReadLine());
         recipe.RateRecipe(rating, UserController.Instance.ActiveUser);
-        Console.WriteLine(recipe.Rating);
+        // Console.WriteLine(recipe.Rating);
         Console.WriteLine("the recipe rating has been updated");
-        Console.WriteLine(recipe);
+        // Console.WriteLine(recipe);
 
         ConsoleUtils.WaitUserPressKey();
     }
@@ -550,7 +599,7 @@ public class Program
         Console.WriteLine("which recipie would you like to add to your favorite list");
         int num = Convert.ToInt32(Console.ReadLine());
 
-        Recipe recipe = ReturnOneRecipe(num - 1);
+        Recipe recipe = ReturnOneRecipe(num);
 
         UserController.Instance.ActiveUser.AddToFavourites(recipe);
 
@@ -563,40 +612,25 @@ public class Program
     //return the correct object from the recipe list
     public static Recipe ReturnOneRecipe(int num)
     {
-        using var context = new RecipesContext();
-        List<Recipe> retrieveRecipes = context.RecipeManager_Recipes.Include(recipe => recipe.Tags)
+        var context = RecipesContext.Instance;
+        
+        List<Recipe> retrieveRecipes = context.RecipeManager_Recipes
             .Include(recipe => recipe.Tags)
             .Include(recipe => recipe._ratings)
             .Include(recipe => recipe._difficulties)
             .Include(recipe => recipe.Owner)
             .Include(recipe => recipe.Ingredients)
+                .ThenInclude(measuredIngredient => measuredIngredient.Ingredient)
             .Include(recipe => recipe.Instructions)
             .Include(recipe => recipe.UserFavourite)
-            .ToList<Recipe>();
-        int count = 0;
-        foreach (Recipe r in retrieveRecipes)
-        {
-            if (count == num)
-            {
-                return r;
-            }
-            count++;
-        }
-        throw new Exception("no item in current position");
+            .ToList();
+        return retrieveRecipes[num - 1];
     }
     //return the correct object from the user favorite recipe list
     public static Recipe ReturnOneRecipeFromFave(int num)
     {
         int count = 0;
-        foreach (Recipe r in UserController.Instance.ActiveUser.UserFavoriteRecipies)
-        {
-            if (count == num)
-            {
-                return r;
-            }
-            count++;
-        }
-        throw new Exception("no item in current position");
+        return UserController.Instance.ActiveUser.UserFavoriteRecipies.ToList()[num - 1];
     }
 
     private static void RemoveRecipeFromFavourites()
@@ -605,7 +639,7 @@ public class Program
         Console.WriteLine("which recipie would you like to add to your favorite list");
         int num = System.Convert.ToInt32(Console.ReadLine());
 
-        Recipe recipe = ReturnOneRecipeFromFave(num - 1);
+        Recipe recipe = ReturnOneRecipeFromFave(num);
 
         UserController.Instance.ActiveUser.RemoveFromFavourites(recipe);
 
@@ -628,7 +662,7 @@ public class Program
 
     public static void Main()
     {
-        //LoginOrRegister();
+        LoginOrRegister();
 
 
         // Ingredient i = new("egg", Units.Quantity);
@@ -681,6 +715,9 @@ public class Program
                 case MainMenuOption.CreateRecipe:
                     CreateRecipe();
                     break;
+                case MainMenuOption.UpdateRecipe:
+                    EditRecipe();
+                    break;
                 case MainMenuOption.FilterRecipeSearch:
                     FilterRecipeSearch();
                     break;
@@ -698,6 +735,17 @@ public class Program
                     break;
                 case MainMenuOption.ViewFavoriteRecipes:
                     PrintFavoriteList();
+                    break;
+                case MainMenuOption.DeleteAccount:
+                    Console.WriteLine("Enter your password");
+                    string password = Console.ReadLine();
+                    UserController.Instance.DeleteAccount(UserController.Instance.ActiveUser.Username, password);
+                    UserController.Instance.ActiveUser = null;
+                    LoginOrRegister();
+                    break;
+                case MainMenuOption.Logout:
+                    UserController.Instance.ActiveUser = null;
+                    LoginOrRegister();
                     break;
             }
         }

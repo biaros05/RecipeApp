@@ -15,8 +15,8 @@ public class RecipeControllerTests
     [TestCleanup()]
     public void Cleanup()
     {
-        RecipesContext.Instance = null;
         RecipeController.Instance = null;
+        RecipesContext.Instance = null;
     }
 
     private static void ConfigureDbSetMock<T>(
@@ -32,6 +32,7 @@ public class RecipeControllerTests
         .Returns(data.GetEnumerator());
     }
 
+    // FILTER RECIPE TESTS
     [TestMethod]
     public void FilterBy_MultipleFilters_FiltersCorrectly()
     {
@@ -90,7 +91,117 @@ public class RecipeControllerTests
 
         CollectionAssert.AreEqual(expected, filteredRecipes);
     }
-    // cleanup static members after every test
+    
+    [TestMethod]
+    public void FilterBy_NoFilters_ReturnsAllRecipes()
+    {
+        var mockContext = new Mock<RecipesContext>();
+
+        //creating test data
+        UserController.Instance.ActiveUser = new User("Bianca", "Rossetti");
+
+        Ingredient a = new("Apple", Units.Quantity);
+        Ingredient b = new("Sugar", Units.Mass);
+        var ingredients = new List<Ingredient>() {
+            a, b
+        }.AsQueryable();
+
+        List<MeasuredIngredient> dict = new()
+            {
+                new ( a, 20 )
+            };
+        List<MeasuredIngredient> dict2 = new()
+            {
+                new ( b, 20 )
+            };
+
+        var recipes = new List<Recipe>() {
+            new("Test Recipe", UserController.Instance.ActiveUser, "Test Description", 30, 60, 4,
+                new List<Instruction> { new(1, "Step 1"), new(2,"Step 2") }, dict, new List<Tag> { new("Tag1"), new("Tag2") }, 2),
+            new(new("Recipe need 10 characters", UserController.Instance.ActiveUser, "Description", 30, 60, 5,
+                new List<Instruction> { new(1, "Step 1"), new(2,"Step 2") }, dict2, new List<Tag> { new("Tag1"), new("Tag2") }, 2))
+        }.AsQueryable();
+
+        //creating expected data
+        List<Recipe> expected = new()
+            {
+                new("Test Recipe", UserController.Instance.ActiveUser, "Test Description", 30, 60, 4,
+                new List<Instruction> { new(1, "Step 1"), new(2,"Step 2") }, dict, new List<Tag> { new("Tag1"), new("Tag2") }, 2),
+            new(new("Recipe need 10 characters", UserController.Instance.ActiveUser, "Description", 30, 60, 5,
+                new List<Instruction> { new(1, "Step 1"), new(2,"Step 2") }, dict2, new List<Tag> { new("Tag1"), new("Tag2") }, 2))
+            };
+
+        //finalize context
+        RecipesContext.Instance = mockContext.Object;
+
+        var mockSetIngredient = new Mock<DbSet<Ingredient>>();
+        ConfigureDbSetMock(ingredients, mockSetIngredient);
+        mockContext.Setup(m => m.RecipeManager_Ingredients).Returns(mockSetIngredient.Object);
+
+        var mockSetRecipe = new Mock<DbSet<Recipe>>();
+        ConfigureDbSetMock(recipes, mockSetRecipe);
+        mockContext.Setup(m => m.RecipeManager_Recipes).Returns(mockSetRecipe.Object);
+        
+        // basic setup
+        List<Recipe> filteredRecipes = RecipeController.Instance.FilterBy();
+
+        CollectionAssert.AreEqual(expected, filteredRecipes);
+    }
+
+    
+    [TestMethod]
+    public void FilterBy_NoRecipes_ReturnsEmptyList()
+    {
+        var mockContext = new Mock<RecipesContext>();
+
+        //creating test data
+        UserController.Instance.ActiveUser = new User("Bianca", "Rossetti");
+
+        Ingredient a = new("Apple", Units.Quantity);
+        Ingredient b = new("Sugar", Units.Mass);
+        var ingredients = new List<Ingredient>() {
+            a, b
+        }.AsQueryable();
+
+        List<MeasuredIngredient> dict = new()
+            {
+                new ( a, 20 )
+            };
+        List<MeasuredIngredient> dict2 = new()
+            {
+                new ( b, 20 )
+            };
+
+        var recipes = new List<Recipe>() {
+        }.AsQueryable();
+
+        //creating expected data
+        List<Recipe> expected = new()
+            {
+            };
+
+        
+        IFilterBy filter = new FilterByServings(3, 6);
+        IFilterBy filter2 = new FilterByKeyword("Test");
+        RecipeController.Instance.AddFilter(filter);
+        RecipeController.Instance.AddFilter(filter2);
+
+        //finalize context
+        RecipesContext.Instance = mockContext.Object;
+
+        var mockSetIngredient = new Mock<DbSet<Ingredient>>();
+        ConfigureDbSetMock(ingredients, mockSetIngredient);
+        mockContext.Setup(m => m.RecipeManager_Ingredients).Returns(mockSetIngredient.Object);
+
+        var mockSetRecipe = new Mock<DbSet<Recipe>>();
+        ConfigureDbSetMock(recipes, mockSetRecipe);
+        mockContext.Setup(m => m.RecipeManager_Recipes).Returns(mockSetRecipe.Object);
+        
+        // basic setup
+        List<Recipe> filteredRecipes = RecipeController.Instance.FilterBy();
+
+        CollectionAssert.AreEqual(expected, filteredRecipes);
+    }
 
     // TESTS FOR CREATERECIPE
     [TestMethod]
@@ -123,10 +234,6 @@ public class RecipeControllerTests
                 new List<Instruction> { new(1, "Step 1"), new(2,"Step 2") }, dict2, new List<Tag> { new("Tag1"), new("Tag2") }, 2))
         }.AsQueryable();
 
-        //creating expected data
-        Recipe r = new("New created recipe!", UserController.Instance.ActiveUser, "Test Description", 30, 60, 4,
-            new List<Instruction> { new(1, "Step 1"), new(2,"Step 2") }, dict, new List<Tag> { new("Tag1"), new("Tag2") }, 2);
-
         IFilterBy filter = new FilterByServings(3, 6);
         IFilterBy filter2 = new FilterByKeyword("Test");
         RecipeController.Instance.AddFilter(filter);
@@ -143,8 +250,11 @@ public class RecipeControllerTests
         ConfigureDbSetMock(recipes, mockSetRecipe);
         mockContext.Setup(m => m.RecipeManager_Recipes).Returns(mockSetRecipe.Object);
 
+        //creating expected data
+        Recipe r = new("New created recipe!", UserController.Instance.ActiveUser, "Test Description", 30, 60, 4,
+            new List<Instruction> { new(1, "Step 1"), new(2,"Step 2") }, dict, new List<Tag> { new("Tag1"), new("Tag2") }, 2);
 
-        RecipeController.Instance.CreateRecipe(r);
+        RecipeController.CreateRecipe(r);
 
         mockSetRecipe.Verify(mock => mock.Add(It.Is<Recipe>(
             actual => r.Equals(actual))), Times.Once);
@@ -181,11 +291,6 @@ public class RecipeControllerTests
                 new List<Instruction> { new(1, "Step 1"), new(2,"Step 2") }, dict2, new List<Tag> { new("Tag1"), new("Tag2") }, 2))
         }.AsQueryable();
 
-        List<MeasuredIngredient> newIngredient = new()
-        {
-            new ( new("Caramel", Units.Quantity), 20 )
-        };
-
 
         IFilterBy filter = new FilterByServings(3, 6);
         IFilterBy filter2 = new FilterByKeyword("Test");
@@ -204,142 +309,389 @@ public class RecipeControllerTests
         ConfigureDbSetMock(recipes, mockSetRecipe);
         mockContext.Setup(m => m.RecipeManager_Recipes).Returns(mockSetRecipe.Object);
 
+        List<MeasuredIngredient> newIngredient = new()
+        {
+            new ( new("Caramel", Units.Quantity), 20 )
+        };
+
         //creating expected data
         Recipe r = new("New created recipe!", UserController.Instance.ActiveUser, "Test Description", 30, 60, 4,
             new List<Instruction> { new(1, "Step 1"), new(2,"Step 2") }, newIngredient, new List<Tag> { new("Tag1"), new("Tag2") }, 2);
-        RecipeController.Instance.CreateRecipe(r);
+        RecipeController.CreateRecipe(r);
 
         mockSetRecipe.Verify(mock => mock.Add(It.Is<Recipe>(
             actual => r.Equals(actual))), Times.Once);
-        mockSetIngredient.Verify(mock => mock.Add(It.IsAny<Ingredient>()), Times.AtLeastOnce);
+        mockSetIngredient.Verify(mock => mock.Add(It.IsAny<Ingredient>()), Times.Once);
         mockContext.Verify(mock => mock.SaveChanges(), Times.AtLeastOnce);
     }
 
-    // [TestMethod]
-    // public void CreateRecipe_AlreadyExists_ThrowsException()
-    // {
-    //     RecipeController instance = RecipeController.Instance;
-    //     UserController.ActiveUser = new User("Bianca", "Rossetti");
-    //     Ingredient i = new("egg", Units.Quantity);
-    //     Dictionary<Ingredient, double> dict = new();
-    //     dict.Add(i, 20);
-    //     Recipe recipe = new("Test Recipe", UserController.ActiveUser, "Test Description", 30, 60, 4,
-    //         new List<string> { "Step 1", "Step 2" }, dict, new List<string> { "Tag1", "Tag2" }, 2);
-    //     instance.CreateRecipe(recipe);
+    [TestMethod]
+    public void CreateRecipe_ExistingIngredient_DoesNotAdd()
+    {
+        var mockContext = new Mock<RecipesContext>();
 
-    //     Action act = () => instance.CreateRecipe(recipe);
+        //creating test data
+        UserController.Instance.ActiveUser = new User("Bianca", "Rossetti");
 
-    //     Assert.ThrowsException<ArgumentException>(act, "Cannot add existing recipe");
-    // }
+        Ingredient a = new("Apple", Units.Quantity);
+        Ingredient b = new("Sugar", Units.Mass);
+        var ingredients = new List<Ingredient>() {
+            a, b
+        }.AsQueryable();
 
-    // [TestMethod]
-    // public void CreateRecipe_SimilarFieldsSameId_ThrowsException()
-    // {
-    //     RecipeController instance = RecipeController.Instance;
-    //     UserController.ActiveUser = new User("Bianca", "Rossetti");
-    //     Ingredient i = new("egg", Units.Quantity);
-    //     Dictionary<Ingredient, double> dict = new();
-    //     dict.Add(i, 20);
-    //     Recipe recipe = new("Test Recipe", UserController.ActiveUser, "Test Description", 30, 60, 4,
-    //         new List<string> { "Step 1", "Step 2" }, dict, new List<string> { "Tag1", "Tag2" }, 2);
-    //     instance.CreateRecipe(recipe);
+        List<MeasuredIngredient> dict = new()
+            {
+                new ( a, 20 )
+            };
+        List<MeasuredIngredient> dict2 = new()
+            {
+                new ( b, 20 )
+            };
 
-    //     Action act = () => instance.CreateRecipe(new("New Recipe", UserController.ActiveUser, "New Description", 40, 70, 4,
-    //         new List<string> { "Step 1", "Step 2" }, dict, new List<string> { "Tag1", "NewTag2" }, 2));
+        var recipes = new List<Recipe>() {
+            new("Test Recipe", UserController.Instance.ActiveUser, "Test Description", 30, 60, 4,
+                new List<Instruction> { new(1, "Step 1"), new(2,"Step 2") }, dict, new List<Tag> { new("Tag1"), new("Tag2") }, 2),
+            new(new("Recipe need 10 characters", UserController.Instance.ActiveUser, "Description", 30, 60, 5,
+                new List<Instruction> { new(1, "Step 1"), new(2,"Step 2") }, dict2, new List<Tag> { new("Tag1"), new("Tag2") }, 2))
+        }.AsQueryable();
 
-    //     Assert.ThrowsException<ArgumentException>(act, "Cannot add recipe with same ID");
-    // }
+        List<MeasuredIngredient> existingIngredient = new()
+        {
+            new ( new("Apple", Units.Quantity), 20 )
+        };
 
-    // [TestMethod]
-    // public void CreateRecipe_SimilarFieldsSameName_ThrowsException()
-    // {
-    //     RecipeController instance = RecipeController.Instance;
-    //     UserController.ActiveUser = new User("Bianca", "Rossetti");
-    //     Ingredient i = new("egg", Units.Quantity);
-    //     Dictionary<Ingredient, double> dict = new();
-    //     dict.Add(i, 20);
-    //     Recipe recipe = new("Test Recipe", UserController.ActiveUser, "Test Description", 30, 60, 4,
-    //         new List<string> { "Step 1", "Step 2" }, dict, new List<string> { "Tag1", "Tag2" }, 2);
-    //     instance.CreateRecipe(recipe);
+        //finalize context
+        RecipesContext.Instance = mockContext.Object;
 
-    //     Action act = () => instance.CreateRecipe(new("Test Recipe", UserController.ActiveUser, "New Description", 40, 70, 4,
-    //         new List<string> { "Step 1", "Step 2" }, dict, new List<string> { "Tag1", "NewTag2" }, 2));
+        // setup mock
+        var mockSetIngredient = new Mock<DbSet<Ingredient>>();
+        ConfigureDbSetMock(ingredients, mockSetIngredient);
+        mockContext.Setup(m => m.RecipeManager_Ingredients).Returns(mockSetIngredient.Object);
 
-    //     Assert.ThrowsException<ArgumentException>(act, "Cannot add recipe with same name");
-    // }
+        var mockSetRecipe = new Mock<DbSet<Recipe>>();
+        ConfigureDbSetMock(recipes, mockSetRecipe);
+        mockContext.Setup(m => m.RecipeManager_Recipes).Returns(mockSetRecipe.Object);
 
-    // [TestMethod]
-    // public void CreateRecipe_WrongOwner_ThrowsException()
-    // {
-    //     RecipeController instance = RecipeController.Instance;
-    //     UserController.ActiveUser = new User("Bianca", "Rossetti");
-    //     Ingredient i = new("egg", Units.Quantity);
-    //     Dictionary<Ingredient, double> dict = new();
-    //     dict.Add(i, 20);
-    //     Recipe recipe = new("Test Recipe", new User("Blob", "Blob"), "Test Description", 30, 60, 4,
-    //         new List<string> { "Step 1", "Step 2" }, dict, new List<string> { "Tag1", "Tag2" }, 2);
+        //creating expected data
+        Recipe r = new("New created recipe!", UserController.Instance.ActiveUser, "Test Description", 30, 60, 4,
+            new List<Instruction> { new(1, "Step 1"), new(2,"Step 2") }, existingIngredient, new List<Tag> { new("Tag1"), new("Tag2") }, 2);
+        RecipeController.CreateRecipe(r);
 
-    //     Action act = () => instance.CreateRecipe(recipe);
+        mockSetRecipe.Verify(mock => mock.Add(It.Is<Recipe>(
+            actual => r.Equals(actual))), Times.Once);
+        mockSetIngredient.Verify(mock => mock.Add(It.IsAny<Ingredient>()), Times.Never);
+        mockContext.Verify(mock => mock.SaveChanges(), Times.AtLeastOnce);
+    }
 
-    //     Assert.ThrowsException<ArgumentException>(act, "Cannot add recipe you arent the owner of");
-    // }
 
-    // // TESTS FOR DELETERECIPE
-    // [TestMethod]
-    // public void DeleteRecipe_RecipeDeleted_ReturnsTrue()
-    // {
-    //     RecipeController instance = RecipeController.Instance;
-    //     UserController.ActiveUser = new User("Bianca", "Rossetti");
-    //     Ingredient i = new("egg", Units.Quantity);
-    //     Dictionary<Ingredient, double> dict = new();
-    //     dict.Add(i, 20);
-    //     Recipe recipe = new("Test Recipe", UserController.ActiveUser, "Test Description", 30, 60, 4,
-    //         new List<string> { "Step 1", "Step 2" }, dict, new List<string> { "Tag1", "Tag2" }, 2);
-    //     Recipe recipe2 = new("New Recipe", UserController.ActiveUser, "Test Description", 30, 60, 4,
-    //         new List<string> { "Step 1", "Step 2" }, dict, new List<string> { "Tag1", "Tag2" }, 2);
-    //     instance.CreateRecipe(recipe);
-    //     instance.CreateRecipe(recipe2);
-    //     List<Recipe> expectedRecipes = new(){recipe2};
+    [TestMethod]
+    public void CreateRecipe_SameNameSameOwner_ThrowsException()
+    {
+        var mockContext = new Mock<RecipesContext>();
 
-    //     instance.DeleteRecipe(recipe);
+        //creating test data
+        UserController.Instance.ActiveUser = new User("Bianca", "Rossetti");
 
-    //     CollectionAssert.AreEqual(expectedRecipes, instance.AllRecipes);
-    // }
+        Ingredient a = new("Apple", Units.Quantity);
+        Ingredient b = new("Sugar", Units.Mass);
+        var ingredients = new List<Ingredient>() {
+            a, b
+        }.AsQueryable();
 
-    // [TestMethod]
-    // public void DeleteRecipe_RecipeDoesNotExist_ThrowsException()
-    // {
-    //     RecipeController instance = RecipeController.Instance;
-    //     UserController.ActiveUser = new User("Bianca", "Rossetti");
-    //     Ingredient i = new("egg", Units.Quantity);
-    //     Dictionary<Ingredient, double> dict = new();
-    //     dict.Add(i, 20);
-    //     Recipe recipe = new("Test Recipe", UserController.ActiveUser, "Test Description", 30, 60, 4,
-    //         new List<string> { "Step 1", "Step 2" }, dict, new List<string> { "Tag1", "Tag2" }, 2);
-    //     Recipe recipe2 = new("New Recipe", UserController.ActiveUser, "Test Description", 30, 60, 4,
-    //         new List<string> { "Step 1", "Step 2" }, dict, new List<string> { "Tag1", "Tag2" }, 2);
-    //     instance.CreateRecipe(recipe);
+        List<MeasuredIngredient> dict = new()
+            {
+                new ( a, 20 )
+            };
+        List<MeasuredIngredient> dict2 = new()
+            {
+                new ( b, 20 )
+            };
 
-    //     Action act = () => instance.DeleteRecipe(recipe2);
+        var recipes = new List<Recipe>() {
+            new("Test Recipe",  UserController.Instance.ActiveUser, "Test Description2222", 50, 70, 4,
+                new List<Instruction> { new(1, "Step 1"), new(2,"Step 2") }, dict, new List<Tag> { new("Tag1"), new("Tag2") }, 2),
+            new(new("Recipe need 10 characters", UserController.Instance.ActiveUser, "Description", 30, 60, 5,
+                new List<Instruction> { new(1, "Step 1"), new(2,"Step 2") }, dict2, new List<Tag> { new("Tag1"), new("Tag2") }, 2))
+        }.AsQueryable();
 
-    //     Assert.ThrowsException<ArgumentException>(act, "Cannot delete non-existent recipe");
-    // }
+        //finalize context
+        RecipesContext.Instance = mockContext.Object;
 
-    // [TestMethod]
-    // public void DeleteRecipe_IncorrectOwner_ThrowsException()
-    // {
-    //     RecipeController instance = RecipeController.Instance;
-    //     UserController.ActiveUser = new User("Blob", "Blob");
-    //     Ingredient i = new("egg", Units.Quantity);
-    //     Dictionary<Ingredient, double> dict = new();
-    //     dict.Add(i, 20);
-    //     Recipe recipe = new("Test Recipe", UserController.ActiveUser, "Test Description", 30, 60, 4,
-    //         new List<string> { "Step 1", "Step 2" }, dict, new List<string> { "Tag1", "Tag2" }, 2);
-    //     instance.CreateRecipe(recipe);
-    //     UserController.ActiveUser = new User("Bianca", "Rossetti");
+        var mockSetIngredient = new Mock<DbSet<Ingredient>>();
+        ConfigureDbSetMock(ingredients, mockSetIngredient);
+        mockContext.Setup(m => m.RecipeManager_Ingredients).Returns(mockSetIngredient.Object);
 
-    //     Action act = () => instance.DeleteRecipe(recipe);
+        var mockSetRecipe = new Mock<DbSet<Recipe>>();
+        ConfigureDbSetMock(recipes, mockSetRecipe);
+        mockContext.Setup(m => m.RecipeManager_Recipes).Returns(mockSetRecipe.Object);
 
-    //     Assert.ThrowsException<ArgumentException>(act, "Cannot delete recipe you are not the owner of");
-    // }
+        //creating expected data
+        Recipe r = new("Test Recipe", UserController.Instance.ActiveUser, "Test Description", 30, 60, 4,
+                new List<Instruction> { new(1, "Step 1"), new(2,"Step 2") }, dict, new List<Tag> { new("Tag1"), new("Tag2") }, 2);
+
+        Action act = () => RecipeController.CreateRecipe(r);
+
+        Assert.ThrowsException<ArgumentException>(act, "Cannot add existing recipe");
+    }
+
+    
+    [TestMethod]
+    public void CreateRecipe_SameNameDiffOwner_WillAdd()
+    {
+        var mockContext = new Mock<RecipesContext>();
+
+        //creating test data
+        UserController.Instance.ActiveUser = new User("Bianca", "Rossetti");
+
+        Ingredient a = new("Apple", Units.Quantity);
+        Ingredient b = new("Sugar", Units.Mass);
+        var ingredients = new List<Ingredient>() {
+            a, b
+        }.AsQueryable();
+
+        List<MeasuredIngredient> dict = new()
+            {
+                new ( a, 20 )
+            };
+        List<MeasuredIngredient> dict2 = new()
+            {
+                new ( b, 20 )
+            };
+
+        var recipes = new List<Recipe>() {
+            new("Test Recipe",  UserController.Instance.ActiveUser, "Test Description2222", 50, 70, 4,
+                new List<Instruction> { new(1, "Step 1"), new(2,"Step 2") }, dict, new List<Tag> { new("Tag1"), new("Tag2") }, 2),
+            new(new("Recipe need 10 characters", UserController.Instance.ActiveUser, "Description", 30, 60, 5,
+                new List<Instruction> { new(1, "Step 1"), new(2,"Step 2") }, dict2, new List<Tag> { new("Tag1"), new("Tag2") }, 2))
+        }.AsQueryable();
+
+        //finalize context
+        RecipesContext.Instance = mockContext.Object;
+
+        var mockSetIngredient = new Mock<DbSet<Ingredient>>();
+        ConfigureDbSetMock(ingredients, mockSetIngredient);
+        mockContext.Setup(m => m.RecipeManager_Ingredients).Returns(mockSetIngredient.Object);
+
+        var mockSetRecipe = new Mock<DbSet<Recipe>>();
+        ConfigureDbSetMock(recipes, mockSetRecipe);
+        mockContext.Setup(m => m.RecipeManager_Recipes).Returns(mockSetRecipe.Object);
+
+        UserController.Instance.ActiveUser = new User("Bobby", "1234567890");
+        //creating expected data
+        Recipe r = new("Test Recipe", UserController.Instance.ActiveUser, "Test Description", 30, 60, 4,
+                new List<Instruction> { new(1, "Step 1"), new(2,"Step 2") }, dict, new List<Tag> { new("Tag1"), new("Tag2") }, 2);
+
+        // Act
+        RecipeController.CreateRecipe(r);
+
+        // Assert
+        mockSetRecipe.Verify(mock => mock.Add(It.Is<Recipe>(
+            actual => r.Equals(actual))), Times.Once);
+        mockContext.Verify(mock => mock.SaveChanges(), Times.Once);
+    }
+
+    [TestMethod]
+    public void CreateRecipe_WrongUser_ThrowsException()
+    {
+        var mockContext = new Mock<RecipesContext>();
+
+        //creating test data
+        UserController.Instance.ActiveUser = new User("Bianca", "Rossetti");
+
+        Ingredient a = new("Apple", Units.Quantity);
+        Ingredient b = new("Sugar", Units.Mass);
+        var ingredients = new List<Ingredient>() {
+            a, b
+        }.AsQueryable();
+
+        List<MeasuredIngredient> dict = new()
+            {
+                new ( a, 20 )
+            };
+        List<MeasuredIngredient> dict2 = new()
+            {
+                new ( b, 20 )
+            };
+
+        var recipes = new List<Recipe>() {
+            new("Test Recipe",  UserController.Instance.ActiveUser, "Test Description2222", 50, 70, 4,
+                new List<Instruction> { new(1, "Step 1"), new(2,"Step 2") }, dict, new List<Tag> { new("Tag1"), new("Tag2") }, 2),
+            new(new("Recipe need 10 characters", UserController.Instance.ActiveUser, "Description", 30, 60, 5,
+                new List<Instruction> { new(1, "Step 1"), new(2,"Step 2") }, dict2, new List<Tag> { new("Tag1"), new("Tag2") }, 2))
+        }.AsQueryable();
+
+        //finalize context
+        RecipesContext.Instance = mockContext.Object;
+
+        var mockSetIngredient = new Mock<DbSet<Ingredient>>();
+        ConfigureDbSetMock(ingredients, mockSetIngredient);
+        mockContext.Setup(m => m.RecipeManager_Ingredients).Returns(mockSetIngredient.Object);
+
+        var mockSetRecipe = new Mock<DbSet<Recipe>>();
+        ConfigureDbSetMock(recipes, mockSetRecipe);
+        mockContext.Setup(m => m.RecipeManager_Recipes).Returns(mockSetRecipe.Object);
+
+        //creating expected data
+        Recipe r = new("Test Recipe", new User("Bobby", "1234567890"), "Test Description", 30, 60, 4,
+                new List<Instruction> { new(1, "Step 1"), new(2,"Step 2") }, dict, new List<Tag> { new("Tag1"), new("Tag2") }, 2);
+
+        // Act
+        Action act = () => RecipeController.CreateRecipe(r);
+
+        // Assert
+        Assert.ThrowsException<ArgumentException>(act, "Cannot create recipe for another user");
+    }
+
+    // TESTS FOR DELETERECIPE
+    [TestMethod]
+    public void DeleteRecipe_ValidRecipe_WillDelete()
+    {
+        var mockContext = new Mock<RecipesContext>();
+
+        //creating test data
+        UserController.Instance.ActiveUser = new User("Bianca", "Rossetti");
+
+        Ingredient a = new("Apple", Units.Quantity);
+        Ingredient b = new("Sugar", Units.Mass);
+        var ingredients = new List<Ingredient>() {
+            a, b
+        }.AsQueryable();
+
+        List<MeasuredIngredient> dict = new()
+            {
+                new ( a, 20 )
+            };
+        List<MeasuredIngredient> dict2 = new()
+            {
+                new ( b, 20 )
+            };
+
+        var recipes = new List<Recipe>() {
+            new("Test Recipe", UserController.Instance.ActiveUser, "Test Description", 30, 60, 4,
+                new List<Instruction> { new(1, "Step 1"), new(2,"Step 2") }, dict, new List<Tag> { new("Tag1"), new("Tag2") }, 2),
+            new(new("Recipe need 10 characters", UserController.Instance.ActiveUser, "Description", 30, 60, 5,
+                new List<Instruction> { new(1, "Step 1"), new(2,"Step 2") }, dict2, new List<Tag> { new("Tag1"), new("Tag2") }, 2))
+        }.AsQueryable();
+
+        //finalize context
+        RecipesContext.Instance = mockContext.Object;
+
+        var mockSetIngredient = new Mock<DbSet<Ingredient>>();
+        ConfigureDbSetMock(ingredients, mockSetIngredient);
+        mockContext.Setup(m => m.RecipeManager_Ingredients).Returns(mockSetIngredient.Object);
+
+        var mockSetRecipe = new Mock<DbSet<Recipe>>();
+        ConfigureDbSetMock(recipes, mockSetRecipe);
+        mockContext.Setup(m => m.RecipeManager_Recipes).Returns(mockSetRecipe.Object);
+
+        RecipeController.DeleteRecipe(new("Test Recipe", UserController.Instance.ActiveUser, "Test Description", 30, 60, 4,
+                new List<Instruction> { new(1, "Step 1"), new(2,"Step 2") }, dict, new List<Tag> { new("Tag1"), new("Tag2") }, 2));
+
+        mockSetRecipe.Verify(mock => mock.Remove(It.IsAny<Recipe>()), Times.Once);
+        mockContext.Verify(mock => mock.SaveChanges(), Times.Once);
+    }
+
+    [TestMethod]
+    public void DeleteRecipe_WrongUser_ThrowsException()
+    {
+        var mockContext = new Mock<RecipesContext>();
+
+        //creating test data
+        UserController.Instance.ActiveUser = new User("Bianca", "Rossetti");
+
+        Ingredient a = new("Apple", Units.Quantity);
+        Ingredient b = new("Sugar", Units.Mass);
+        var ingredients = new List<Ingredient>() {
+            a, b
+        }.AsQueryable();
+
+        List<MeasuredIngredient> dict = new()
+            {
+                new ( a, 20 )
+            };
+        List<MeasuredIngredient> dict2 = new()
+            {
+                new ( b, 20 )
+            };
+
+        var recipes = new List<Recipe>() {
+            new("Test Recipe",  UserController.Instance.ActiveUser, "Test Description2222", 50, 70, 4,
+                new List<Instruction> { new(1, "Step 1"), new(2,"Step 2") }, dict, new List<Tag> { new("Tag1"), new("Tag2") }, 2),
+            new(new("Recipe need 10 characters", UserController.Instance.ActiveUser, "Description", 30, 60, 5,
+                new List<Instruction> { new(1, "Step 1"), new(2,"Step 2") }, dict2, new List<Tag> { new("Tag1"), new("Tag2") }, 2))
+        }.AsQueryable();
+
+        //finalize context
+        RecipesContext.Instance = mockContext.Object;
+
+        var mockSetIngredient = new Mock<DbSet<Ingredient>>();
+        ConfigureDbSetMock(ingredients, mockSetIngredient);
+        mockContext.Setup(m => m.RecipeManager_Ingredients).Returns(mockSetIngredient.Object);
+
+        var mockSetRecipe = new Mock<DbSet<Recipe>>();
+        ConfigureDbSetMock(recipes, mockSetRecipe);
+        mockContext.Setup(m => m.RecipeManager_Recipes).Returns(mockSetRecipe.Object);
+
+        //creating expected data
+        Recipe r = new("Test Recipe", new User("Bobby", "1234567890"), "Test Description", 30, 60, 4,
+                new List<Instruction> { new(1, "Step 1"), new(2,"Step 2") }, dict, new List<Tag> { new("Tag1"), new("Tag2") }, 2);
+
+        // Act
+        Action act = () => RecipeController.DeleteRecipe(r);
+
+        // Assert
+        Assert.ThrowsException<ArgumentException>(act, "Cannot delete recipe for another user");
+    }
+
+    [TestMethod]
+    public void DeleteRecipe_RecipeDoesNotExist_ThrowsException()
+    {
+        var mockContext = new Mock<RecipesContext>();
+
+        //creating test data
+        UserController.Instance.ActiveUser = new User("Bianca", "Rossetti");
+
+        Ingredient a = new("Apple", Units.Quantity);
+        Ingredient b = new("Sugar", Units.Mass);
+        var ingredients = new List<Ingredient>() {
+            a, b
+        }.AsQueryable();
+
+        List<MeasuredIngredient> dict = new()
+            {
+                new ( a, 20 )
+            };
+        List<MeasuredIngredient> dict2 = new()
+            {
+                new ( b, 20 )
+            };
+
+        var recipes = new List<Recipe>() {
+            new("Test Recipe",  UserController.Instance.ActiveUser, "Test Description2222", 50, 70, 4,
+                new List<Instruction> { new(1, "Step 1"), new(2,"Step 2") }, dict, new List<Tag> { new("Tag1"), new("Tag2") }, 2),
+            new(new("Recipe need 10 characters", UserController.Instance.ActiveUser, "Description", 30, 60, 5,
+                new List<Instruction> { new(1, "Step 1"), new(2,"Step 2") }, dict2, new List<Tag> { new("Tag1"), new("Tag2") }, 2))
+        }.AsQueryable();
+
+        //finalize context
+        RecipesContext.Instance = mockContext.Object;
+
+        var mockSetIngredient = new Mock<DbSet<Ingredient>>();
+        ConfigureDbSetMock(ingredients, mockSetIngredient);
+        mockContext.Setup(m => m.RecipeManager_Ingredients).Returns(mockSetIngredient.Object);
+
+        var mockSetRecipe = new Mock<DbSet<Recipe>>();
+        ConfigureDbSetMock(recipes, mockSetRecipe);
+        mockContext.Setup(m => m.RecipeManager_Recipes).Returns(mockSetRecipe.Object);
+
+        //creating expected data
+        Recipe r = new("Blah Blah Blah", UserController.Instance.ActiveUser, "Test Description", 30, 60, 4,
+                new List<Instruction> { new(1, "Step 1"), new(2,"Step 2") }, dict, new List<Tag> { new("Tag1"), new("Tag2") }, 2);
+
+        // Act
+        Action act = () => RecipeController.DeleteRecipe(r);
+
+        // Assert
+        Assert.ThrowsException<ArgumentException>(act, "Cannot delete recipe for another user");
+    }
 }

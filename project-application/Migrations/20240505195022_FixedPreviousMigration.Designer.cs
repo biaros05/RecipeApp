@@ -11,8 +11,8 @@ using Oracle.EntityFrameworkCore.Metadata;
 namespace project.Migrations
 {
     [DbContext(typeof(RecipesContext))]
-    [Migration("20240429005656_RemoveRatingAndDiff")]
-    partial class RemoveRatingAndDiff
+    [Migration("20240505195022_FixedPreviousMigration")]
+    partial class FixedPreviousMigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -23,6 +23,58 @@ namespace project.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             OracleModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+
+            modelBuilder.Entity("DifficultyRating", b =>
+                {
+                    b.Property<int?>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("NUMBER(10)");
+
+                    OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<int?>("Id"));
+
+                    b.Property<int>("OwnerUserId")
+                        .HasColumnType("NUMBER(10)");
+
+                    b.Property<int>("RecipeId")
+                        .HasColumnType("NUMBER(10)");
+
+                    b.Property<int>("ScaleRating")
+                        .HasColumnType("NUMBER(10)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OwnerUserId");
+
+                    b.HasIndex("RecipeId");
+
+                    b.ToTable("RecipeManager_DifficultyRatings");
+                });
+
+            modelBuilder.Entity("Rating", b =>
+                {
+                    b.Property<int?>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("NUMBER(10)");
+
+                    OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<int?>("Id"));
+
+                    b.Property<int>("OwnerUserId")
+                        .HasColumnType("NUMBER(10)");
+
+                    b.Property<int>("RecipeId")
+                        .HasColumnType("NUMBER(10)");
+
+                    b.Property<int>("StarRating")
+                        .HasColumnType("NUMBER(10)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OwnerUserId");
+
+                    b.HasIndex("RecipeId");
+
+                    b.ToTable("RecipeManager_Ratings");
+                });
 
             modelBuilder.Entity("RecipeUser", b =>
                 {
@@ -47,7 +99,7 @@ namespace project.Migrations
 
                     OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<int?>("Id"));
 
-                    b.Property<int?>("RecipeId")
+                    b.Property<int>("RecipeId")
                         .HasColumnType("NUMBER(10)");
 
                     b.Property<string>("TagName")
@@ -58,7 +110,7 @@ namespace project.Migrations
 
                     b.HasIndex("RecipeId");
 
-                    b.ToTable("Tag");
+                    b.ToTable("RecipeManager_Tags");
                 });
 
             modelBuilder.Entity("recipes.Ingredient", b =>
@@ -140,6 +192,10 @@ namespace project.Migrations
 
                     OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("Budget")
+                        .IsRequired()
+                        .HasColumnType("NVARCHAR2(2000)");
+
                     b.Property<int>("CookTimeMins")
                         .HasColumnType("NUMBER(10)");
 
@@ -178,7 +234,15 @@ namespace project.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("NVARCHAR2(2000)");
 
+                    b.Property<string>("HashPass")
+                        .IsRequired()
+                        .HasColumnType("NVARCHAR2(2000)");
+
                     b.Property<byte[]>("Image")
+                        .HasColumnType("RAW(2000)");
+
+                    b.Property<byte[]>("Salt")
+                        .IsRequired()
                         .HasColumnType("RAW(2000)");
 
                     b.Property<string>("Username")
@@ -188,6 +252,44 @@ namespace project.Migrations
                     b.HasKey("UserId");
 
                     b.ToTable("RecipeManager_Users");
+                });
+
+            modelBuilder.Entity("DifficultyRating", b =>
+                {
+                    b.HasOne("users.User", "Owner")
+                        .WithMany()
+                        .HasForeignKey("OwnerUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("recipes.Recipe", "Recipe")
+                        .WithMany("_difficulties")
+                        .HasForeignKey("RecipeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Owner");
+
+                    b.Navigation("Recipe");
+                });
+
+            modelBuilder.Entity("Rating", b =>
+                {
+                    b.HasOne("users.User", "Owner")
+                        .WithMany()
+                        .HasForeignKey("OwnerUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("recipes.Recipe", "Recipe")
+                        .WithMany("_ratings")
+                        .HasForeignKey("RecipeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Owner");
+
+                    b.Navigation("Recipe");
                 });
 
             modelBuilder.Entity("RecipeUser", b =>
@@ -207,9 +309,13 @@ namespace project.Migrations
 
             modelBuilder.Entity("Tag", b =>
                 {
-                    b.HasOne("recipes.Recipe", null)
+                    b.HasOne("recipes.Recipe", "Recipe")
                         .WithMany("Tags")
-                        .HasForeignKey("RecipeId");
+                        .HasForeignKey("RecipeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Recipe");
                 });
 
             modelBuilder.Entity("recipes.Instruction", b =>
@@ -252,6 +358,10 @@ namespace project.Migrations
                     b.Navigation("Instructions");
 
                     b.Navigation("Tags");
+
+                    b.Navigation("_difficulties");
+
+                    b.Navigation("_ratings");
                 });
 
             modelBuilder.Entity("users.User", b =>

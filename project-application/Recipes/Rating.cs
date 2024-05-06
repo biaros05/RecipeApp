@@ -6,6 +6,7 @@ public class Rating
     public int? Id {get; set;}
     public int StarRating {get; set;}
     public User Owner {get; set;}
+    public Recipe Recipe {get; set;}
     public Rating(int rating, User owner)
     {
         StarRating = rating;

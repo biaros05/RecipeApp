@@ -11,8 +11,8 @@ using Oracle.EntityFrameworkCore.Metadata;
 namespace project.Migrations
 {
     [DbContext(typeof(RecipesContext))]
-    [Migration("20240502202459_OnCascade")]
-    partial class OnCascade
+    [Migration("20240506000118_FKInstructionsMeasuredIngredients")]
+    partial class FKInstructionsMeasuredIngredients
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -35,7 +35,7 @@ namespace project.Migrations
                     b.Property<int>("OwnerUserId")
                         .HasColumnType("NUMBER(10)");
 
-                    b.Property<int?>("RecipeId")
+                    b.Property<int>("RecipeId")
                         .HasColumnType("NUMBER(10)");
 
                     b.Property<int>("ScaleRating")
@@ -61,7 +61,7 @@ namespace project.Migrations
                     b.Property<int>("OwnerUserId")
                         .HasColumnType("NUMBER(10)");
 
-                    b.Property<int?>("RecipeId")
+                    b.Property<int>("RecipeId")
                         .HasColumnType("NUMBER(10)");
 
                     b.Property<int>("StarRating")
@@ -99,7 +99,7 @@ namespace project.Migrations
 
                     OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<int?>("Id"));
 
-                    b.Property<int?>("RecipeId")
+                    b.Property<int>("RecipeId")
                         .HasColumnType("NUMBER(10)");
 
                     b.Property<string>("TagName")
@@ -144,7 +144,7 @@ namespace project.Migrations
                     b.Property<int>("Index")
                         .HasColumnType("NUMBER(10)");
 
-                    b.Property<int?>("RecipeId")
+                    b.Property<int>("RecipeId")
                         .HasColumnType("NUMBER(10)");
 
                     b.Property<string>("Text")
@@ -172,7 +172,7 @@ namespace project.Migrations
                     b.Property<double>("Quantity")
                         .HasColumnType("BINARY_DOUBLE");
 
-                    b.Property<int?>("RecipeId")
+                    b.Property<int>("RecipeId")
                         .HasColumnType("NUMBER(10)");
 
                     b.HasKey("Id");
@@ -262,11 +262,15 @@ namespace project.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("recipes.Recipe", null)
+                    b.HasOne("recipes.Recipe", "Recipe")
                         .WithMany("_difficulties")
-                        .HasForeignKey("RecipeId");
+                        .HasForeignKey("RecipeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Owner");
+
+                    b.Navigation("Recipe");
                 });
 
             modelBuilder.Entity("Rating", b =>
@@ -277,11 +281,15 @@ namespace project.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("recipes.Recipe", null)
+                    b.HasOne("recipes.Recipe", "Recipe")
                         .WithMany("_ratings")
-                        .HasForeignKey("RecipeId");
+                        .HasForeignKey("RecipeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Owner");
+
+                    b.Navigation("Recipe");
                 });
 
             modelBuilder.Entity("RecipeUser", b =>
@@ -301,16 +309,24 @@ namespace project.Migrations
 
             modelBuilder.Entity("Tag", b =>
                 {
-                    b.HasOne("recipes.Recipe", null)
+                    b.HasOne("recipes.Recipe", "Recipe")
                         .WithMany("Tags")
-                        .HasForeignKey("RecipeId");
+                        .HasForeignKey("RecipeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Recipe");
                 });
 
             modelBuilder.Entity("recipes.Instruction", b =>
                 {
-                    b.HasOne("recipes.Recipe", null)
+                    b.HasOne("recipes.Recipe", "Recipe")
                         .WithMany("Instructions")
-                        .HasForeignKey("RecipeId");
+                        .HasForeignKey("RecipeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Recipe");
                 });
 
             modelBuilder.Entity("recipes.MeasuredIngredient", b =>
@@ -321,11 +337,15 @@ namespace project.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("recipes.Recipe", null)
+                    b.HasOne("recipes.Recipe", "Recipe")
                         .WithMany("Ingredients")
-                        .HasForeignKey("RecipeId");
+                        .HasForeignKey("RecipeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Ingredient");
+
+                    b.Navigation("Recipe");
                 });
 
             modelBuilder.Entity("recipes.Recipe", b =>

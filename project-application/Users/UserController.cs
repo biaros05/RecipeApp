@@ -3,6 +3,7 @@ namespace users;
 using filtering;
 using System.Net;
 using recipes;
+using System.Globalization;
 
 public class UserController
 {
@@ -16,8 +17,12 @@ public class UserController
     // public void CreateAccount(User newUser){}
     public void CreateAccount(string username, string password, string description)
     {
+        if (username == null)
+        {
+            throw new ArgumentNullException("Username cannot be null");
+        }
         var context = RecipesContext.Instance;
-        var userQuery = context.RecipeManager_Users.AsQueryable();
+        IQueryable<User> userQuery = context.RecipeManager_Users;
         filtering = new(userQuery);
         User result = filtering.FilterUsers(username);
         if (result != null)
@@ -44,7 +49,7 @@ public class UserController
     public bool AuthenticateUser(string username, string password)
     {
         var context = RecipesContext.Instance;
-        var userQuery = context.RecipeManager_Users.AsQueryable();
+        IQueryable<User> userQuery = context.RecipeManager_Users;
         filtering = new(userQuery);
         User result = filtering.FilterUsers(username);
         if (result == null)
@@ -64,7 +69,7 @@ public class UserController
     public void DeleteAccount(string username, string password)
     {
         var context = RecipesContext.Instance;
-        var userQuery = context.RecipeManager_Users.AsQueryable();
+        IQueryable<User> userQuery = context.RecipeManager_Users;
         bool result = AuthenticateUser(username, password);
         if (result)
         {
@@ -118,6 +123,10 @@ public class UserController
                     _instance = new UserController();
                 }
                 return _instance;
+            }
+            set
+            {
+                _instance = value;
             }
         }
 

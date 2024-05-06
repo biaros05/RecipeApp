@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore;
 namespace recipes;
 public class RecipeController
 {
-    public List<IFilterBy> Filters { get; set;} = new();
+    public List<IFilterBy> Filters { get; set; } = new();
     public List<Recipe> AllRecipes { get; } = new();
     public List<Ingredient> Ingredients { get; } = new();
 
@@ -35,8 +35,12 @@ public class RecipeController
         }
     }
 
-    // will add the recipe to the list of all recipes
-    public void CreateRecipe(Recipe recipe)
+    /// <summary>
+    /// this method will add the new recipe to the database. 
+    /// it will check that it doesnt yet exist and will also make sure the proper user is logged in before creating
+    /// </summary>
+    /// <param name="recipe">The recipe to create</param>
+    public static void CreateRecipe(Recipe recipe)
     {
         var context = RecipesContext.Instance;
         List<Recipe> retrieveRecipes = context.RecipeManager_Recipes.ToList<Recipe>();
@@ -54,11 +58,15 @@ public class RecipeController
 
     }
 
-    // adds an ingredient to the list of ingredients available for selection
-    public void AddIngredient(Ingredient ingredient)
+    /// <summary>
+    ///  this will add am ingredient to the database. 
+    /// if it already exists, it will refrain from adding
+    /// </summary>
+    /// <param name="ingredient">The ingredient to add</param>
+    public static void AddIngredient(Ingredient ingredient)
     {
         var context = RecipesContext.Instance;
-        List<Ingredient> retrieveIngredients = RecipesContext.Instance.RecipeManager_Ingredients.ToList<Ingredient>();
+        List<Ingredient> retrieveIngredients = context.RecipeManager_Ingredients.ToList<Ingredient>();
         if (!retrieveIngredients.Contains(ingredient))
         {
             context.RecipeManager_Ingredients.Add(ingredient);
@@ -66,39 +74,77 @@ public class RecipeController
         }
     }
 
-    // get list of recipes, and remove particular recipe. only allows owner to remove recipe
+    /// <summary>
+    /// this method will delete a recipe from the database. if the recipe does not exist
+    /// or if the logged in user is not the recipe's owner, it will throw an exception
+    /// </summary>
+    /// <param name="recipe">The recipe to delete</param>
+
+    // filters all recipes using the filters in the list **********
     public static void DeleteRecipe(Recipe recipe)
     {
         var context = RecipesContext.Instance;
-        List<Recipe> retrieveRecipes = context.RecipeManager_Recipes.ToList<Recipe>();
-        if (!retrieveRecipes.Contains(recipe))
+        IQueryable<Recipe> recipeQuery = context.RecipeManager_Recipes;
+        IQueryable<Recipe> retrieveRecipes = RecipesContext.Instance.RecipeManager_Recipes
+            .Include(recipe => recipe.Tags)
+            .Include(recipe => recipe._ratings)
+            .Include(recipe => recipe._difficulties)
+            .Include(recipe => recipe.Owner)
+            .Include(recipe => recipe.Ingredients)
+            .Include(recipe => recipe.Instructions)
+            .Include(recipe => recipe.UserFavourite);
+        Recipe? toRemove = retrieveRecipes
+            .Include(recipe => recipe.Tags)
+            .Include(recipe => recipe._ratings)
+            .Include(recipe => recipe._difficulties)
+            .Include(recipe => recipe.Owner)
+            .Include(recipe => recipe.Ingredients)
+            .Include(recipe => recipe.Instructions)
+            .Include(recipe => recipe.UserFavourite)
+            .FirstOrDefault(r => r.Name.Equals(recipe.Name) && r.Owner.Equals(recipe.Owner));
+        if (toRemove == null)
         {
             throw new ArgumentException("This recipe does not exist in the database");
         }
-        if (!recipe.Owner.Equals(UserController.Instance.ActiveUser))
+        if (!toRemove.Owner.Equals(UserController.Instance.ActiveUser))
         {
             throw new ArgumentException("Cannot delete the recipe you arent an owner of");
         }
 
-        context.Remove(recipe);
-        context.SaveChanges();
+        RecipesContext.Instance.RecipeManager_Recipes.Remove(toRemove);
+        RecipesContext.Instance.SaveChanges();
     }
 
 
-    // filters all recipes using the filters in the list **********
+    /// <summary>
+    /// this method will apply all the filters in the current Filters list 
+    /// and filter the recipes in the database, returning a list of recipes
+    /// </summary>
+    /// <returns>List of filtered recipes</returns>
     public List<Recipe> FilterBy()
     {
         var context = RecipesContext.Instance;
-        IQueryable<Recipe> recipeQuery = context.RecipeManager_Recipes;
+        var recipeQuery = context.RecipeManager_Recipes
+            .Include(recipe => recipe.Tags)
+            .Include(recipe => recipe._ratings)
+            .Include(recipe => recipe._difficulties)
+            .Include(recipe => recipe.Owner)
+            .Include(recipe => recipe.Ingredients)
+                .ThenInclude(measuredIngredient => measuredIngredient.Ingredient)
+            .Include(recipe => recipe.Instructions)
+            .Include(recipe => recipe.UserFavourite)
+            .AsQueryable();
         foreach (IFilterBy filter in Filters)
         {
             recipeQuery = filter.FilterRecipes(recipeQuery);
         }
-        return recipeQuery.ToList<Recipe>();
+        return recipeQuery.ToList();
     }
 
-    // as the user adds a filter, this will accumilate the filters (will NOT add one if already there.)
-
+    /// <summary>
+    /// this method will add a filter to the list if it does not already exits
+    /// </summary>
+    /// <param name="filter">The filter to add</param>
     public void AddFilter(IFilterBy filter)
     {
         if (Filters.Contains(filter))
@@ -108,6 +154,10 @@ public class RecipeController
         Filters.Add(filter);
     }
 
+    /// <summary>
+    /// this method will remove a filter from the list if it exists
+    /// </summary>
+    /// <param name="filter">The filter to remove</param>
     public void RemoveFilter(IFilterBy filter)
     {
         if (!Filters.Contains(filter))
@@ -117,6 +167,9 @@ public class RecipeController
         Filters.Remove(filter);
     }
 
+    /// <summary>
+    /// this method effectively clears all the filters from the Filters list
+    /// </summary>
     public void RemoveAllFilters()
     {
         Filters = new();

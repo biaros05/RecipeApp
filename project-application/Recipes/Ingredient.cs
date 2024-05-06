@@ -21,6 +21,10 @@ public class Ingredient
         this.IngredientId = id;
     }
 
+    public Ingredient(Ingredient i): this(i.Name, i.Unit)
+    {
+    }
+
     public Ingredient(){}
     public string Name { get; set; }
 
@@ -43,11 +47,6 @@ public class Ingredient
     // hashcode (the name of the ingredient)
     public override int GetHashCode()
     {
-        int hash = 17;//prime num
-        unchecked
-        {
-            hash = hash * 31 + this.Name.GetHashCode();
-            return hash;
-        }
+        return HashCode.Combine(this.Name.ToLower());
     }
 }

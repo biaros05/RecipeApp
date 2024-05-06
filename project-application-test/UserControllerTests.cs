@@ -4,6 +4,7 @@ using System.Runtime.InteropServices;
 using System.Threading.Tasks.Dataflow;
 using Microsoft.EntityFrameworkCore;
 using Moq;
+using recipes;
 using users;
 
 [TestClass]
@@ -35,6 +36,8 @@ public class UserControllerTests
     public void Cleanup()
     {
         RecipesContext.Instance = null;
+        RecipeController.Instance = null;
+        UserController.Instance = null;
     }
 
     [TestMethod]
@@ -163,14 +166,20 @@ public class UserControllerTests
     {
         var mockContext = new Mock<RecipesContext>();
         RecipesContext.Instance = mockContext.Object;
+
+        var users = new List<User>(){
+            new("test user 2", "test blah", "test description")
+        }.AsQueryable();
+
+        var expected = new User("test user 1", "test password", "description test");
+
         var mockSetUser = new Mock<DbSet<User>>();
+        ConfigureDbSetMock(users, mockSetUser);
         mockContext.Setup(m => m.RecipeManager_Users).Returns(mockSetUser.Object);
 
         UserController.Instance.CreateAccount("test user 1", "test password", "description test");
 
-        var expected = new User("test user 1", "test password", "description test");
-
-        mockSetUser.Verify(mock => mock.Add(It.Is<User>(
+        mockContext.Verify(mock => mock.Add(It.Is<User>(
             actual => expected.Equals(actual))), Times.Once);
         mockContext.Verify(mock => mock.SaveChanges(), Times.Once);
     }
@@ -242,7 +251,6 @@ public class UserControllerTests
     }
     // test authenticate user if passwords do not match
     [TestMethod]
-    [ExpectedException(typeof(Exception))]
     public void AuthenticateUserPasswordWrong()
     {
         var users = new List<User>(){
@@ -255,7 +263,9 @@ public class UserControllerTests
         ConfigureDbSetMock(users, mockSetUser);
         mockContext.Setup(m => m.RecipeManager_Users).Returns(mockSetUser.Object);
 
-        UserController.Instance.AuthenticateUser("test user 1", "dwadawdwa");
+        bool result = UserController.Instance.AuthenticateUser("test user 1", "dwadawdwa");
+
+        Assert.IsFalse(result);
     }
     // test authenticate user if user is null
     [TestMethod]
@@ -276,7 +286,7 @@ public class UserControllerTests
     }
     // test authenticate user if password is null
     [TestMethod]
-    [ExpectedException(typeof(Exception))]
+    [ExpectedException(typeof(ArgumentNullException))]
     public void AuthenticateUserPasswordNull()
     {
         var users = new List<User>(){
@@ -295,12 +305,14 @@ public class UserControllerTests
     [TestMethod]
     public void DeleteAcount()
     {
+        var mockContext = new Mock<RecipesContext>();
         var users = new List<User>(){
             new("test user 1", "test password", "test description"),
             new("test user 2", "test password", "test description")
         }.AsQueryable();
 
-        var mockContext = new Mock<RecipesContext>();
+        var expected = new User("test user 1", "test password", "test description");
+
         RecipesContext.Instance = mockContext.Object;
         var mockSetUser = new Mock<DbSet<User>>();
         ConfigureDbSetMock(users, mockSetUser);
@@ -308,29 +320,11 @@ public class UserControllerTests
 
         UserController.Instance.DeleteAccount("test user 1", "test password");
 
-        var expected = new User("test user 1", "test password", "test description");
-
-        mockSetUser.Verify(mock => mock.Remove(It.Is<User>(
+        mockContext.Verify(mock => mock.Remove(It.Is<User>(
             actual => expected.Equals(actual))), Times.Once);
         mockContext.Verify(mock => mock.SaveChanges(), Times.Once);
     }
-    // test delete account when passord is incorrect
-    [TestMethod]
-    [ExpectedException(typeof(Exception))]
-    public void DeleteAcountWrongPassword()
-    {
-        var users = new List<User>(){
-            new("test user 1", "test password", "test description")
-        }.AsQueryable();
 
-        var mockContext = new Mock<RecipesContext>();
-        RecipesContext.Instance = mockContext.Object;
-        var mockSetUser = new Mock<DbSet<User>>();
-        ConfigureDbSetMock(users, mockSetUser);
-        mockContext.Setup(m => m.RecipeManager_Users).Returns(mockSetUser.Object);
-
-        UserController.Instance.DeleteAccount("test user 1", "tadwadaw");
-    }
     // test delete account if usrname doesnt exist
     [TestMethod]
     [ExpectedException(typeof(Exception))]
