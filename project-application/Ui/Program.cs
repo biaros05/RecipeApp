@@ -660,6 +660,17 @@ public class Program
         ConsoleUtils.WaitUserPressKey();
     }
 
+    public static void UpdateUser()
+    {
+        Console.WriteLine("Enter a new username:");
+        string username = Console.ReadLine();
+        Console.WriteLine("Enter a new description:");
+        string description = Console.ReadLine();
+        Console.WriteLine("Enter a new password:");
+        string password = Console.ReadLine();
+        UserController.Instance.UpdateUser(username, description, new byte[8], password);
+    }
+
     public static void Main()
     {
         LoginOrRegister();
@@ -717,6 +728,9 @@ public class Program
                     break;
                 case MainMenuOption.UpdateRecipe:
                     EditRecipe();
+                    break;
+                case MainMenuOption.UpdateUser:
+                    UpdateUser();
                     break;
                 case MainMenuOption.FilterRecipeSearch:
                     FilterRecipeSearch();

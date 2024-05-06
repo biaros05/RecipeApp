@@ -80,7 +80,7 @@ public class UserController
         }
     }
 
-    public void UpdateUser(string username, string description, byte[] image, string hashpass )
+    public void UpdateUser(string username, string description, byte[] image, string password )
     {
         var context =RecipesContext.Instance;
 
@@ -100,6 +100,7 @@ public class UserController
         this.ActiveUser.Description=description==null?this.ActiveUser.Description:description;
         this.ActiveUser.Image=image==null?this.ActiveUser.Image:image;
         this.ActiveUser.Username=username==null?this.ActiveUser.Username:username;
+        string hashpass = Password.HashPassword(this.ActiveUser.Salt, password);
         this.ActiveUser.HashPass=hashpass==null?this.ActiveUser.HashPass:hashpass;
 
         user.Description=description==null?this.ActiveUser.Description:description;
