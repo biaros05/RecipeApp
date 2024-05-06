@@ -195,12 +195,6 @@ public class FilterTests
     {
         var mockContext = new Mock<RecipesContext>();
 
-        // basic setup
-        var mockSetRecipe = new Mock<DbSet<Recipe>>();
-        mockContext.Setup(m => m.RecipeManager_Recipes).Returns(mockSetRecipe.Object);
-        var mockSetIngredient = new Mock<DbSet<Ingredient>>();
-        mockContext.Setup(m => m.RecipeManager_Ingredients).Returns(mockSetIngredient.Object);
-
         // adding the ingredients we are looking for
         List<Ingredient> lookingForIngredient = new()
             {
@@ -212,6 +206,7 @@ public class FilterTests
         // adding test recipes
         Ingredient a = new("Apple", Units.Quantity);
         Ingredient b = new("Sugar", Units.Mass);
+        List<Ingredient> ingredients = new(){a,b};
         List<MeasuredIngredient> dict = new()
             {
                 new( a, 20 ),
@@ -235,15 +230,23 @@ public class FilterTests
         // //finalize context
         RecipesContext.Instance = mockContext.Object;
 
-        // set up queryable data
-        var data = recipes.AsQueryable();
-        ConfigureDbSetMock<Recipe>(data, mockSetRecipe);
-        var ingredientsData = recipes.SelectMany(recipe => recipe.Ingredients.Select(mi => mi.Ingredient)).Distinct().AsQueryable();
-        ConfigureDbSetMock<Ingredient>(ingredientsData, mockSetIngredient);
+       //finalize context
+        RecipesContext.Instance = mockContext.Object;
+
+        var mockSetIngredient = new Mock<DbSet<Ingredient>>();
+        ConfigureDbSetMock(ingredients.AsQueryable(), mockSetIngredient);
+        mockContext.Setup(m => m.RecipeManager_Ingredients).Returns(mockSetIngredient.Object);
+
+        var mockSetRecipe = new Mock<DbSet<Recipe>>();
+        ConfigureDbSetMock(recipes.AsQueryable(), mockSetRecipe);
+        mockContext.Setup(m => m.RecipeManager_Recipes).Returns(mockSetRecipe.Object);
+
+        var mockSetRatings = new Mock<DbSet<Rating>>();
+        mockContext.Setup(m => m.RecipeManager_Ratings).Returns(mockSetRatings.Object);
 
         // calling filtering
         IFilterBy filter = new FilterByIngredients(lookingForIngredient);
-        IQueryable<Recipe> filteredRecipes = filter.FilterRecipes(data);
+        IQueryable<Recipe> filteredRecipes = filter.FilterRecipes(recipes.AsQueryable());
         List<Recipe> actual = filteredRecipes.ToList<Recipe>();
 
         CollectionAssert.AreEqual(expectedRecipes, actual);
@@ -264,15 +267,11 @@ public class FilterTests
     {
         var mockContext = new Mock<RecipesContext>();
 
-        // basic setup
-        var mockSetRecipe = new Mock<DbSet<Recipe>>();
-        mockContext.Setup(m => m.RecipeManager_Recipes).Returns(mockSetRecipe.Object);
-        var mockSetIngredient = new Mock<DbSet<Ingredient>>();
-        mockContext.Setup(m => m.RecipeManager_Ingredients).Returns(mockSetIngredient.Object);
-
         //creating test data
         Ingredient a = new("Apple", Units.Quantity);
         Ingredient b = new("Sugar", Units.Mass);
+
+        var ingredients = new List<Ingredient>(){a, b}.AsQueryable();
         List<MeasuredIngredient> dict = new()
             {
                 new( a, 20 ),
@@ -288,9 +287,6 @@ public class FilterTests
                 new("Recipe need 10 characters", new User("Not Bianca", "123456789"), "Test Description", 30, 60, 4,
                 new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict2, new List<Tag> { new("Tag1"), new("Tag2") }, 2)
             };
-        //rate the first recipe 3 star and second 0
-        recipes[0].RateRecipe(3);
-        recipes[1].RateRecipe(1);
 
         //create expected results
         List<Recipe> expected = new()
@@ -299,17 +295,30 @@ public class FilterTests
                 new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict, new List<Tag> { new("Tag1"), new("Tag2") }, 2),
             };
 
-            // //finalize context
+        //finalize context
         RecipesContext.Instance = mockContext.Object;
 
-        // set up queryable data
-        var data = recipes.AsQueryable();
-        ConfigureDbSetMock<Recipe>(data, mockSetRecipe);
-        var ingredientsData = recipes.SelectMany(recipe => recipe.Ingredients.Select(mi => mi.Ingredient)).Distinct().AsQueryable();
-        ConfigureDbSetMock<Ingredient>(ingredientsData, mockSetIngredient);
+        var mockSetIngredient = new Mock<DbSet<Ingredient>>();
+        ConfigureDbSetMock(ingredients.AsQueryable(), mockSetIngredient);
+        mockContext.Setup(m => m.RecipeManager_Ingredients).Returns(mockSetIngredient.Object);
+
+        var mockSetRecipe = new Mock<DbSet<Recipe>>();
+        ConfigureDbSetMock(recipes.AsQueryable(), mockSetRecipe);
+        mockContext.Setup(m => m.RecipeManager_Recipes).Returns(mockSetRecipe.Object);
+
+        var mockSetRatings = new Mock<DbSet<Rating>>();
+        mockContext.Setup(m => m.RecipeManager_Ratings).Returns(mockSetRatings.Object);
+
+
+        //rate the first recipe 3 star and second 0
+        recipes[0].RateRecipe(3, UserController.Instance.ActiveUser);
+        recipes[1].RateRecipe(1, UserController.Instance.ActiveUser);
+
+            // //finalize context
+
 
         IFilterBy filter = new FilterByRating(3);
-        IQueryable<Recipe> filteredRecipes = filter.FilterRecipes(data);
+        IQueryable<Recipe> filteredRecipes = filter.FilterRecipes(recipes.AsQueryable());
         List<Recipe> actual = filteredRecipes.ToList<Recipe>();
 
         CollectionAssert.AreEqual(expected, actual);
@@ -337,15 +346,10 @@ public class FilterTests
     {
         var mockContext = new Mock<RecipesContext>();
 
-        // basic setup
-        var mockSetRecipe = new Mock<DbSet<Recipe>>();
-        mockContext.Setup(m => m.RecipeManager_Recipes).Returns(mockSetRecipe.Object);
-        var mockSetIngredient = new Mock<DbSet<Ingredient>>();
-        mockContext.Setup(m => m.RecipeManager_Ingredients).Returns(mockSetIngredient.Object);
-
         //creating test data
         Ingredient a = new("Apple", Units.Quantity);
         Ingredient b = new("Sugar", Units.Mass);
+        List<Ingredient> ingredients = new(){a,b};
         List<MeasuredIngredient> dict = new()
             {
                 new( a, 20 ),
@@ -387,14 +391,19 @@ public class FilterTests
         //finalize context
         RecipesContext.Instance = mockContext.Object;
 
-        // set up queryable data
-        var data = recipes.AsQueryable();
-        ConfigureDbSetMock<Recipe>(data, mockSetRecipe);
-        var ingredientsData = recipes.SelectMany(recipe => recipe.Ingredients.Select(mi => mi.Ingredient)).Distinct().AsQueryable();
-        ConfigureDbSetMock<Ingredient>(ingredientsData, mockSetIngredient);
+        var mockSetIngredient = new Mock<DbSet<Ingredient>>();
+        ConfigureDbSetMock(ingredients.AsQueryable(), mockSetIngredient);
+        mockContext.Setup(m => m.RecipeManager_Ingredients).Returns(mockSetIngredient.Object);
+
+        var mockSetRecipe = new Mock<DbSet<Recipe>>();
+        ConfigureDbSetMock(recipes.AsQueryable(), mockSetRecipe);
+        mockContext.Setup(m => m.RecipeManager_Recipes).Returns(mockSetRecipe.Object);
+
+        var mockSetRatings = new Mock<DbSet<Rating>>();
+        mockContext.Setup(m => m.RecipeManager_Ratings).Returns(mockSetRatings.Object);
 
         IFilterBy filter = new FilterByTags(tags);
-        IQueryable<Recipe> filteredRecipes = filter.FilterRecipes(data);
+        IQueryable<Recipe> filteredRecipes = filter.FilterRecipes(recipes.AsQueryable());
         List<Recipe> actual = filteredRecipes.ToList<Recipe>();
 
         CollectionAssert.AreEqual(expected, actual);
@@ -414,17 +423,10 @@ public class FilterTests
     {
         var mockContext = new Mock<RecipesContext>();
 
-        // basic setup
-        var mockSetRecipe = new Mock<DbSet<Recipe>>();
-        mockContext.Setup(m => m.RecipeManager_Recipes).Returns(mockSetRecipe.Object);
-        var mockSetUser = new Mock<DbSet<User>>();
-        mockContext.Setup(m => m.RecipeManager_Users).Returns(mockSetUser.Object);
-        var mockSetIngredient = new Mock<DbSet<Ingredient>>();
-        mockContext.Setup(m => m.RecipeManager_Ingredients).Returns(mockSetIngredient.Object);
-
         // creating test data
         Ingredient a = new("Apple", Units.Quantity);
         Ingredient b = new("Sugar", Units.Mass);
+        List<Ingredient> ingredients = new(){a,b};
         List<MeasuredIngredient> dict = new()
             {
                 new( a, 20 ),
@@ -451,16 +453,22 @@ public class FilterTests
         //finalize context
         RecipesContext.Instance = mockContext.Object;
 
-        // set up queryable data
-        var data = recipes.AsQueryable();
-        ConfigureDbSetMock<Recipe>(data, mockSetRecipe);
-        var usersData = recipes.Select(mi => mi.Owner).Distinct().AsQueryable();
-        ConfigureDbSetMock<User>(usersData, mockSetUser);
-        var ingredientsData = recipes.SelectMany(recipe => recipe.Ingredients.Select(mi => mi.Ingredient)).Distinct().AsQueryable();
-        ConfigureDbSetMock<Ingredient>(ingredientsData, mockSetIngredient);
+        var mockSetIngredient = new Mock<DbSet<Ingredient>>();
+        ConfigureDbSetMock(ingredients.AsQueryable(), mockSetIngredient);
+        mockContext.Setup(m => m.RecipeManager_Ingredients).Returns(mockSetIngredient.Object);
+
+        var mockSetUser = new Mock<DbSet<User>>();
+        mockContext.Setup(m => m.RecipeManager_Users).Returns(mockSetUser.Object);
+
+        var mockSetRecipe = new Mock<DbSet<Recipe>>();
+        ConfigureDbSetMock(recipes.AsQueryable(), mockSetRecipe);
+        mockContext.Setup(m => m.RecipeManager_Recipes).Returns(mockSetRecipe.Object);
+
+        var mockSetRatings = new Mock<DbSet<Rating>>();
+        mockContext.Setup(m => m.RecipeManager_Ratings).Returns(mockSetRatings.Object);
 
         IFilterBy filter = new FilterByOwner(new User("Bianca", "123456789"));
-        IQueryable<Recipe> filteredRecipes = filter.FilterRecipes(data);
+        IQueryable<Recipe> filteredRecipes = filter.FilterRecipes(recipes.AsQueryable());
         List<Recipe> actual = filteredRecipes.ToList<Recipe>();
 
         CollectionAssert.AreEqual(expected, actual);
@@ -480,15 +488,11 @@ public class FilterTests
     {
         var mockContext = new Mock<RecipesContext>();
 
-        // basic setup
-        var mockSetRecipe = new Mock<DbSet<Recipe>>();
-        mockContext.Setup(m => m.RecipeManager_Recipes).Returns(mockSetRecipe.Object);
-        var mockSetIngredient = new Mock<DbSet<Ingredient>>();
-        mockContext.Setup(m => m.RecipeManager_Ingredients).Returns(mockSetIngredient.Object);
 
         //creating test data
         Ingredient a = new("Apple", Units.Quantity);
         Ingredient b = new("Sugar", Units.Mass);
+        List<Ingredient> ingredients = new(){a,b};
         List<MeasuredIngredient> dict = new()
             {
                 new( a, 20 ),
@@ -519,15 +523,17 @@ public class FilterTests
         //finalize context
         RecipesContext.Instance = mockContext.Object;
 
-        // set up queryable data
-        var data = recipes.AsQueryable();
-        ConfigureDbSetMock<Recipe>(data, mockSetRecipe);
-        var ingredientsData = recipes.SelectMany(recipe => recipe.Ingredients.Select(mi => mi.Ingredient)).Distinct().AsQueryable();
-        ConfigureDbSetMock<Ingredient>(ingredientsData, mockSetIngredient);
+        var mockSetIngredient = new Mock<DbSet<Ingredient>>();
+        ConfigureDbSetMock(ingredients.AsQueryable(), mockSetIngredient);
+        mockContext.Setup(m => m.RecipeManager_Ingredients).Returns(mockSetIngredient.Object);
+
+        var mockSetRecipe = new Mock<DbSet<Recipe>>();
+        ConfigureDbSetMock(recipes.AsQueryable(), mockSetRecipe);
+        mockContext.Setup(m => m.RecipeManager_Recipes).Returns(mockSetRecipe.Object);
 
         //filter
         IFilterBy filter = new FilterByServings(3, 6);
-        IQueryable<Recipe> filteredRecipes = filter.FilterRecipes(data);
+        IQueryable<Recipe> filteredRecipes = filter.FilterRecipes(recipes.AsQueryable());
         List<Recipe> actual = filteredRecipes.ToList<Recipe>();
 
         CollectionAssert.AreEqual(expected, actual);
@@ -556,10 +562,6 @@ public class FilterTests
     {
         var mockContext = new Mock<RecipesContext>();
 
-        // basic setup
-        var mockSetUsers = new Mock<DbSet<User>>();
-        mockContext.Setup(m => m.RecipeManager_Users).Returns(mockSetUsers.Object);
-
         // creating new test data
         List<User> users = new()
         {
@@ -570,6 +572,10 @@ public class FilterTests
 
         //finalize context
         RecipesContext.Instance = mockContext.Object;
+
+        // basic setup
+        var mockSetUsers = new Mock<DbSet<User>>();
+        mockContext.Setup(m => m.RecipeManager_Users).Returns(mockSetUsers.Object);
 
         // set up queryable data
         var data = users.AsQueryable();

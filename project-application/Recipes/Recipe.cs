@@ -7,6 +7,7 @@ using System.Dynamic;
 using System.Reflection.Metadata.Ecma335;
 using System.Timers;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using users;
 public class Recipe
 {
@@ -137,7 +138,8 @@ public class Recipe
     {
         get
         {
-            int totalRating = 0;
+
+            double totalRating = 0;
             foreach (Rating r in this._ratings)
             {
                 totalRating += r.StarRating;
@@ -176,7 +178,7 @@ public class Recipe
             throw new ArgumentOutOfRangeException("Rating must be between 1 and 5 stars");
         }
         var context = RecipesContext.Instance;  
-        Recipe retrieveRecipe = context.RecipeManager_Recipes.First(r => r.Id == Id);
+        Recipe retrieveRecipe = context.RecipeManager_Recipes.First(r => r.Name.Equals(this.Name) && r.Owner.Equals(this.Owner));
         foreach (Rating r in retrieveRecipe._ratings)
         {
             if (r.Owner == owner)
@@ -185,7 +187,6 @@ public class Recipe
             }
         }
         retrieveRecipe._ratings.Add(new Rating(rating, owner));
-        context.RecipeManager_Ratings.Add(new Rating(rating, owner));
         context.SaveChanges();
     }
 
@@ -207,7 +208,6 @@ public class Recipe
             }
         }
         retrieveRecipe._difficulties.Add(new DifficultyRating(rating, owner));
-        context.RecipeManager_DifficultyRatings.Add(new DifficultyRating(rating, owner));
         context.SaveChanges();
     }
 
@@ -236,6 +236,10 @@ public class Recipe
     string description, int preptimeMins, int cooktimeMins,
     List<MeasuredIngredient> ingredients, List<Tag> tags)
     {
+        if (this.Owner != UserController.Instance.ActiveUser)
+        {
+            throw new ArgumentException("You do not have permission to edit this recipe");
+        }
         if (preptimeMins < 0 || preptimeMins > 240)
         {
             throw new ArgumentOutOfRangeException("Prep time cannot be less than 0 or greater than 4 hours");
@@ -253,6 +257,7 @@ public class Recipe
         retrieveRecipe.CookTimeMins = cooktimeMins;
         UpdateIngredients(ingredients);
         retrieveRecipe.Tags = tags;
+        context.RecipeManager_Recipes.Update(retrieveRecipe);
         context.SaveChanges();
     }
 
@@ -264,7 +269,7 @@ public class Recipe
         List<MeasuredIngredient> newIngredients = new();
         foreach (MeasuredIngredient i in ingredients)
         {
-            RecipeController.Instance.AddIngredient(i.Ingredient);
+            RecipeController.AddIngredient(i.Ingredient);
             Ingredient? ingredient = RecipesContext.Instance.RecipeManager_Ingredients.FirstOrDefault(ing => ing.Name == i.Ingredient.Name);
             i.Ingredient = ingredient!;
             newIngredients.Add(i);
@@ -309,7 +314,7 @@ public class Recipe
         }
 
         this.Instructions = instructions;
-        this.Ingredients = ingredients;
+        UpdateIngredients(ingredients);
         this.Tags = tags;
 
         if (budget < 1 || budget > 3)

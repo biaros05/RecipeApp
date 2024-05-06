@@ -36,8 +36,10 @@ public class FilterByIngredients : IFilterBy
     /// <returns>A filtered list of recipes if they have the looked for ingredient</returns>
     public IQueryable<Recipe> FilterRecipes(IQueryable<Recipe> recipes)
     {
-        return recipes
-            .Where(recipe => ContainsIngredient(new List<Ingredient>(recipe.Ingredients.Select(measured => measured.Ingredient))));
+        List<Recipe> recipesList = recipes.ToList();
+        var query = recipesList
+            .Where(recipe => ContainsIngredient(new List<Ingredient>(recipe.Ingredients.Select(measured => new Ingredient(measured.Ingredient)))));
+        return query.AsQueryable();
     }
 
     public override string ToString()

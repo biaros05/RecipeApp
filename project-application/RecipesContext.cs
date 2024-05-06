@@ -7,12 +7,11 @@ public class RecipesContext : DbContext
     public virtual DbSet<Recipe> RecipeManager_Recipes {get; set;}
     public virtual DbSet<User> RecipeManager_Users {get; set;}
     public virtual DbSet<Ingredient> RecipeManager_Ingredients {get; set;}
-    
-    public virtual DbSet<Tag> RecipeManager_Tags {get; set;}
     public virtual DbSet<DifficultyRating> RecipeManager_DifficultyRatings {get; set;}
     public virtual DbSet<Rating> RecipeManager_Ratings {get; set;}
     public virtual DbSet<Instruction> RecipeManager_Instructions {get; set;}
     public virtual DbSet<MeasuredIngredient> RecipeManager_MeasuredIngredients {get; set;}
+    public virtual DbSet<Tag> RecipeManager_Tags {get; set;}
     public string HostName { get; set; }
 
     public string Port { get; set; }
@@ -57,6 +56,8 @@ public class RecipesContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
+        Console.WriteLine($"Data Source={HostName}:{Port}/{ServiceName}; " +
+        $"User Id={UserName}; Password={Password}");
         optionsBuilder.UseOracle($"Data Source={HostName}:{Port}/{ServiceName}; " +
         $"User Id={UserName}; Password={Password}");
     }
