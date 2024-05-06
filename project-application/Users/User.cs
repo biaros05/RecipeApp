@@ -124,20 +124,20 @@ public class User
     public void AddToFavourites(Recipe recipe)
     {
         var context = RecipesContext.Instance;
-        User user = context.RecipeManager_Users.ToList()
-                    .Where(u => u.username.Equals(this.Username))
-                    .First();
+        // User user = context.RecipeManager_Users.Select(u => u).ToList()
+        //             .Where(u => u.username.Equals(this.Username))
+        //             .First();
 
         if (recipe == null)
         {
             throw new ArgumentNullException("Recipe cannot be null");
         }
-        if (user.UserFavoriteRecipies.Contains(recipe))
+        if (this.UserFavoriteRecipies.Contains(recipe))
         {
             throw new ArgumentException("This recipe has already been added to favourites");
         }
-        user.UserFavoriteRecipies.Add(recipe);
-        context.Update(user);
+        this.UserFavoriteRecipies.Add(recipe);
+        context.Update(this);
         context.SaveChanges();
     }
 
@@ -145,20 +145,20 @@ public class User
     public void RemoveFromFavourites(Recipe recipe)
     {
         var context = RecipesContext.Instance;
-        User user = context.RecipeManager_Users.ToList()
-                    .Where(u => u.username.Equals(this.Username))
-                    .First();
+        // User user = context.RecipeManager_Users.Select(u => u).ToList()
+        //             .Where(u => u.username.Equals(this.Username))
+        //             .First();
 
         if (recipe == null)
         {
             throw new ArgumentNullException("Recipe cannot be null");
         }
-        if (!user.UserFavoriteRecipies.Contains(recipe))
+        if (!this.UserFavoriteRecipies.Contains(recipe))
         {
             throw new ArgumentException("This recipe was never added to your favourites");
         }
-        user.UserFavoriteRecipies.Remove(recipe);
-        context.Update(user);
+        this.UserFavoriteRecipies.Remove(recipe);
+        context.Update(this);
         context.SaveChanges();
     }
 
