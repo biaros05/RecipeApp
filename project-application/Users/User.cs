@@ -124,10 +124,6 @@ public class User
     public void AddToFavourites(Recipe recipe)
     {
         var context = RecipesContext.Instance;
-        // User user = context.RecipeManager_Users.Select(u => u).ToList()
-        //             .Where(u => u.username.Equals(this.Username))
-        //             .First();
-
         if (recipe == null)
         {
             throw new ArgumentNullException("Recipe cannot be null");
@@ -145,9 +141,6 @@ public class User
     public void RemoveFromFavourites(Recipe recipe)
     {
         var context = RecipesContext.Instance;
-        // User user = context.RecipeManager_Users.Select(u => u).ToList()
-        //             .Where(u => u.username.Equals(this.Username))
-        //             .First();
 
         if (recipe == null)
         {

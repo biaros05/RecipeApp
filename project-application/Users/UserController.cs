@@ -13,8 +13,13 @@ public class UserController
     public User? ActiveUser { get; set; }
     public List<User> AllUsers { get; } = new();
 
-    // adds a new account (validates the input) --> should it take a user or params to create a new user individually?
-    // public void CreateAccount(User newUser){}
+    /// <summary>
+    /// this will make sure the given username does not already exist and is not null
+    /// and will create a user
+    /// </summary>
+    /// <param name="username">new username</param>
+    /// <param name="password">new password</param>
+    /// <param name="description">user's description</param>
     public void CreateAccount(string username, string password, string description)
     {
         if (username == null)
@@ -42,10 +47,15 @@ public class UserController
         }
         RecipesContext.Instance.SaveChanges();
     }
-    // make sure the user exists in the database, and the hashed password matches 
-    // the hashed password of the username 
-    // (interacts with data layer to retrieve list of users to perform authentication)
-    // update ActiveUser
+
+    /// <summary>
+    /// this method will make sure the user exists in the database
+    /// by verifying the username existing, and then matching the 
+    /// passed password with the user's password.
+    /// </summary>
+    /// <param name="username">username to login with</param>
+    /// <param name="password">the given password to be validated</param>
+    /// <returns></returns>
     public bool AuthenticateUser(string username, string password)
     {
         var context = RecipesContext.Instance;
@@ -64,8 +74,12 @@ public class UserController
         return false;
     }
 
-    // retrieve list of users from db, remove active user from list, sned back new list to data layer
-    //FIXME - need to use fluent API to on cascade delete
+    /// <summary>
+    /// this will take in a username for the user to be deleted, 
+    /// and will make sure the given password matches the user
+    /// </summary>
+    /// <param name="username">username for user to be deleted</param>
+    /// <param name="password">password of said user (must match)</param>
     public void DeleteAccount(string username, string password)
     {
         var context = RecipesContext.Instance;
