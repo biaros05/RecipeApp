@@ -7,6 +7,7 @@ using System.Dynamic;
 using System.Reflection.Metadata.Ecma335;
 using System.Timers;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using users;
 public class Recipe
 {
@@ -186,7 +187,6 @@ public class Recipe
             }
         }
         retrieveRecipe._ratings.Add(new Rating(rating, owner));
-        //context.RecipeManager_Ratings.Add(new Rating(rating, owner));
         context.SaveChanges();
     }
 
@@ -208,7 +208,6 @@ public class Recipe
             }
         }
         retrieveRecipe._difficulties.Add(new DifficultyRating(rating, owner));
-        context.RecipeManager_DifficultyRatings.Add(new DifficultyRating(rating, owner));
         context.SaveChanges();
     }
 
@@ -258,6 +257,7 @@ public class Recipe
         retrieveRecipe.CookTimeMins = cooktimeMins;
         UpdateIngredients(ingredients);
         retrieveRecipe.Tags = tags;
+        context.RecipeManager_Recipes.Update(retrieveRecipe);
         context.SaveChanges();
     }
 
