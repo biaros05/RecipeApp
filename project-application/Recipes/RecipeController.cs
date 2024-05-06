@@ -82,8 +82,23 @@ public class RecipeController
     public static void DeleteRecipe(Recipe recipe)
     {
 
-        IQueryable<Recipe> retrieveRecipes = RecipesContext.Instance.RecipeManager_Recipes;
-        Recipe? toRemove = retrieveRecipes.FirstOrDefault(r => r.Name.Equals(recipe.Name) && r.Owner.Equals(recipe.Owner));
+        IQueryable<Recipe> retrieveRecipes = RecipesContext.Instance.RecipeManager_Recipes
+            .Include(recipe => recipe.Tags)
+            .Include(recipe => recipe._ratings)
+            .Include(recipe => recipe._difficulties)
+            .Include(recipe => recipe.Owner)
+            .Include(recipe => recipe.Ingredients)
+            .Include(recipe => recipe.Instructions)
+            .Include(recipe => recipe.UserFavourite);
+        Recipe? toRemove = retrieveRecipes
+            .Include(recipe => recipe.Tags)
+            .Include(recipe => recipe._ratings)
+            .Include(recipe => recipe._difficulties)
+            .Include(recipe => recipe.Owner)
+            .Include(recipe => recipe.Ingredients)
+            .Include(recipe => recipe.Instructions)
+            .Include(recipe => recipe.UserFavourite)
+            .FirstOrDefault(r => r.Name.Equals(recipe.Name) && r.Owner.Equals(recipe.Owner));
         if (toRemove == null)
         {
             throw new ArgumentException("This recipe does not exist in the database");

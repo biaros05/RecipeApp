@@ -225,6 +225,7 @@ public class Program
         Recipe newRecipe = new Recipe(name, owner, description, prepTimeMins, cookTimeMins, numberOfServings, instructions, ingredients, tags, budget);
 
         RecipeController.CreateRecipe(newRecipe);
+
     }
 
     private static void EditRecipe()
@@ -739,6 +740,7 @@ public class Program
                     Console.WriteLine("Enter your password");
                     string password = Console.ReadLine();
                     UserController.Instance.DeleteAccount(UserController.Instance.ActiveUser.Username, password);
+                    UserController.Instance.ActiveUser = null;
                     LoginOrRegister();
                     break;
                 case MainMenuOption.Logout:
