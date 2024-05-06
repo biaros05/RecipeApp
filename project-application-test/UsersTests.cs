@@ -391,6 +391,7 @@ public class UsersTests
     [TestMethod]
     public void User_Test_AddingToFavorite()
     {
+        var mockContext=new Mock<RecipesContext>();
         //Arrange
         var data = new List<User>()
         {
@@ -404,17 +405,25 @@ public class UsersTests
         dict.Add(new(i, 20));
         Recipe recipe = new("Test Recipe", new User("Bianca", "123456789"), "Test Description", 30, 60, 4,
             new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict, new List<Tag> { new("Tag1"), new("Tag2") }, 2);
+        var recipes = new List<Recipe>
+        {
+            recipe
+        }.AsQueryable();
 
         string username = "testing";
         string passwrd = "password";
         string description = "description";
         
-        var mockContext=new Mock<RecipesContext>();
+        RecipesContext.Instance= mockContext.Object;
         var mockUser= new Mock<DbSet<User>>();
         ConfigureDbSetMock(data,mockUser);
         mockContext.Setup(mock => mock.RecipeManager_Users).Returns(mockUser.Object);
-        RecipesContext.Instance= mockContext.Object;
         var service=RecipesContext.Instance;
+
+        var mockSetRecipe = new Mock<DbSet<Recipe>>();
+        ConfigureDbSetMock(recipes, mockSetRecipe);
+        mockContext.Setup(m => m.RecipeManager_Recipes).Returns(mockSetRecipe.Object);
+
         //Act
         User user1 = new(username,passwrd, description);
         user1.AddToFavourites(recipe);
@@ -427,6 +436,7 @@ public class UsersTests
     [TestMethod]
     public void User_Test_RemoveFromFavorite()
     {
+        var mockContext=new Mock<RecipesContext>();
         //Arrange
         var data = new List<User>()
         {
@@ -440,19 +450,25 @@ public class UsersTests
         dict.Add(new(i, 20));
         Recipe recipe = new("Test Recipe", new User("Bianca", "123456789"), "Test Description", 30, 60, 4,
             new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict, new List<Tag> { new("Tag1"), new("Tag2") }, 2);
-        //Recipe recipe2 = new("Test Recipe2", new User("Bianca", "123456789"), "Test Description", 30, 60, 4,
-        //    new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict, new List<string> { "Tag1", "Tag2" }, 2);
+        var recipes = new List<Recipe>
+            {
+                recipe
+            }.AsQueryable();
 
         string username = "testing";
         string passwrd = "password";
         string description = "description";
         
-        var mockContext=new Mock<RecipesContext>();
+        RecipesContext.Instance= mockContext.Object;
         var mockUser= new Mock<DbSet<User>>();
         ConfigureDbSetMock(data,mockUser);
         mockContext.Setup(mock => mock.RecipeManager_Users).Returns(mockUser.Object);
-        RecipesContext.Instance= mockContext.Object;
         var service=RecipesContext.Instance;
+
+        var mockSetRecipe = new Mock<DbSet<Recipe>>();
+        ConfigureDbSetMock(recipes, mockSetRecipe);
+        mockContext.Setup(m => m.RecipeManager_Recipes).Returns(mockSetRecipe.Object);
+
         //Act
         User user1 = new(username,passwrd, description);
         user1.AddToFavourites(recipe);
