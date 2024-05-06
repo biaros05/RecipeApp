@@ -652,7 +652,10 @@ public class Program
     private static void PrintFavoriteList()
     {
         int num = 1;
-        foreach (Recipe r in UserController.Instance.ActiveUser.UserFavoriteRecipies)
+        User user = RecipesContext.Instance.RecipeManager_Users
+        .Include(u => u.UserFavoriteRecipies)
+        .First(u => u.Username.Equals(UserController.Instance.ActiveUser.Username));
+        foreach (Recipe r in user.UserFavoriteRecipies)
         {
             Console.WriteLine($"{num}. {r}");
             num++;

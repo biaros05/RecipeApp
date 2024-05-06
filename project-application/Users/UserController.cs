@@ -31,7 +31,7 @@ public class UserController
         }
         if (description == null)
         {
-            
+
             User user1 = new User(username, password);
             RecipesContext.Instance.Add(user1);
         }
@@ -56,7 +56,7 @@ public class UserController
         {
             throw new Exception("Username user doesnt exist");
         }
-        if (Password.DoPasswordsMatch(password,result.Salt,result.HashPass))
+        if (Password.DoPasswordsMatch(password, result.Salt, result.HashPass))
         {
             ActiveUser = result;
             return true;
@@ -80,56 +80,55 @@ public class UserController
         }
     }
 
-    public void UpdateUser(string username, string description, byte[] image, string password )
+    public void UpdateUser(string username, string description, byte[] image, string hashpass)
     {
-        var context =RecipesContext.Instance;
+        var context = RecipesContext.Instance;
 
-        int total= context.RecipeManager_Users
-                    .Where(u=> u.Username==username)
+        int total = context.RecipeManager_Users
+                    .Where(u => u.Username == username)
                     .Count();
-        
+
         if (total != 0)
         {
             throw new Exception("this username is already taken");
         }
 
-        User user= context.RecipeManager_Users
-                    .Where(u=> u.Username==this.ActiveUser.Username)
+        User user = context.RecipeManager_Users
+                    .Where(u => u.Username == this.ActiveUser.Username)
                     .First();
 
-        this.ActiveUser.Description=description==null?this.ActiveUser.Description:description;
-        this.ActiveUser.Image=image==null?this.ActiveUser.Image:image;
-        this.ActiveUser.Username=username==null?this.ActiveUser.Username:username;
-        string hashpass = Password.HashPassword(this.ActiveUser.Salt, password);
-        this.ActiveUser.HashPass=hashpass==null?this.ActiveUser.HashPass:hashpass;
+        this.ActiveUser.Description = description == null ? this.ActiveUser.Description : description;
+        this.ActiveUser.Image = image == null ? this.ActiveUser.Image : image;
+        this.ActiveUser.Username = username == null ? this.ActiveUser.Username : username;
+        this.ActiveUser.HashPass = hashpass == null ? this.ActiveUser.HashPass : hashpass;
 
-        user.Description=description==null?this.ActiveUser.Description:description;
-        user.Image=image==null?this.ActiveUser.Image:image;
-        user.Username=username==null?this.ActiveUser.Username:username;
-        user.HashPass=hashpass==null?this.ActiveUser.HashPass:hashpass;
+        user.Description = description == null ? this.ActiveUser.Description : description;
+        user.Image = image == null ? this.ActiveUser.Image : image;
+        user.Username = username == null ? this.ActiveUser.Username : username;
+        user.HashPass = hashpass == null ? this.ActiveUser.HashPass : hashpass;
 
-        context.Update(user); 
+        context.Update(user);
         context.SaveChanges();
     }
 
     private static UserController? _instance;
 
-        private UserController() { }
-        public static UserController Instance
+    private UserController() { }
+    public static UserController Instance
+    {
+        get
         {
-            get
+            if (_instance == null)
             {
-                if (_instance == null)
-                {
-                    _instance = new UserController();
-                }
-                return _instance;
+                _instance = new UserController();
             }
-            set
-            {
-                _instance = value;
-            }
+            return _instance;
         }
+        set
+        {
+            _instance = value;
+        }
+    }
 
 
 }
