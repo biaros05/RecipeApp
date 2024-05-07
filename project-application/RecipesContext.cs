@@ -56,8 +56,6 @@ public class RecipesContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        Console.WriteLine($"Data Source={HostName}:{Port}/{ServiceName}; " +
-        $"User Id={UserName}; Password={Password}");
         optionsBuilder.UseOracle($"Data Source={HostName}:{Port}/{ServiceName}; " +
         $"User Id={UserName}; Password={Password}");
     }

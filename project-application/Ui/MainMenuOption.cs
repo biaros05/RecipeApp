@@ -14,5 +14,6 @@ enum MainMenuOption
   RemoveFromFavourites,
   ViewFavoriteRecipes,
   DeleteAccount,
-  Logout
+  Logout,
+  UpdateUser
 }

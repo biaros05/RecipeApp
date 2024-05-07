@@ -652,12 +652,26 @@ public class Program
     private static void PrintFavoriteList()
     {
         int num = 1;
-        foreach (Recipe r in UserController.Instance.ActiveUser.UserFavoriteRecipies)
+        User user = RecipesContext.Instance.RecipeManager_Users
+        .Include(u => u.UserFavoriteRecipies)
+        .First(u => u.Username.Equals(UserController.Instance.ActiveUser.Username));
+        foreach (Recipe r in user.UserFavoriteRecipies)
         {
             Console.WriteLine($"{num}. {r}");
             num++;
         }
         ConsoleUtils.WaitUserPressKey();
+    }
+
+    public static void UpdateUser()
+    {
+        Console.WriteLine("Enter a new username:");
+        string username = Console.ReadLine();
+        Console.WriteLine("Enter a new description:");
+        string description = Console.ReadLine();
+        Console.WriteLine("Enter a new password:");
+        string password = Console.ReadLine();
+        UserController.Instance.UpdateUser(username, description, new byte[8], password);
     }
 
     public static void Main()
@@ -717,6 +731,9 @@ public class Program
                     break;
                 case MainMenuOption.UpdateRecipe:
                     EditRecipe();
+                    break;
+                case MainMenuOption.UpdateUser:
+                    UpdateUser();
                     break;
                 case MainMenuOption.FilterRecipeSearch:
                     FilterRecipeSearch();

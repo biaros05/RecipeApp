@@ -13,8 +13,13 @@ public class UserController
     public User? ActiveUser { get; set; }
     public List<User> AllUsers { get; } = new();
 
-    // adds a new account (validates the input) --> should it take a user or params to create a new user individually?
-    // public void CreateAccount(User newUser){}
+    /// <summary>
+    /// this will make sure the given username does not already exist and is not null
+    /// and will create a user
+    /// </summary>
+    /// <param name="username">new username</param>
+    /// <param name="password">new password</param>
+    /// <param name="description">user's description</param>
     public void CreateAccount(string username, string password, string description)
     {
         if (username == null)
@@ -31,7 +36,7 @@ public class UserController
         }
         if (description == null)
         {
-            
+
             User user1 = new User(username, password);
             RecipesContext.Instance.Add(user1);
         }
@@ -42,10 +47,15 @@ public class UserController
         }
         RecipesContext.Instance.SaveChanges();
     }
-    // make sure the user exists in the database, and the hashed password matches 
-    // the hashed password of the username 
-    // (interacts with data layer to retrieve list of users to perform authentication)
-    // update ActiveUser
+
+    /// <summary>
+    /// this method will make sure the user exists in the database
+    /// by verifying the username existing, and then matching the 
+    /// passed password with the user's password.
+    /// </summary>
+    /// <param name="username">username to login with</param>
+    /// <param name="password">the given password to be validated</param>
+    /// <returns></returns>
     public bool AuthenticateUser(string username, string password)
     {
         var context = RecipesContext.Instance;
@@ -56,7 +66,7 @@ public class UserController
         {
             throw new Exception("Username user doesnt exist");
         }
-        if (Password.DoPasswordsMatch(password,result.Salt,result.HashPass))
+        if (Password.DoPasswordsMatch(password, result.Salt, result.HashPass))
         {
             ActiveUser = result;
             return true;
@@ -64,8 +74,12 @@ public class UserController
         return false;
     }
 
-    // retrieve list of users from db, remove active user from list, sned back new list to data layer
-    //FIXME - need to use fluent API to on cascade delete
+    /// <summary>
+    /// this will take in a username for the user to be deleted, 
+    /// and will make sure the given password matches the user
+    /// </summary>
+    /// <param name="username">username for user to be deleted</param>
+    /// <param name="password">password of said user (must match)</param>
     public void DeleteAccount(string username, string password)
     {
         var context = RecipesContext.Instance;
@@ -80,55 +94,55 @@ public class UserController
         }
     }
 
-    public void UpdateUser(string username, string description, byte[] image, string hashpass )
+    public void UpdateUser(string username, string description, byte[] image, string hashpass)
     {
-        var context =RecipesContext.Instance;
+        var context = RecipesContext.Instance;
 
-        int total= context.RecipeManager_Users
-                    .Where(u=> u.Username==username)
+        int total = context.RecipeManager_Users
+                    .Where(u => u.Username == username)
                     .Count();
-        
+
         if (total != 0)
         {
             throw new Exception("this username is already taken");
         }
 
-        User user= context.RecipeManager_Users
-                    .Where(u=> u.Username==this.ActiveUser.Username)
+        User user = context.RecipeManager_Users
+                    .Where(u => u.Username == this.ActiveUser.Username)
                     .First();
 
-        this.ActiveUser.Description=description==null?this.ActiveUser.Description:description;
-        this.ActiveUser.Image=image==null?this.ActiveUser.Image:image;
-        this.ActiveUser.Username=username==null?this.ActiveUser.Username:username;
-        this.ActiveUser.HashPass=hashpass==null?this.ActiveUser.HashPass:hashpass;
+        this.ActiveUser.Description = description == null ? this.ActiveUser.Description : description;
+        this.ActiveUser.Image = image == null ? this.ActiveUser.Image : image;
+        this.ActiveUser.Username = username == null ? this.ActiveUser.Username : username;
+        this.ActiveUser.HashPass = hashpass == null ? this.ActiveUser.HashPass : hashpass;
 
-        user.Description=description==null?this.ActiveUser.Description:description;
-        user.Image=image==null?this.ActiveUser.Image:image;
-        user.Username=username==null?this.ActiveUser.Username:username;
-        user.HashPass=hashpass==null?this.ActiveUser.HashPass:hashpass;
+        user.Description = description == null ? this.ActiveUser.Description : description;
+        user.Image = image == null ? this.ActiveUser.Image : image;
+        user.Username = username == null ? this.ActiveUser.Username : username;
+        user.HashPass = hashpass == null ? this.ActiveUser.HashPass : hashpass;
 
-        context.Update(user); 
+        context.Update(user);
         context.SaveChanges();
     }
 
     private static UserController? _instance;
 
-        private UserController() { }
-        public static UserController Instance
+    private UserController() { }
+    public static UserController Instance
+    {
+        get
         {
-            get
+            if (_instance == null)
             {
-                if (_instance == null)
-                {
-                    _instance = new UserController();
-                }
-                return _instance;
+                _instance = new UserController();
             }
-            set
-            {
-                _instance = value;
-            }
+            return _instance;
         }
+        set
+        {
+            _instance = value;
+        }
+    }
 
 
 }
