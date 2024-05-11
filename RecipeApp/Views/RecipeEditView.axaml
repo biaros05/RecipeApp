@@ -3,5 +3,75 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-             x:Class="App.Views.RecipeEditView">
+             x:Class="App.Views.RecipeEditView"
+             xmlns:vm="using:App.ViewModels"
+             x:DataType="vm:RecipeEditViewModel">
+  <DockPanel>
+
+    <StackPanel DockPanel.Dock="Bottom">
+    </StackPanel>
+
+    <StackPanel DockPanel.Dock="Left">
+      <Button Command="{Binding $parent[Window].DataContext.NavigateToTags}"
+                Content="Tags"
+                x:CompileBindings="False"/>
+      <Button Command="{Binding $parent[Window].DataContext.NavigateToIngredients}"
+                Content="Ingredients"
+                x:CompileBindings="False"/>
+      <Button Command="{Binding $parent[Window].DataContext.NavigateToInstructions}"
+                Content="Instructions"
+                x:CompileBindings="False"/>
+    </StackPanel>
+
+    <StackPanel DockPanel.Dock="Bottom">
+      <TextBlock Text="{Binding ErrorMessage}"/>
+    </StackPanel>
+
+    <StackPanel>
+      <TextBlock>
+        Name:
+      </TextBlock>
+      <TextBox Text="{Binding Name}"/>
+      <TextBlock>
+        Description:
+      </TextBlock>
+      <TextBox Text="{Binding Description}"/>
+      <TextBlock>
+        Preperation Time in minutes:
+      </TextBlock>
+      <NumericUpDown 
+      Value="{Binding PrepTime}"
+      Minimum="0"
+      Maximum="240"
+      Increment="1"
+      />
+      <TextBlock>
+        Cook Time in minutes:
+      </TextBlock>
+      <NumericUpDown 
+      Value="{Binding CookTime}"
+      Minimum="0"
+      Maximum="240"
+      Increment="1"
+      />
+      <TextBlock>
+        Number of servings:
+      </TextBlock>
+      <NumericUpDown 
+      Value="{Binding NumServings}"
+      Minimum="1"
+      Increment="1"
+      />
+      <TextBlock>
+        Budget:
+      </TextBlock>
+      <NumericUpDown 
+      Value="{Binding Budget}"
+      Minimum="1"
+      Maximum="3"
+      Increment="1"
+      />
+    </StackPanel>
+
+  </DockPanel>
 </UserControl>
