@@ -1,0 +1,43 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="App.Views.RecipeInstructionEditView"
+             xmlns:vm="using:App.ViewModels"
+             x:DataType="vm:RecipeInstructionEditViewModel">
+  <DockPanel>
+  <!-- this datagrid will show all existing Instructions in the DB -->
+    <StackPanel>
+      <ListBox
+              ItemsSource="{Binding Instructions}"
+              SelectedItem="{Binding SelectedInstruction}"
+              BorderThickness="1"
+              BorderBrush="Gray"
+              SelectionMode="Single,Toggle"
+              ScrollViewer.Vertical="Visible">
+        
+      </ListBox>
+      <Button Command="{Binding Remove}"
+                Content="Instructions"
+                x:CompileBindings="False"/>
+    </StackPanel>
+    <StackPanel>
+      <TextBlock>
+        Add instruction:
+      </TextBlock>
+      <TextBox Text="{Binding ToAdd}"/>
+      <Button Command="{Binding Add}"
+                Content="Add"
+                x:CompileBindings="False"/>
+    </StackPanel>
+    <StackPanel>
+      <Button Command="{Binding $parent[Window].DataContext.NavigateToEditRecipe}"
+                Content="Cancel"
+                x:CompileBindings="False"/>
+      <Button Command="{Binding Save}"
+                Content="Save"
+                x:CompileBindings="False"/>
+    </StackPanel>
+  </DockPanel>
+</UserControl>
