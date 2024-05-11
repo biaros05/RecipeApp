@@ -8,7 +8,7 @@
              x:DataType="vm:RecipeInstructionEditViewModel">
   <DockPanel>
   <!-- this datagrid will show all existing Instructions in the DB -->
-    <StackPanel>
+    <StackPanel DockPanel.Dock="Right">
       <ListBox
               ItemsSource="{Binding Instructions}"
               SelectedItem="{Binding SelectedInstruction}"
@@ -22,6 +22,14 @@
                 Content="Instructions"
                 x:CompileBindings="False"/>
     </StackPanel>
+    <StackPanel DockPanel.Dock="Bottom">
+      <Button Command="{Binding $parent[Window].DataContext.NavigateToEditRecipe}"
+                Content="Cancel"
+                x:CompileBindings="False"/>
+      <Button Command="{Binding Save}"
+                Content="Save"
+                x:CompileBindings="False"/>
+    </StackPanel>
     <StackPanel>
       <TextBlock>
         Add instruction:
@@ -29,14 +37,6 @@
       <TextBox Text="{Binding ToAdd}"/>
       <Button Command="{Binding Add}"
                 Content="Add"
-                x:CompileBindings="False"/>
-    </StackPanel>
-    <StackPanel>
-      <Button Command="{Binding $parent[Window].DataContext.NavigateToEditRecipe}"
-                Content="Cancel"
-                x:CompileBindings="False"/>
-      <Button Command="{Binding Save}"
-                Content="Save"
                 x:CompileBindings="False"/>
     </StackPanel>
   </DockPanel>
