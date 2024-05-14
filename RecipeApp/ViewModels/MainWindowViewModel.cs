@@ -2,6 +2,8 @@ using App.Views;
 using ReactiveUI;
 using System.Reactive.Linq;
 using System;
+using System.Collections.Generic;
+using recipes;
 
 namespace App.ViewModels;
 
@@ -14,26 +16,30 @@ public class MainWindowViewModel : ViewModelBase
         private set => this.RaiseAndSetIfChanged(ref _contentViewModel, value);
     }
     
-    public void NavigateToEditInstructions()
+    public void NavigateToEditInstructions(Recipe recipe=null)
     {
-        RecipeInstructionEditViewModel instructionViewModel = new();
-        instructionViewModel.Save.Subscribe(instructions => 
+        RecipeInstructionEditViewModel instructionViewModel = new(recipe);
+        instructionViewModel.Save.Subscribe(newRecipe => 
         {
-            if (instructions != null && instructions.Count >= 1)
-            {
-                NavigateToEditRecipe();
-            }
+            NavigateToEditRecipe(newRecipe);
         });
-
+        instructionViewModel.Cancel.Subscribe(oldRecipe =>
+        {
+            NavigateToEditRecipe(oldRecipe);
+        });
         ContentViewModel = instructionViewModel;
     }
 
-    public void NavigateToEditRecipe()
+    public void NavigateToEditRecipe(Recipe recipe=null)
     {
-        ContentViewModel = new RecipeEditViewModel(); 
+        RecipeEditViewModel recipeViewModel = new RecipeEditViewModel(recipe);
+        recipeViewModel.InstructionButton.Subscribe(r => {
+            NavigateToEditInstructions(r);
+        });
+        ContentViewModel = recipeViewModel;
     }
     public MainWindowViewModel()
     {
-        this._contentViewModel = new RecipeEditViewModel();
+        NavigateToEditRecipe();
     }
 }

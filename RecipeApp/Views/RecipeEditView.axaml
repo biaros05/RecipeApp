@@ -9,16 +9,21 @@
   <DockPanel>
 
     <StackPanel DockPanel.Dock="Bottom">
+      <Button Command="{Binding Save}"
+                Content="Save"
+                x:CompileBindings="False"/>
     </StackPanel>
 
-    <StackPanel DockPanel.Dock="Left">
-      <Button Command="{Binding $parent[Window].DataContext.NavigateToTags}"
+    <StackPanel DockPanel.Dock="Right"
+    HorizontalAlignment="Center"
+    VerticalAlignment="Center">
+      <Button Command="{Binding TagButton}"
                 Content="Tags"
                 x:CompileBindings="False"/>
-      <Button Command="{Binding $parent[Window].DataContext.NavigateToIngredients}"
+      <Button Command="{Binding IngredientButton}"
                 Content="Ingredients"
                 x:CompileBindings="False"/>
-      <Button Command="{Binding $parent[Window].DataContext.NavigateToInstructions}"
+      <Button Command="{Binding InstructionButton}"
                 Content="Instructions"
                 x:CompileBindings="False"/>
     </StackPanel>
@@ -27,7 +32,9 @@
       <TextBlock Text="{Binding ErrorMessage}"/>
     </StackPanel>
 
-    <StackPanel>
+    <StackPanel
+    HorizontalAlignment="Center"
+    VerticalAlignment="Center">
       <TextBlock>
         Name:
       </TextBlock>

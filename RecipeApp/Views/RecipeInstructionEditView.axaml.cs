@@ -9,6 +9,6 @@ public partial class RecipeInstructionEditView : UserControl
     public RecipeInstructionEditView()
     {
         InitializeComponent();
-        this.DataContext = this;
+        //this.DataContext = this;
     }
 }

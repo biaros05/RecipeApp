@@ -2,6 +2,8 @@ using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive;
+using System.Reactive.Linq;
+using Avalonia.LogicalTree;
 using ReactiveUI;
 using recipes;
 using users;
@@ -10,44 +12,51 @@ namespace App.ViewModels;
 
 public class RecipeEditViewModel : ViewModelBase
 {
-    private Recipe? Recipe {get; set;}
+    private Recipe Recipe {get; set;} = new();
     private string? _name;
     public string? Name
     {
-        get => _name;
-        set => this.RaiseAndSetIfChanged(ref _name, value);
+        get => Recipe.Name;
+        set => Recipe.Name = value;
     }
 
     private string? _description;
     public string? Description
     {
-        get => _description;
-        set => this.RaiseAndSetIfChanged(ref _description, value);
+        get => Recipe.Description;
+        set => Recipe.Description = value;
     }
     private int _prepTime;
     public int PrepTime
     {
-        get => _prepTime;
-        set => this.RaiseAndSetIfChanged(ref _prepTime, Convert.ToInt32(value));
+        get => Recipe.PrepTimeMins;
+        set => Recipe.PrepTimeMins = Convert.ToInt32(value);
     }
     private int _cookTime;
     public int CookTime 
     {
-        get => _cookTime;
-        set => this.RaiseAndSetIfChanged(ref _cookTime, Convert.ToInt32(value));
+        get => Recipe.CookTimeMins;
+        set => Recipe.CookTimeMins = Convert.ToInt32(value);
     }
     private int _numServings;
     public int NumServings 
     {
-        get => _numServings;
-        set => this.RaiseAndSetIfChanged(ref _numServings, Convert.ToInt32(value));
+        get => Recipe.NumberOfServings;
+        set => Recipe.NumberOfServings = Convert.ToInt32(value);
     }
     
     private int _budget;
     public int Budget 
     {
-        get => _budget;
-        set => this.RaiseAndSetIfChanged(ref _budget, Convert.ToInt32(value));
+        get => Recipe.Budget.Length;
+        set
+        {
+            if (value < 1 || value > 3)
+            {
+                throw new ArgumentException("Budget rating must be 1, 2, or 3");
+            }
+            this.Recipe.Budget = new string('$', Convert.ToInt32(value));
+        }
     }
     
     private string? _errorMessage;
@@ -69,10 +78,18 @@ public class RecipeEditViewModel : ViewModelBase
 
     public ReactiveCommand<Unit, Recipe?> IngredientButton { get; }
 
-    public ReactiveCommand<Unit, Recipe?> InstructionButton { get; }
+    public ReactiveCommand<Unit, Recipe> InstructionButton { get; }
 
-    public RecipeEditViewModel()
+    public RecipeEditViewModel(Recipe? recipe=null)
     {
+        UserController.Instance.AuthenticateUser("Bianca", "Rossetti");
+        this.Recipe = new(){Budget = ""};
+        this.Recipe.Owner = UserController.Instance.ActiveUser;
+        if (recipe != null)
+        {
+            this.Recipe = recipe;
+        }
+
         // validates that name textbox is filled (FIXME: ADD INGREDIENTS AND INSTRUCTIONS)
         IObservable<bool> areFieldsFilled = this.WhenAnyValue(
         recipeViewModel => recipeViewModel.Name,
@@ -81,9 +98,9 @@ public class RecipeEditViewModel : ViewModelBase
         );
         Save = ReactiveCommand.Create(() =>
             {
-                Recipe recipe = new Recipe(Name, UserController.Instance.ActiveUser, Description, PrepTime, CookTime, NumServings, Instructions.ToList(), Ingredients.ToList(), Tags.ToList(), Budget);
                 try{
-                    RecipeController.CreateRecipe(recipe);
+                    RecipeController.CreateRecipe(this.Recipe);
+                    // navigates elsewhere
                 }
                 catch(Exception e)
                 {
@@ -94,7 +111,7 @@ public class RecipeEditViewModel : ViewModelBase
 
         InstructionButton = ReactiveCommand.Create(() =>
             {
-                return Recipe;
+                return this.Recipe;
             }
         );
     }

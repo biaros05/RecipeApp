@@ -8,21 +8,26 @@
              x:DataType="vm:RecipeInstructionEditViewModel">
   <DockPanel>
   <!-- this datagrid will show all existing Instructions in the DB -->
-    <StackPanel DockPanel.Dock="Right">
+    <StackPanel DockPanel.Dock="Left"
+    HorizontalAlignment="Center"
+    VerticalAlignment="Center"
+    MinWidth="500">
       <ListBox
               ItemsSource="{Binding Instructions}"
               SelectedItem="{Binding SelectedInstruction}"
               BorderThickness="1"
               BorderBrush="Gray"
               SelectionMode="Single,Toggle"
-              ScrollViewer.Vertical="Visible">
+              ScrollViewer.VerticalScrollBarVisibility="Visible">
         
       </ListBox>
       <Button Command="{Binding Remove}"
-                Content="Instructions"
+                Content="Remove"
                 x:CompileBindings="False"/>
     </StackPanel>
-    <StackPanel DockPanel.Dock="Bottom">
+    <StackPanel DockPanel.Dock="Bottom"
+    HorizontalAlignment="Center"
+    VerticalAlignment="Center">
       <Button Command="{Binding $parent[Window].DataContext.NavigateToEditRecipe}"
                 Content="Cancel"
                 x:CompileBindings="False"/>
@@ -30,7 +35,9 @@
                 Content="Save"
                 x:CompileBindings="False"/>
     </StackPanel>
-    <StackPanel>
+    <StackPanel
+    HorizontalAlignment="Center"
+    VerticalAlignment="Center">
       <TextBlock>
         Add instruction:
       </TextBlock>

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
 using DynamicData.Binding;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using ReactiveUI;
 using recipes;
 using users;
@@ -13,6 +14,7 @@ namespace App.ViewModels;
 
 public class RecipeInstructionEditViewModel : ViewModelBase
 {
+    private Recipe Recipe;
     private ObservableCollection<Instruction> _instructions;
     public ObservableCollection<Instruction> Instructions
     {
@@ -35,26 +37,22 @@ public class RecipeInstructionEditViewModel : ViewModelBase
     }
 
     public ReactiveCommand<Unit, Unit> Remove { get; }
-    public ReactiveCommand<Unit, List<Instruction>> Save { get; }
-    public ReactiveCommand<Unit, Unit> Cancel { get; }
+    public ReactiveCommand<Unit, Recipe> Save { get; }
+    public ReactiveCommand<Unit, Recipe> Cancel { get; }
 
     public ReactiveCommand<Unit, Unit> Add { get; }
 
-    public RecipeInstructionEditViewModel()
+    public RecipeInstructionEditViewModel(Recipe recipe = null)
     {
-        RecipeEditViewModel viewModel = new();
-        viewModel.InstructionButton.Subscribe(recipe => 
-        {
-            if (recipe != null)
-            {
-                Instructions = new(recipe.Instructions);
-            }
-        });
+        this.Recipe = new();
+        if (recipe != null)
+            this.Recipe = recipe;
 
-        IObservable<bool> isSelected = this.WhenAny(
-        recipeViewModel => recipeViewModel.SelectedInstruction,
-        (instr) =>
-            !(instr == null)
+        this.Instructions = new(this.Recipe.Instructions);
+
+        IObservable<bool> isSelected = this.WhenAnyValue(
+            recipeViewModel => recipeViewModel.SelectedInstruction,
+            (Instruction? instr) => instr != null
         );
 
         Remove = ReactiveCommand.Create(() =>
@@ -66,21 +64,29 @@ public class RecipeInstructionEditViewModel : ViewModelBase
         IObservable<bool> atLeastOneInstruction = this.WhenAnyValue(
         recipeViewModel => recipeViewModel.Instructions,
         (instr) =>
-            (instr != null && instr.Count > 0)
+            instr != null && instr.Count > 0
         );
 
         Save = ReactiveCommand.Create(() =>
         {
-            return Instructions.ToList();
+            this.Recipe.Instructions = Instructions.ToList();
+            return this.Recipe;
         }, atLeastOneInstruction);
 
-        IObservable<bool> addNotNull = this.WhenAnyValue<RecipeInstructionEditViewModel, bool>(
-            recipeViewModel => recipeViewModel.ToAdd != null
+        IObservable<bool> addNotNull = this.WhenAnyValue(
+            recipeViewModel => recipeViewModel.ToAdd,
+            (toAdd) => !string.IsNullOrEmpty(toAdd) //toAdd != null
         );
 
-        Add = ReactiveCommand.Create(() => {
+        Add = ReactiveCommand.Create(() =>
+        {
             Instructions.Add(new Instruction(Instructions.Count(), ToAdd!));
             ToAdd = null;
         }, addNotNull);
+
+        Cancel = ReactiveCommand.Create(() =>
+        {
+            return Recipe;
+        });
     }
 }

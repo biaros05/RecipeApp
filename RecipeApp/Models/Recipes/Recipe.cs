@@ -130,7 +130,7 @@ public class Recipe
     }
 
     public int NumberOfServings { get; set; }
-    public List<Instruction> Instructions { get; } = new();
+    public List<Instruction> Instructions { get; set;} = new();
     // contains the ingredient and its quantity for specified unit 
     public List<MeasuredIngredient> Ingredients { get; set; } = new();
     public List<Rating> _ratings {get; set;}= new(); // all the ratings given by users OUT OF FIVE STARS
