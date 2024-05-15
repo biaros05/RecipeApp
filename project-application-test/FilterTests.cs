@@ -2,50 +2,92 @@ using System.Collections.ObjectModel;
 using filtering;
 using recipes;
 using users;
+using Moq;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+
 
 namespace project_application_test;
 [TestClass]
 public class FilterTests
 {
+    [TestCleanup()]
+    public void Cleanup()
+    {
+        RecipesContext.Instance = null;
+    }
+    private static void ConfigureDbSetMock<T>(
+    IQueryable<T> data, Mock<DbSet<T>> mockDbSet) where T : class
+    {
+        mockDbSet.As<IQueryable<T>>().Setup(mock => mock.Provider)
+        .Returns(data.Provider);
+        mockDbSet.As<IQueryable<T>>().Setup(mock => mock.Expression)
+        .Returns(data.Expression);
+        mockDbSet.As<IQueryable<T>>().Setup(mock => mock.ElementType)
+        .Returns(data.ElementType);
+        mockDbSet.As<IQueryable<T>>().Setup(mock => mock.GetEnumerator())
+        .Returns(data.GetEnumerator());
+    }
+
+
     [TestMethod]
     //tests for filter by time
     public void FilterByTimeTest()
     {
+        var mockContext = new Mock<RecipesContext>();
+
+        // basic setup
+        var mockSetRecipe = new Mock<DbSet<Recipe>>();
+        mockContext.Setup(m => m.RecipeManager_Recipes).Returns(mockSetRecipe.Object);
+        var mockSetIngredient = new Mock<DbSet<Ingredient>>();
+        mockContext.Setup(m => m.RecipeManager_Ingredients).Returns(mockSetIngredient.Object);
+
         //creating test data
         Ingredient a = new("Apple", Units.Quantity);
-        Ingredient b = new("Sugar", Units.Mass);
-        Dictionary<Ingredient, double> dict = new()
+        Ingredient b =  new("Sugar", Units.Mass);
+
+        List<MeasuredIngredient> dict = new()
             {
-                { a, 20 },
+                new(a, 20),
             };
-        Dictionary<Ingredient, double> dict2 = new()
+        List<MeasuredIngredient> dict2 = new()
             {
-                { b, 20 },
+                new(b, 20 ),
             };
         List<Recipe> recipes = new()
             {
                 new("Test Recipe", new User("Bianca", "123456789"), "Test Description", 30, 45, 4,
-                new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict, new List<string> { "Tag1", "Tag2" }, 2),
+                new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict, new List<Tag> { new("Tag1"),new("Tag2") }, 2),
                 new("Recipe need 10 characters", new User("Not Bianca", "123456789"), "Test Description", 15, 15, 4,
-                new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict2, new List<string> { "Tag2", "Tag3" }, 2),
+                new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict2, new List<Tag> { new("Tag2"), new("Tag3") }, 2),
                 new("Recipe need 10 characters", new User("Not Bianca", "123456789"), "Test Description", 60, 60, 4,
-                new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict2, new List<string> { "Tag4", "Tag6" }, 2),
+                new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict2, new List<Tag> { new("Tag4"), new("Tag6") }, 2),
                 new("Recipe need 10 characters", new User("Not Bianca", "123456789"), "Test Description", 90, 60, 4,
-                new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict2, new List<string> { "Tag4", "Tag1" }, 2)
+                new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict2, new List<Tag> { new("Tag4"), new("Tag1") }, 2)
             };
 
         //create expected data
         List<Recipe> expected = new()
             {
                 new("Test Recipe", new User("Bianca", "123456789"), "Test Description", 30, 45, 4,
-                new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict, new List<string> { "Tag1", "Tag2" }, 2),
+                new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict, new List<Tag> { new("Tag1"), new("Tag2") }, 2),
                 new("Recipe need 10 characters", new User("Not Bianca", "123456789"), "Test Description", 60, 60, 4,
-                new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict2, new List<string> { "Tag4", "Tag6" }, 2)
+                new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict2, new List<Tag> { new("Tag4"), new("Tag6") }, 2)
             };
 
-        //filter
+        // //finalize context
+        RecipesContext.Instance = mockContext.Object;
+
+        // set up queryable data
+        var data = recipes.AsQueryable();
+        ConfigureDbSetMock<Recipe>(data, mockSetRecipe);
+        var ingredientsData = recipes.SelectMany(recipe => recipe.Ingredients.Select(mi => mi.Ingredient)).Distinct().AsQueryable();
+        ConfigureDbSetMock<Ingredient>(ingredientsData, mockSetIngredient);
+
+        //filter & obtain query results
         IFilterBy filter = new FilterByTime(75, 130);
-        List<Recipe> actual = filter.FilterRecipes(recipes);
+        IQueryable<Recipe> filteredRecipes = filter.FilterRecipes(data);
+        List<Recipe> actual = filteredRecipes.ToList<Recipe>();
 
         //assert
         CollectionAssert.AreEqual(expected, actual);
@@ -80,42 +122,61 @@ public class FilterTests
     [TestMethod]
     public void FilterByKeywordTest()
     {
+        var mockContext = new Mock<RecipesContext>();
+
+        // basic setup
+        var mockSetRecipe = new Mock<DbSet<Recipe>>();
+        mockContext.Setup(m => m.RecipeManager_Recipes).Returns(mockSetRecipe.Object);
+        var mockSetIngredient = new Mock<DbSet<Ingredient>>();
+        mockContext.Setup(m => m.RecipeManager_Ingredients).Returns(mockSetIngredient.Object);
+
+
         //creating test recipes
         Ingredient a = new("Apple", Units.Quantity);
         Ingredient b = new("Sugar", Units.Mass);
-        Dictionary<Ingredient, double> dict = new()
+        List<MeasuredIngredient> dict = new()
             {
-                { a, 20 },
+                new( a, 20 ),
             };
-        Dictionary<Ingredient, double> dict2 = new()
+        List<MeasuredIngredient> dict2 = new()
             {
-                { b, 20 },
+                new( b, 20 ),
             };
         List<Recipe> recipes = new()
             {
                 new("Test Recipe", new User("Bianca", "123456789"), "Test Description", 30, 60, 4,
-                new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict, new List<string> { "Tag1", "Tag2" }, 2),
+                new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict, new List<Tag> { new("Tag1"), new("Tag2") }, 2),
                 new("Recipe need 10 characters", new User("Bianca", "123456789"), "Test Description", 30, 60, 4,
-                new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict2, new List<string> { "Tag1", "Tag2" }, 2),
+                new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict2, new List<Tag> { new("Tag1"), new("Tag2") }, 2),
                 new("recipe Test that is over 10 characters", new User("Bianca", "123456789"), "Description", 30, 60, 4,
-                new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict2, new List<string> { "Tag1", "Tag2" }, 2),
+                new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict2, new List<Tag> { new("Tag1"), new("Tag2") }, 2),
                 new("recipe that is over 10 characters", new User("Bianca", "123456789"), "Description", 30, 60, 4,
-                new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict2, new List<string> { "Tag1", "Tag2" }, 2)
+                new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict2, new List<Tag> { new("Tag1"), new("Tag2") }, 2)
             };
 
         //creating expected results
         List<Recipe> expected = new()
             {
                 new("Test Recipe", new User("Bianca", "123456789"), "Test Description", 30, 60, 4,
-                new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict, new List<string> { "Tag1", "Tag2" }, 2),
+                new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict, new List<Tag> { new("Tag1"), new("Tag2") }, 2),
                 new("Recipe need 10 characters", new User("Bianca", "123456789"), "Test Description", 30, 60, 4,
-                new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict2, new List<string> { "Tag1", "Tag2" }, 2),
+                new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict2, new List<Tag> { new("Tag1"), new("Tag2") }, 2),
                 new("recipe Test that is over 10 characters", new User("Bianca", "123456789"), "Description", 30, 60, 4,
-                new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict2, new List<string> { "Tag1", "Tag2" }, 2)
+                new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict2, new List<Tag> { new("Tag1"), new("Tag2") }, 2)
             };
 
+        // //finalize context
+        RecipesContext.Instance = mockContext.Object;
+
+        // set up queryable data
+        var data = recipes.AsQueryable();
+        ConfigureDbSetMock<Recipe>(data, mockSetRecipe);
+        var ingredientsData = recipes.SelectMany(recipe => recipe.Ingredients.Select(mi => mi.Ingredient)).Distinct().AsQueryable();
+        ConfigureDbSetMock<Ingredient>(ingredientsData, mockSetIngredient);
+
         IFilterBy filter = new FilterByKeyword("Test");
-        List<Recipe> actual = filter.FilterRecipes(recipes);
+        IQueryable<Recipe> filteredRecipes = filter.FilterRecipes(data);
+        List<Recipe> actual = filteredRecipes.ToList<Recipe>();
 
         CollectionAssert.AreEqual(expected, actual);
     }
@@ -132,6 +193,8 @@ public class FilterTests
     [TestMethod]
     public void FilterByIngredients_test()
     {
+        var mockContext = new Mock<RecipesContext>();
+
         // adding the ingredients we are looking for
         List<Ingredient> lookingForIngredient = new()
             {
@@ -143,30 +206,48 @@ public class FilterTests
         // adding test recipes
         Ingredient a = new("Apple", Units.Quantity);
         Ingredient b = new("Sugar", Units.Mass);
-        Dictionary<Ingredient, double> dict = new()
+        List<Ingredient> ingredients = new(){a,b};
+        List<MeasuredIngredient> dict = new()
             {
-                { a, 20 },
+                new( a, 20 ),
             };
-        Dictionary<Ingredient, double> dict2 = new()
+        List<MeasuredIngredient> dict2 = new()
             {
-                { b, 20 },
+                new( b, 20 ),
             };
         recipes.Add(new("Test Recipe", new User("Bianca", "123456789"), "Test Description", 30, 60, 4,
-            new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict, new List<string> { "Tag1", "Tag2" }, 2));
+            new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict, new List<Tag> { new("Tag1"), new("Tag2") }, 2));
         recipes.Add(new("Test Recipe", new User("Bianca", "123456789"), "Test Description", 30, 60, 4,
-            new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict2, new List<string> { "Tag1", "Tag2" }, 2));
+            new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict2, new List<Tag> { new("Tag1"), new("Tag2") }, 2));
 
         // creating expected recipes
         List<Recipe> expectedRecipes = new()
             {
                 new("Test Recipe", new User("Bianca", "123456789"), "Test Description", 30, 60, 4,
-                new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict, new List<string> { "Tag1", "Tag2" }, 2)
+                new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict, new List<Tag> { new("Tag1"), new("Tag2") }, 2)
             };
+
+        // //finalize context
+        RecipesContext.Instance = mockContext.Object;
+
+       //finalize context
+        RecipesContext.Instance = mockContext.Object;
+
+        var mockSetIngredient = new Mock<DbSet<Ingredient>>();
+        ConfigureDbSetMock(ingredients.AsQueryable(), mockSetIngredient);
+        mockContext.Setup(m => m.RecipeManager_Ingredients).Returns(mockSetIngredient.Object);
+
+        var mockSetRecipe = new Mock<DbSet<Recipe>>();
+        ConfigureDbSetMock(recipes.AsQueryable(), mockSetRecipe);
+        mockContext.Setup(m => m.RecipeManager_Recipes).Returns(mockSetRecipe.Object);
+
+        var mockSetRatings = new Mock<DbSet<Rating>>();
+        mockContext.Setup(m => m.RecipeManager_Ratings).Returns(mockSetRatings.Object);
 
         // calling filtering
         IFilterBy filter = new FilterByIngredients(lookingForIngredient);
-        List<Recipe> actual = filter.FilterRecipes(recipes);
-
+        IQueryable<Recipe> filteredRecipes = filter.FilterRecipes(recipes.AsQueryable());
+        List<Recipe> actual = filteredRecipes.ToList<Recipe>();
 
         CollectionAssert.AreEqual(expectedRecipes, actual);
     }
@@ -184,38 +265,62 @@ public class FilterTests
     [TestMethod]
     public void FilterByRatingTest()
     {
+        var mockContext = new Mock<RecipesContext>();
+
         //creating test data
         Ingredient a = new("Apple", Units.Quantity);
         Ingredient b = new("Sugar", Units.Mass);
-        Dictionary<Ingredient, double> dict = new()
+
+        var ingredients = new List<Ingredient>(){a, b}.AsQueryable();
+        List<MeasuredIngredient> dict = new()
             {
-                { a, 20 },
+                new( a, 20 ),
             };
-        Dictionary<Ingredient, double> dict2 = new()
+        List<MeasuredIngredient> dict2 = new()
             {
-                { b, 20 },
+                new( b, 20 ),
             };
         List<Recipe> recipes = new()
             {
                 new("Test Recipe", new User("Bianca", "123456789"), "Test Description", 30, 60, 4,
-                new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict, new List<string> { "Tag1", "Tag2" }, 2),
+                new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict, new List<Tag> { new("Tag1"), new("Tag2") }, 2),
                 new("Recipe need 10 characters", new User("Not Bianca", "123456789"), "Test Description", 30, 60, 4,
-                new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict2, new List<string> { "Tag1", "Tag2" }, 2)
+                new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict2, new List<Tag> { new("Tag1"), new("Tag2") }, 2)
             };
-        //rate the first recipe 3 star and second 0
-        recipes[0].RateRecipe(3);
-        recipes[1].RateRecipe(1);
 
         //create expected results
         List<Recipe> expected = new()
             {
                 new("Test Recipe", new User("Bianca", "123456789"), "Test Description", 30, 60, 4,
-                new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict, new List<string> { "Tag1", "Tag2" }, 2),
+                new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict, new List<Tag> { new("Tag1"), new("Tag2") }, 2),
             };
 
+        //finalize context
+        RecipesContext.Instance = mockContext.Object;
+
+        var mockSetIngredient = new Mock<DbSet<Ingredient>>();
+        ConfigureDbSetMock(ingredients.AsQueryable(), mockSetIngredient);
+        mockContext.Setup(m => m.RecipeManager_Ingredients).Returns(mockSetIngredient.Object);
+
+        var mockSetRecipe = new Mock<DbSet<Recipe>>();
+        ConfigureDbSetMock(recipes.AsQueryable(), mockSetRecipe);
+        mockContext.Setup(m => m.RecipeManager_Recipes).Returns(mockSetRecipe.Object);
+
+        var mockSetRatings = new Mock<DbSet<Rating>>();
+        mockContext.Setup(m => m.RecipeManager_Ratings).Returns(mockSetRatings.Object);
+
+
+        //rate the first recipe 3 star and second 0
+        recipes[0].RateRecipe(3, UserController.Instance.ActiveUser);
+        recipes[1].RateRecipe(1, UserController.Instance.ActiveUser);
+
+            // //finalize context
+
+
         IFilterBy filter = new FilterByRating(3);
-        List<Recipe> actual = filter.FilterRecipes(recipes);
-        //assert
+        IQueryable<Recipe> filteredRecipes = filter.FilterRecipes(recipes.AsQueryable());
+        List<Recipe> actual = filteredRecipes.ToList<Recipe>();
+
         CollectionAssert.AreEqual(expected, actual);
 
     }
@@ -239,50 +344,68 @@ public class FilterTests
     [TestMethod]
     public void FilterByTagsTest()
     {
+        var mockContext = new Mock<RecipesContext>();
+
         //creating test data
         Ingredient a = new("Apple", Units.Quantity);
         Ingredient b = new("Sugar", Units.Mass);
-        Dictionary<Ingredient, double> dict = new()
+        List<Ingredient> ingredients = new(){a,b};
+        List<MeasuredIngredient> dict = new()
             {
-                { a, 20 },
+                new( a, 20 ),
             };
-        Dictionary<Ingredient, double> dict2 = new()
+        List<MeasuredIngredient> dict2 = new()
             {
-                { b, 20 },
+                new( b, 20 ),
             };
         List<Recipe> recipes = new()
             {
                 new("Test Recipe", new User("Bianca", "123456789"), "Test Description", 30, 60, 4,
-                new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict, new List<string> { "Tag1", "Tag2" }, 2),
+                new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict, new List<Tag> { new("Tag1"), new("Tag2") }, 2),
                 new("Recipe need 10 characters", new User("Not Bianca", "123456789"), "Test Description", 30, 60, 4,
-                new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict2, new List<string> { "Tag2", "Tag3" }, 2),
+                new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict2, new List<Tag> { new("Tag2"), new("Tag3") }, 2),
                 new("Recipe need 10 characters", new User("Not Bianca", "123456789"), "Test Description", 30, 60, 4,
-                new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict2, new List<string> { "Tag4", "Tag6" }, 2),
+                new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict2, new List<Tag> { new("Tag4"), new("Tag6") }, 2),
                 new("Recipe need 10 characters", new User("Not Bianca", "123456789"), "Test Description", 30, 60, 4,
-                new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict2, new List<string> { "Tag4", "Tag1" }, 2)
+                new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict2, new List<Tag> { new("Tag4"), new("Tag1") }, 2)
             };
 
         //create expected data
         List<Recipe> expected = new()
             {
                 new("Test Recipe", new User("Bianca", "123456789"), "Test Description", 30, 60, 4,
-                new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict, new List<string> { "Tag1", "Tag2" }, 2),
+                new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict, new List<Tag> { new("Tag1"), new("Tag2") }, 2),
                 new("Recipe need 10 characters", new User("Not Bianca", "123456789"), "Test Description", 30, 60, 4,
-                new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict2, new List<string> { "Tag2", "Tag3" }, 2),
+                new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict2, new List<Tag> { new("Tag2"), new("Tag3") }, 2),
                 new("Recipe need 10 characters", new User("Not Bianca", "123456789"), "Test Description", 30, 60, 4,
-                new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict2, new List<string> { "Tag4", "Tag1" }, 2)
+                new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict2, new List<Tag> { new("Tag4"), new("Tag1") }, 2)
             };
 
         //filter
-        List<string> tags = new()
+        List<Tag> tags = new()
         {
             new("Tag1"),
             new("Tag2")
         };
-        IFilterBy filter = new FilterByTags(tags);
-        List<Recipe> actual = filter.FilterRecipes(recipes);
 
-        //assert
+        //finalize context
+        RecipesContext.Instance = mockContext.Object;
+
+        var mockSetIngredient = new Mock<DbSet<Ingredient>>();
+        ConfigureDbSetMock(ingredients.AsQueryable(), mockSetIngredient);
+        mockContext.Setup(m => m.RecipeManager_Ingredients).Returns(mockSetIngredient.Object);
+
+        var mockSetRecipe = new Mock<DbSet<Recipe>>();
+        ConfigureDbSetMock(recipes.AsQueryable(), mockSetRecipe);
+        mockContext.Setup(m => m.RecipeManager_Recipes).Returns(mockSetRecipe.Object);
+
+        var mockSetRatings = new Mock<DbSet<Rating>>();
+        mockContext.Setup(m => m.RecipeManager_Ratings).Returns(mockSetRatings.Object);
+
+        IFilterBy filter = new FilterByTags(tags);
+        IQueryable<Recipe> filteredRecipes = filter.FilterRecipes(recipes.AsQueryable());
+        List<Recipe> actual = filteredRecipes.ToList<Recipe>();
+
         CollectionAssert.AreEqual(expected, actual);
     }
 
@@ -291,41 +414,62 @@ public class FilterTests
     [ExpectedException(typeof(InvalidOperationException))]
     public void FilterByTagsNull()
     {
-        IFilterBy filter = new FilterByTags(new List<string>());
+        IFilterBy filter = new FilterByTags(new List<Tag>());
     }
 
     //tests for filter by owner
     [TestMethod]
     public void FilterByOwnerTest()
     {
+        var mockContext = new Mock<RecipesContext>();
+
         // creating test data
         Ingredient a = new("Apple", Units.Quantity);
         Ingredient b = new("Sugar", Units.Mass);
-        Dictionary<Ingredient, double> dict = new()
+        List<Ingredient> ingredients = new(){a,b};
+        List<MeasuredIngredient> dict = new()
             {
-                { a, 20 },
+                new( a, 20 ),
             };
-        Dictionary<Ingredient, double> dict2 = new()
+        List<MeasuredIngredient> dict2 = new()
             {
-                { b, 20 },
+                new( b, 20 ),
             };
         List<Recipe> recipes = new()
             {
             new("Test Recipe", new User("Bianca", "123456789"), "Test Description", 30, 60, 4,
-                new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict, new List<string> { "Tag1", "Tag2" }, 2),
+                new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict, new List<Tag> { new("Tag1"), new("Tag2") }, 2),
                 new("Recipe need 10 characters", new User("Not Bianca", "123456789"), "Test Description", 30, 60, 4,
-                new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict2, new List<string> { "Tag1", "Tag2" }, 2)
+                new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict2, new List<Tag> { new("Tag1"), new("Tag2") }, 2)
             };
 
         // creating expected data
         List<Recipe> expected = new()
             {
                 new("Test Recipe", new User("Bianca", "123456789"), "Test Description", 30, 60, 4,
-                new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict, new List<string> { "Tag1", "Tag2" }, 2),
+                new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict, new List<Tag> { new("Tag1"), new("Tag2") }, 2),
             };
 
+        //finalize context
+        RecipesContext.Instance = mockContext.Object;
+
+        var mockSetIngredient = new Mock<DbSet<Ingredient>>();
+        ConfigureDbSetMock(ingredients.AsQueryable(), mockSetIngredient);
+        mockContext.Setup(m => m.RecipeManager_Ingredients).Returns(mockSetIngredient.Object);
+
+        var mockSetUser = new Mock<DbSet<User>>();
+        mockContext.Setup(m => m.RecipeManager_Users).Returns(mockSetUser.Object);
+
+        var mockSetRecipe = new Mock<DbSet<Recipe>>();
+        ConfigureDbSetMock(recipes.AsQueryable(), mockSetRecipe);
+        mockContext.Setup(m => m.RecipeManager_Recipes).Returns(mockSetRecipe.Object);
+
+        var mockSetRatings = new Mock<DbSet<Rating>>();
+        mockContext.Setup(m => m.RecipeManager_Ratings).Returns(mockSetRatings.Object);
+
         IFilterBy filter = new FilterByOwner(new User("Bianca", "123456789"));
-        List<Recipe> actual = filter.FilterRecipes(recipes);
+        IQueryable<Recipe> filteredRecipes = filter.FilterRecipes(recipes.AsQueryable());
+        List<Recipe> actual = filteredRecipes.ToList<Recipe>();
 
         CollectionAssert.AreEqual(expected, actual);
     }
@@ -342,39 +486,55 @@ public class FilterTests
     [TestMethod]
     public void FilterByServingTest()
     {
+        var mockContext = new Mock<RecipesContext>();
+
+
         //creating test data
         Ingredient a = new("Apple", Units.Quantity);
         Ingredient b = new("Sugar", Units.Mass);
-        Dictionary<Ingredient, double> dict = new()
+        List<Ingredient> ingredients = new(){a,b};
+        List<MeasuredIngredient> dict = new()
             {
-                { a, 20 },
+                new( a, 20 ),
             };
-        Dictionary<Ingredient, double> dict2 = new()
+        List<MeasuredIngredient> dict2 = new()
             {
-                { b, 20 },
+                new( b, 20 ),
             };
         List<Recipe> recipes = new()
             {
                 new("Test Recipe", new User("Bianca", "123456789"), "Test Description", 30, 60, 4,
-                new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict, new List<string> { "Tag1", "Tag2" }, 2),
+                new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict, new List<Tag> { new("Tag1"), new("Tag2") }, 2),
                 new("Recipe need 10 characters", new User("Not Bianca", "123456789"), "Test Description", 30, 60, 2,
-                new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict2, new List<string> { "Tag1", "Tag2" }, 2),
+                new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict2, new List<Tag> { new("Tag1"), new("Tag2") }, 2),
                 new("Recipe need 10 characters", new User("Not Bianca", "123456789"), "Test Description", 30, 60, 5,
-                new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict2, new List<string> { "Tag1", "Tag2" }, 2)
+                new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict2, new List<Tag> { new("Tag1"), new("Tag2") }, 2)
             };
 
         //creating expected data
         List<Recipe> expected = new()
             {
                 new("Test Recipe", new User("Bianca", "123456789"), "Test Description", 30, 60, 4,
-                new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict, new List<string> { "Tag1", "Tag2" }, 2),
+                new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict, new List<Tag> { new("Tag1"), new("Tag2") }, 2),
                 new("Recipe need 10 characters", new User("Not Bianca", "123456789"), "Test Description", 30, 60, 5,
-                new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict2, new List<string> { "Tag1", "Tag2" }, 2)
+                new List<Instruction> { new Instruction(1, "Step 1"), new Instruction(2, "Step 2") }, dict2, new List<Tag> { new("Tag1"), new("Tag2") }, 2)
             };
+
+        //finalize context
+        RecipesContext.Instance = mockContext.Object;
+
+        var mockSetIngredient = new Mock<DbSet<Ingredient>>();
+        ConfigureDbSetMock(ingredients.AsQueryable(), mockSetIngredient);
+        mockContext.Setup(m => m.RecipeManager_Ingredients).Returns(mockSetIngredient.Object);
+
+        var mockSetRecipe = new Mock<DbSet<Recipe>>();
+        ConfigureDbSetMock(recipes.AsQueryable(), mockSetRecipe);
+        mockContext.Setup(m => m.RecipeManager_Recipes).Returns(mockSetRecipe.Object);
 
         //filter
         IFilterBy filter = new FilterByServings(3, 6);
-        List<Recipe> actual = filter.FilterRecipes(recipes);
+        IQueryable<Recipe> filteredRecipes = filter.FilterRecipes(recipes.AsQueryable());
+        List<Recipe> actual = filteredRecipes.ToList<Recipe>();
 
         CollectionAssert.AreEqual(expected, actual);
 
@@ -400,6 +560,8 @@ public class FilterTests
     [TestMethod]
     public void FilterByUsersTest()
     {
+        var mockContext = new Mock<RecipesContext>();
+
         // creating new test data
         List<User> users = new()
         {
@@ -407,8 +569,20 @@ public class FilterTests
             new User("Bobbie", "123456789"),
             new User("Doeey", "123456789")
         };
+
+        //finalize context
+        RecipesContext.Instance = mockContext.Object;
+
+        // basic setup
+        var mockSetUsers = new Mock<DbSet<User>>();
+        mockContext.Setup(m => m.RecipeManager_Users).Returns(mockSetUsers.Object);
+
+        // set up queryable data
+        var data = users.AsQueryable();
+        ConfigureDbSetMock<User>(data, mockSetUsers);
+
         // filter the users
-        FilterByUsername filter = new FilterByUsername(users);
+        FilterByUsername filter = new FilterByUsername(data);
         User actual = filter.FilterUsers("Johny");
 
         Assert.AreEqual(new User("Johny", "123456789"), actual);
@@ -419,10 +593,21 @@ public class FilterTests
     [ExpectedException(typeof(ArgumentException))]
     public void FilterByUsersNullTest()
     {
-        // creating new test data
+        var mockContext = new Mock<RecipesContext>();
+
         List<User> users = new() { };
+
+        //finalize context
+        RecipesContext.Instance = mockContext.Object;
+
+        // creating new test data
+        var mockSetUsers = new Mock<DbSet<User>>();
+        mockContext.Setup(m => m.RecipeManager_Users).Returns(mockSetUsers.Object);
+        var data = users.AsQueryable();
+        ConfigureDbSetMock<User>(data, mockSetUsers);
+
         // filter the users
-        FilterByUsername filter = new FilterByUsername(users);
+        FilterByUsername filter = new FilterByUsername(data);
         User actual = filter.FilterUsers("John");
 
         Assert.AreEqual(new User("John", "123456789"), actual);
