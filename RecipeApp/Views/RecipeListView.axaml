@@ -1,0 +1,133 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+  mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+  x:Class="App.Views.RecipeListView"
+  xmlns:vm="using:App.ViewModels"
+  x:DataType="vm:RecipeListViewModel">
+  <DockPanel LastChildFill="False">
+    <StackPanel Orientation="Horizontal" DockPanel.Dock="Bottom" HorizontalAlignment="Center">
+      <Button>
+        Cancel
+      </Button>
+      <Button Command="{Binding SearchCommand}">
+        Search
+      </Button>
+    </StackPanel>
+
+    <StackPanel HorizontalAlignment="Center" DockPanel.Dock="Left">
+      <Label FontSize="14" FontWeight="Bold" VerticalAlignment="Center">Filters</Label>
+      <StackPanel
+        Orientation="Horizontal">
+        <Label FontSize="14" FontWeight="Bold" VerticalAlignment="Center">Keyword</Label>
+        <TextBox Width="200" Watermark="enter a keyword" Text="{Binding Keyword}" />
+      </StackPanel>
+      <StackPanel Orientation="Horizontal">
+        <Label FontSize="14" FontWeight="Bold" VerticalAlignment="Center">Owner</Label>
+        <TextBox Width="200" Watermark="enter a owner" Text="{Binding Owner}" />
+      </StackPanel>
+      <StackPanel
+        Orientation="Horizontal">
+        <Label FontSize="14" FontWeight="Bold" VerticalAlignment="Center">Rating</Label>
+        <NumericUpDown Minimum="0" Maximum="5"
+          Increment="0.5"
+          VerticalAlignment="Center"
+          Watermark="Enter Rating from 0-5" Value="{Binding Rating}" />
+      </StackPanel>
+      <StackPanel
+        Orientation="Horizontal">
+        <Label FontSize="14" FontWeight="Bold" VerticalAlignment="Center">Serving Size</Label>
+        <Label FontSize="14" VerticalAlignment="Center">min:</Label>
+        <NumericUpDown Minimum="0"
+          Increment="1"
+          VerticalAlignment="Center"
+          Value="{Binding MinServing}" />
+        <Label FontSize="14" VerticalAlignment="Center">max:</Label>
+        <NumericUpDown Minimum="0"
+          Increment="1"
+          VerticalAlignment="Center"
+          Value="{Binding MaxServing}" />
+      </StackPanel>
+      <StackPanel Orientation="Horizontal">
+        <Label FontSize="14" FontWeight="Bold" VerticalAlignment="Center">Tag</Label>
+        <TextBox Width="200" Watermark="Enter a tag" Text="{Binding Tags}" />
+      </StackPanel>
+      <StackPanel Orientation="Horizontal">
+        <Label FontSize="14" FontWeight="Bold" VerticalAlignment="Center">Ingredient</Label>
+        <TextBox Width="200" Watermark="Enter an ingredient name (seperated by ',')"
+          Text="{Binding Ingredients}" />
+      </StackPanel>
+      <StackPanel Orientation="Horizontal">
+        <Label FontSize="14" FontWeight="Bold" VerticalAlignment="Center">Time</Label>
+        <Label FontSize="14" VerticalAlignment="Center">Min:</Label>
+        <NumericUpDown Minimum="0" Maximum="420"
+          Increment="1"
+          VerticalAlignment="Center"
+          Value="{Binding MinTime}"/>
+          <Label FontSize="14" VerticalAlignment="Center">Max:</Label>
+        <NumericUpDown Minimum="0" Maximum="420"
+          Increment="1"
+          VerticalAlignment="Center"
+          Value="{Binding MaxTime}"/>
+      </StackPanel>
+      <Button Command="{Binding ClearFilterCommand}">
+        Clear All
+      </Button>
+      <Button Command="{Binding AddFilterCommand}">
+        Apply
+      </Button>
+    </StackPanel>
+
+    <StackPanel HorizontalAlignment="Center" DockPanel.Dock="Right">
+      <Label FontSize="14" FontWeight="Bold" VerticalAlignment="Center">Recipes</Label>
+      <ListBox x:Name="Recipes" ItemsSource="{Binding RecipeList}" SelectionMode="Single">
+        <ListBox.ItemTemplate>
+          <DataTemplate>
+            <Border BorderBrush="Blue" BorderThickness="1" Padding="4">
+              <TextBlock>
+                <Run Text="{Binding Name}" />
+                <Run Text=" - " />
+                <Run Text="{Binding Owner.Username}" />
+              </TextBlock>
+            </Border>
+          </DataTemplate>
+        </ListBox.ItemTemplate>
+      </ListBox>
+      <Button>
+        View
+      </Button>
+      <Button>
+        Add to Favorites
+      </Button>
+    </StackPanel>
+    <StackPanel>
+      <!-- doesn't work we tried fixing it in class -->
+      <Label FontSize="14" FontWeight="Bold" VerticalAlignment="Stretch">Applied Filters *Scroll after adding</Label>
+      <DataGrid Margin="20" ItemsSource="{Binding FilterList}"
+        IsReadOnly="True"
+        BorderThickness="1"
+        GridLinesVisibility="All"
+      >
+        <DataGrid.Columns>
+          <DataGridTextColumn Header="Filter name" Binding="{Binding Name}" />
+          <DataGridTextColumn Header="Filter Value" Binding="{Binding Value}" />
+        </DataGrid.Columns>
+      </DataGrid>
+
+      <!-- <ListBox ItemsSource="{Binding FilterList}" SelectionMode="Single">
+        <ListBox.ItemTemplate>
+          <DataTemplate>
+            <Border BorderBrush="Blue" BorderThickness="1" Padding="4">
+              <TextBlock>
+                <Run Text="{Binding Name}" />
+                <Run Text=" - "/>
+                <Run Text="{Binding Value}" />
+              </TextBlock> 
+            </Border>
+          </DataTemplate>
+        </ListBox.ItemTemplate>
+      </ListBox> -->
+    </StackPanel>
+  </DockPanel>
+</UserControl>

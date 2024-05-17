@@ -13,7 +13,28 @@ namespace recipes;
 public class RecipeController
 {
     public List<IFilterBy> Filters { get; set; } = new();
-    public List<Recipe> AllRecipes { get; } = new();
+    private List<Recipe> allRecipes = new();
+    //NOTE - might not be the good way to do this
+    public List<Recipe> AllRecipes
+    {
+        get
+        {
+            var context = RecipesContext.Instance;
+            List<Recipe> retrieveRecipes = context.RecipeManager_Recipes
+                .Include(recipe => recipe.Tags)
+                .Include(recipe => recipe._ratings)
+                .Include(recipe => recipe._difficulties)
+                .Include(recipe => recipe.Owner)
+                .Include(recipe => recipe.Ingredients)
+                    .ThenInclude(measuredIngredient => measuredIngredient.Ingredient)
+                .Include(recipe => recipe.Instructions)
+                .Include(recipe => recipe.UserFavourite)
+                .ToList();
+            allRecipes = retrieveRecipes;
+            RecipesContext.Instance = null;
+            return allRecipes;
+        }
+    }
     public List<Ingredient> Ingredients { get; } = new();
 
     // singleton RecipeController in order to keep the instance up to date across entire program
@@ -174,7 +195,7 @@ public class RecipeController
     /// </summary>
     public void RemoveAllFilters()
     {
-        Filters = new();
+        Filters.Clear();
     }
 
 }

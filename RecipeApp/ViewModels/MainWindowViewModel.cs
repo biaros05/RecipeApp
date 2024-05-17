@@ -1,5 +1,6 @@
 using App.Views;
 using ReactiveUI;
+using recipes;
 
 namespace App.ViewModels;
 
@@ -11,4 +12,8 @@ public class MainWindowViewModel : ViewModelBase
         get => _contentViewModel;
         private set => this.RaiseAndSetIfChanged(ref _contentViewModel, value);
     }
-}
+
+    public MainWindowViewModel(){
+        _contentViewModel = new RecipeListViewModel(RecipeController.Instance.AllRecipes);
+    }
+}   
