@@ -13,39 +13,33 @@ namespace App.ViewModels;
 public class RecipeEditViewModel : ViewModelBase
 {
     private Recipe Recipe {get; set;} = new();
-    private string? _name;
     public string? Name
     {
         get => Recipe.Name;
         set => Recipe.Name = value;
     }
 
-    private string? _description;
     public string? Description
     {
         get => Recipe.Description;
         set => Recipe.Description = value;
     }
-    private int _prepTime;
     public int PrepTime
     {
         get => Recipe.PrepTimeMins;
         set => Recipe.PrepTimeMins = Convert.ToInt32(value);
     }
-    private int _cookTime;
     public int CookTime 
     {
         get => Recipe.CookTimeMins;
         set => Recipe.CookTimeMins = Convert.ToInt32(value);
     }
-    private int _numServings;
     public int NumServings 
     {
         get => Recipe.NumberOfServings;
         set => Recipe.NumberOfServings = Convert.ToInt32(value);
     }
     
-    private int _budget;
     public int Budget 
     {
         get => Recipe.Budget.Length;
@@ -66,17 +60,17 @@ public class RecipeEditViewModel : ViewModelBase
         set => this.RaiseAndSetIfChanged(ref _errorMessage, value);
     } 
 
-    public ObservableCollection<Instruction> Instructions;
+    public ObservableCollection<Instruction> Instructions = new();
 
-    public ObservableCollection<MeasuredIngredient> Ingredients;
-    public ObservableCollection<Tag> Tags;
+    public ObservableCollection<MeasuredIngredient> Ingredients = new();
+    public ObservableCollection<Tag> Tags = new();
 
     // reactive command for the Save button
     public ReactiveCommand<Unit, Unit> Save { get; }
 
-    public ReactiveCommand<Unit, Recipe?> TagButton { get; }
+    public ReactiveCommand<Unit, Recipe> TagButton { get; }
 
-    public ReactiveCommand<Unit, Recipe?> IngredientButton { get; }
+    public ReactiveCommand<Unit, Recipe> IngredientButton { get; }
 
     public ReactiveCommand<Unit, Recipe> InstructionButton { get; }
 
@@ -84,7 +78,7 @@ public class RecipeEditViewModel : ViewModelBase
     {
         UserController.Instance.AuthenticateUser("Bianca", "Rossetti");
         this.Recipe = new(){Budget = ""};
-        this.Recipe.Owner = UserController.Instance.ActiveUser;
+        this.Recipe.Owner = UserController.Instance.ActiveUser!;
         if (recipe != null)
         {
             this.Recipe = recipe;
@@ -96,6 +90,7 @@ public class RecipeEditViewModel : ViewModelBase
         (name) =>
             !(string.IsNullOrEmpty(name))
         );
+
         Save = ReactiveCommand.Create(() =>
             {
                 try{
@@ -110,9 +105,18 @@ public class RecipeEditViewModel : ViewModelBase
         );
 
         InstructionButton = ReactiveCommand.Create(() =>
-            {
-                return this.Recipe;
-            }
-        );
+        {
+            return this.Recipe;
+        });
+
+        IngredientButton = ReactiveCommand.Create(() =>
+        {
+            return this.Recipe;
+        });
+
+        TagButton = ReactiveCommand.Create(() => 
+        {
+            return this.Recipe;
+        });
     }
 }

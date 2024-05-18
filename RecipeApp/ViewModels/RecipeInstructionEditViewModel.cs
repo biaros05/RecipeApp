@@ -15,7 +15,7 @@ namespace App.ViewModels;
 public class RecipeInstructionEditViewModel : ViewModelBase
 {
     private Recipe Recipe;
-    private ObservableCollection<Instruction> _instructions;
+    private ObservableCollection<Instruction> _instructions = new();
     public ObservableCollection<Instruction> Instructions
     {
         get => _instructions;
@@ -42,7 +42,7 @@ public class RecipeInstructionEditViewModel : ViewModelBase
 
     public ReactiveCommand<Unit, Unit> Add { get; }
 
-    public RecipeInstructionEditViewModel(Recipe recipe = null)
+    public RecipeInstructionEditViewModel(Recipe? recipe = null)
     {
         this.Recipe = new();
         if (recipe != null)

@@ -265,7 +265,7 @@ public class Recipe
 
     // helper method that updates the list of ingredients in the recipe and also updates them in 
     // the system if they do not already exist
-    private void UpdateIngredients(List<MeasuredIngredient> ingredients)
+    public void UpdateIngredients(List<MeasuredIngredient> ingredients)
     {
 
         List<MeasuredIngredient> newIngredients = new();

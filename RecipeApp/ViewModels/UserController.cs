@@ -110,10 +110,10 @@ public class UserController
         }
 
         User user = context.RecipeManager_Users
-                    .Where(u => u.Username == this.ActiveUser.Username)
+                    .Where(u => u.Username == this.ActiveUser!.Username)
                     .First();
 
-        this.ActiveUser.Description = description == null ? this.ActiveUser.Description : description;
+        this.ActiveUser!.Description = description == null ? this.ActiveUser.Description : description;
         this.ActiveUser.Image = image == null ? this.ActiveUser.Image : image;
         this.ActiveUser.Username = username == null ? this.ActiveUser.Username : username;
         this.ActiveUser.HashPass = hashpass == null ? this.ActiveUser.HashPass : hashpass;
