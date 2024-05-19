@@ -6,5 +6,89 @@
              x:Class="App.Views.RecipeIngredientEditView"
              xmlns:vm="using:App.ViewModels"
              x:DataType="vm:RecipeIngredientEditViewModel">
-  Welcome to Avalonia!
+  <DockPanel>
+    <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal">
+      <!-- Contains the code to add Ingredient to DB -->
+      <StackPanel DockPanel.Dock="Left"
+        HorizontalAlignment="Center"
+        VerticalAlignment="Center"
+        MinWidth="500"
+        Margin="0 16 0 0">
+        <TextBlock Text="Name:"/>
+        <TextBox Text="{Binding NewIngredientName}"/>
+
+        <WrapPanel HorizontalAlignment="Center">
+          <WrapPanel.Styles>
+            <Style Selector="ComboBox">
+              <Setter Property="Width" Value="250" />
+              <Setter Property="Margin" Value="10" />
+            </Style>
+          </WrapPanel.Styles>
+          <ComboBox PlaceholderText="Pick a Unit" SelectedIndex="{Binding NewUnit}">
+            <ComboBoxItem>Volume</ComboBoxItem>
+            <ComboBoxItem>Mass</ComboBoxItem>
+            <ComboBoxItem>Quantity</ComboBoxItem>
+          </ComboBox>
+        </WrapPanel>
+        <!--AddDB-->
+        <Button Command="{Binding AddDB}"
+                  Content="Add to list"
+                  x:CompileBindings="False"/>
+      </StackPanel>
+      <!-- Contains the code to cancel or save -->
+      <StackPanel
+      VerticalAlignment="Center"
+      HorizontalAlignment="Center"
+      MinWidth="500"
+      MinHeight="100">
+        <Button Command="{Binding Save}"
+                Content="Save"
+                x:CompileBindings="False"
+                HorizontalAlignment="Center"
+                />
+        <Button Command="{Binding Cancel}"
+                Content="Cancel"
+                x:CompileBindings="False"
+                HorizontalAlignment="Center"
+                />
+      </StackPanel>
+    </StackPanel>
+
+    <!-- Contains recipe Ingredients -->
+      <DataGrid DockPanel.Dock="Left"
+              Margin="20"
+              IsReadOnly="True" 
+              GridLinesVisibility="All"
+              BorderThickness="1" BorderBrush="Gray"
+              ItemsSource="{Binding MeasuredIngredients}">
+              <DataGrid.Columns>
+                <DataGridTextColumn Header="Ingredient"  Binding="{Binding Ingredient.Name}"/>
+                <DataGridTextColumn Header="Amount" Binding="{Binding Quantity}" />
+              </DataGrid.Columns>
+      </DataGrid>
+
+    <!-- Add ingredient to recipe -->
+    <StackPanel
+    HorizontalAlignment="Center"
+    VerticalAlignment="Center">
+      <TextBlock Text="Select Ingredient to add:"/>
+        <ListBox
+              ItemsSource="{Binding DBIngredients}"
+              SelectedItem="{Binding SelectedIngredient}"
+              BorderThickness="1"
+              BorderBrush="Gray"
+              SelectionMode="Single,Toggle"
+              ScrollViewer.VerticalScrollBarVisibility="Visible">
+      </ListBox>
+      <TextBlock Text="Quantity:"/>
+      <NumericUpDown 
+        Value="{Binding Quantity}" 
+        Minimum="1"
+        Increment="1"/>
+      <Button Command="{Binding Add}"
+                Content="Add to recipe"
+                x:CompileBindings="False"/>
+    </StackPanel>
+
+  </DockPanel>
 </UserControl>

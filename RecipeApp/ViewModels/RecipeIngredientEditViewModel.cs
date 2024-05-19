@@ -19,14 +19,21 @@ public class RecipeIngredientEditViewModel : ViewModelBase
 
     // User ingredients
     private ObservableCollection<MeasuredIngredient> _measuredIngredients;
+
     public ObservableCollection<MeasuredIngredient> MeasuredIngredients
     {
-        get => new(_measuredIngredients);
+        get => _measuredIngredients;
         set => this.RaiseAndSetIfChanged(ref _measuredIngredients, value);
     }
 
     // Functionality to add ingredient to recipe
-    public ObservableCollection<Ingredient> DBIngredients = new();
+
+    private ObservableCollection<Ingredient> _dbIngredients;
+    public ObservableCollection<Ingredient> DBIngredients
+    {
+        get => _dbIngredients;
+        set => this.RaiseAndSetIfChanged(ref _dbIngredients, value);
+    }
     
     private Ingredient? _selectedIngredient;
     public Ingredient? SelectedIngredient
@@ -39,7 +46,7 @@ public class RecipeIngredientEditViewModel : ViewModelBase
     public double? Quantity
     {
         get => _quantity;
-        set => this.RaiseAndSetIfChanged(ref _quantity, value);
+        set => this.RaiseAndSetIfChanged(ref _quantity, Convert.ToInt32(value));
     }
 
     public ReactiveCommand<Unit, Unit> Add { get; }
@@ -52,11 +59,24 @@ public class RecipeIngredientEditViewModel : ViewModelBase
         set => this.RaiseAndSetIfChanged(ref _newIngredientName, value);
     }
 
+    private int? _newUnit;
+    public int? NewUnit
+    {
+        get => _newUnit;
+        set
+        {
+            SelectedUnit = (Units) Convert.ToInt32(value);
+            this.RaiseAndSetIfChanged(ref _newUnit, Convert.ToInt32(value));
+        }
+    }
+
+
+
     private Units? _selectedUnit;
     public Units? SelectedUnit
     {
         get => _selectedUnit;
-        set => this.RaiseAndSetIfChanged(ref _selectedUnit, value);
+        set => _selectedUnit = value;
     }
 
     private string? _errorMessage;
@@ -93,9 +113,13 @@ public class RecipeIngredientEditViewModel : ViewModelBase
         Add = ReactiveCommand.Create(() => 
         {
             try{
-                MeasuredIngredients.Append(new MeasuredIngredient(this.SelectedIngredient!, (double)this.Quantity!));
-                this.SelectedIngredient = null;
-                this.Quantity = 0;
+                MeasuredIngredient newIngr = new(this.SelectedIngredient!, (double)this.Quantity!);
+                if (!this.MeasuredIngredients.Contains(newIngr))
+                {
+                    MeasuredIngredients.Add(newIngr);
+                    this.SelectedIngredient = null;
+                    this.Quantity = null;
+                }
             }
             catch (Exception e)
             {
@@ -108,7 +132,7 @@ public class RecipeIngredientEditViewModel : ViewModelBase
 
         IObservable<bool> newIngredientFieldsValid = this.WhenAnyValue(
             recipeViewModel => recipeViewModel.NewIngredientName,
-            recipeViewModel => recipeViewModel.SelectedUnit,
+            recipeViewModel => recipeViewModel.NewUnit,
             (ingr, unit) => !(string.IsNullOrEmpty(ingr)) && unit != null
         );
 
@@ -119,9 +143,8 @@ public class RecipeIngredientEditViewModel : ViewModelBase
                 Ingredient newIngr = new(this.NewIngredientName!, (Units)this.SelectedUnit!);
                 if (!this.DBIngredients.Contains(newIngr))
                 {
-                    this.DBIngredients.Append(newIngr);
+                    this.DBIngredients.Add(newIngr);
                     this.NewIngredientName = "";
-                    this.SelectedIngredient = null;
                 }
                 else
                 {

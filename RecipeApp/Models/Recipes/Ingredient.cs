@@ -1,6 +1,7 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection.Metadata.Ecma335;
+using Microsoft.EntityFrameworkCore.Metadata.Conventions.Infrastructure;
 
 namespace recipes;
 public class Ingredient
@@ -49,5 +50,10 @@ public class Ingredient
     public override int GetHashCode()
     {
         return HashCode.Combine(this.Name.ToLower());
+    }
+
+    public override string ToString()
+    {
+        return $"{Name}";
     }
 }
