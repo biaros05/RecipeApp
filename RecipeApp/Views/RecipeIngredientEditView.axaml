@@ -53,7 +53,9 @@
                 />
       </StackPanel>
     </StackPanel>
-
+    <StackPanel DockPanel.Dock="Bottom">
+      <TextBlock Text="{Binding ErrorMessage}"/>
+    </StackPanel>
     <!-- Contains recipe Ingredients -->
       <DataGrid DockPanel.Dock="Left"
               Margin="20"

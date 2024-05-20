@@ -129,7 +129,6 @@ public class RecipeIngredientEditViewModel : ViewModelBase
         }, notEmpty);
 
         // functionality to add new ingredient to list of available
-
         IObservable<bool> newIngredientFieldsValid = this.WhenAnyValue(
             recipeViewModel => recipeViewModel.NewIngredientName,
             recipeViewModel => recipeViewModel.NewUnit,
