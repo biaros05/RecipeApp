@@ -3,9 +3,9 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-             x:Class="App.Views.RecipeEditView"
+             x:Class="App.Views.RecipeCreateView"
              xmlns:vm="using:App.ViewModels"
-             x:DataType="vm:RecipeEditViewModel">
+             x:DataType="vm:RecipeCreateViewModel">
   <DockPanel Margin="10,10,10,10">
 
     <Grid DockPanel.Dock="Bottom"
@@ -63,7 +63,7 @@
       <TextBlock>
         Name:
       </TextBlock>
-      <TextBlock Text="{Binding Name}"/>
+      <TextBox Text="{Binding Name}"/>
       <TextBlock>
         Description:
       </TextBlock>

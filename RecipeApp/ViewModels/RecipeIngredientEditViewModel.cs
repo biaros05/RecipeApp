@@ -161,7 +161,7 @@ public class RecipeIngredientEditViewModel : ViewModelBase
 
         Save = ReactiveCommand.Create(() => 
         {
-            this.Recipe.Ingredients = this.MeasuredIngredients.ToList();
+            Recipe.UpdateIngredients(MeasuredIngredients.ToList());
             return Recipe;
         }, ingredientsAvailable);
 

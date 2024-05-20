@@ -4,6 +4,9 @@ using System.Reactive.Linq;
 using System;
 using System.Collections.Generic;
 using recipes;
+using filtering;
+using users;
+using Microsoft.EntityFrameworkCore;
 
 namespace App.ViewModels;
 
@@ -15,26 +18,70 @@ public class MainWindowViewModel : ViewModelBase
         get => _contentViewModel;
         private set => this.RaiseAndSetIfChanged(ref _contentViewModel, value);
     }
+
+    public static bool EditingRecipe;
     
     public void NavigateToEditInstructions(Recipe? recipe = null)
     {
         RecipeInstructionEditViewModel instructionViewModel = new(recipe);
-        instructionViewModel.Save.Subscribe(newRecipe => NavigateToEditRecipe(newRecipe));
-        instructionViewModel.Cancel.Subscribe(oldRecipe => NavigateToEditRecipe(oldRecipe));
+        instructionViewModel.Save.Subscribe(r =>{
+            if (EditingRecipe)
+                NavigateToEditRecipe(r);
+            else
+                NavigateToCreateRecipe(r);
+        });
+        instructionViewModel.Cancel.Subscribe(r =>{
+            if (EditingRecipe)
+                NavigateToEditRecipe(r);
+            else
+                NavigateToCreateRecipe(r);
+        });
         ContentViewModel = instructionViewModel;
     }
 
     public void NavigateToEditIngredients(Recipe? recipe = null)
     {
         RecipeIngredientEditViewModel ingredientEditView = new(recipe);
-        ingredientEditView.Save.Subscribe(r => NavigateToEditRecipe(r));
-        ingredientEditView.Cancel.Subscribe(r => NavigateToEditRecipe(r));
+        ingredientEditView.Save.Subscribe(r => {
+            if (EditingRecipe)
+                NavigateToEditRecipe(r);
+            else
+                NavigateToCreateRecipe(r);
+        });
+        ingredientEditView.Cancel.Subscribe(r => {
+            if (EditingRecipe)
+                NavigateToEditRecipe(r);
+            else
+                NavigateToCreateRecipe(r);
+        });
         ContentViewModel = ingredientEditView;
     }
 
-    public void NavigateToEditRecipe(Recipe? recipe = null)
+    public void NavigateToCreateRecipe(Recipe? recipe = null)
     {
-        RecipeEditViewModel recipeViewModel = new RecipeEditViewModel(recipe);
+        EditingRecipe = false;
+        RecipeCreateViewModel recipeViewModel = new RecipeCreateViewModel(recipe);
+        recipeViewModel.InstructionButton.Subscribe(r => {
+            NavigateToEditInstructions(r);
+        });
+
+        recipeViewModel.IngredientButton.Subscribe(r => {
+            NavigateToEditIngredients(r);
+        });
+
+        recipeViewModel.TagButton.Subscribe(r => {
+            NavigateToEditTags(r);
+        });
+
+        // ADD FOR SAVE AND CANCEL HERE TOO
+
+        ContentViewModel = recipeViewModel;
+    }
+
+    public void NavigateToEditRecipe(Recipe recipe)
+    {
+        EditingRecipe = true;
+        RecipeEditViewModel recipeViewModel = new(recipe);
         recipeViewModel.InstructionButton.Subscribe(r => {
             NavigateToEditInstructions(r);
         });
@@ -55,14 +102,40 @@ public class MainWindowViewModel : ViewModelBase
     public void NavigateToEditTags(Recipe? recipe = null)
     {
         RecipeTagsEditViewModel recipeTagsEditView = new(recipe);
-        recipeTagsEditView.Cancel.Subscribe((r) => NavigateToEditRecipe(r));
-        recipeTagsEditView.Save.Subscribe((r) => NavigateToEditRecipe(r));
+        recipeTagsEditView.Cancel.Subscribe((r) => 
+        {
+            if (EditingRecipe)
+                NavigateToEditRecipe(r);
+            else
+                NavigateToCreateRecipe(r);
+        });
+        recipeTagsEditView.Save.Subscribe((r) => 
+        {
+            if (EditingRecipe)
+                NavigateToEditRecipe(r);
+            else
+                NavigateToCreateRecipe(r);
+        });
         ContentViewModel = recipeTagsEditView;
     }
 
     // TO BE CHANGED
     public MainWindowViewModel()
     {
-        NavigateToEditRecipe();
+        EditingRecipe = false;
+        IFilterBy keyword = new FilterByKeyword("Cookies");
+        List<Recipe> recipes = new(keyword.FilterRecipes(
+            RecipesContext.Instance.RecipeManager_Recipes
+            .Include(recipe => recipe.Tags)
+            .Include(recipe => recipe._ratings)
+            .Include(recipe => recipe._difficulties)
+            .Include(recipe => recipe.Owner)
+            .Include(recipe => recipe.Ingredients)
+            .Include(recipe => recipe.Instructions)
+            .Include(recipe => recipe.UserFavourite)));
+        FilterByUsername user = new(RecipesContext.Instance.RecipeManager_Users);
+        User login = user.FilterUsers("Bianca");
+        UserController.Instance.ActiveUser = login;
+        NavigateToEditRecipe(recipes[0]);
     }
 }

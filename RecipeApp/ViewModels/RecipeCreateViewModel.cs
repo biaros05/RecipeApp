@@ -1,6 +1,5 @@
 using System;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
@@ -11,9 +10,8 @@ using users;
 
 namespace App.ViewModels;
 
-public class RecipeEditViewModel : ViewModelBase
+public class RecipeCreateViewModel : ViewModelBase
 {
-    private Recipe OldRecipe {get; set;} = new();
     private Recipe Recipe {get; set;} = new();
     public string? Name
     {
@@ -69,7 +67,6 @@ public class RecipeEditViewModel : ViewModelBase
 
     // reactive command for the Save button
     public ReactiveCommand<Unit, Unit> Save { get; }
-    public ReactiveCommand<Unit, Unit> Cancel { get; }
 
     public ReactiveCommand<Unit, Recipe> TagButton { get; }
 
@@ -77,12 +74,15 @@ public class RecipeEditViewModel : ViewModelBase
 
     public ReactiveCommand<Unit, Recipe> InstructionButton { get; }
 
-    public RecipeEditViewModel(Recipe recipe)
+    public RecipeCreateViewModel(Recipe? recipe=null)
     {
         UserController.Instance.AuthenticateUser("Bianca", "Rossetti");
-        this.Recipe = recipe;
+        this.Recipe = new(){Budget = ""};
         this.Recipe.Owner = UserController.Instance.ActiveUser!;
-        this.OldRecipe = this.Recipe;
+        if (recipe != null)
+        {
+            this.Recipe = recipe;
+        }
 
         // validates that name textbox is filled (FIXME: ADD INGREDIENTS AND INSTRUCTIONS)
         IObservable<bool> areFieldsFilled = this.WhenAnyValue(
@@ -94,9 +94,7 @@ public class RecipeEditViewModel : ViewModelBase
         Save = ReactiveCommand.Create(() =>
             {
                 try{
-                    var context = RecipesContext.Instance;
-                    context.RecipeManager_Recipes.Update(Recipe);
-                    context.SaveChanges();
+                    RecipeController.CreateRecipe(this.Recipe);
                 }
                 catch(Exception e)
                 {
