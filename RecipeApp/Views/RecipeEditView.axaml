@@ -8,25 +8,50 @@
              x:DataType="vm:RecipeEditViewModel">
   <DockPanel>
 
-    <StackPanel DockPanel.Dock="Bottom">
+    <Grid DockPanel.Dock="Bottom"
+    HorizontalAlignment="Center"
+    VerticalAlignment="Center" Margin="10,10,10,10">
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="Auto"/>
+        <ColumnDefinition Width="Auto"/>
+      </Grid.ColumnDefinitions>
+      <Button Command="{Binding Cancel}"
+                Content="Cancel"
+                x:CompileBindings="False"
+                HorizontalAlignment="Center"
+                Grid.Column="0"/>
       <Button Command="{Binding Save}"
                 Content="Save"
-                x:CompileBindings="False"/>
-    </StackPanel>
+                x:CompileBindings="False"
+                HorizontalAlignment="Center"
+                Grid.Column="1"/>
+    </Grid>
 
-    <StackPanel DockPanel.Dock="Right"
-    HorizontalAlignment="Center"
-    VerticalAlignment="Center">
-      <Button Command="{Binding TagButton}"
-                Content="Tags"
-                x:CompileBindings="False"/>
-      <Button Command="{Binding IngredientButton}"
-                Content="Ingredients"
-                x:CompileBindings="False"/>
-      <Button Command="{Binding InstructionButton}"
-                Content="Instructions"
-                x:CompileBindings="False"/>
-    </StackPanel>
+    <Grid DockPanel.Dock="Right"
+          HorizontalAlignment="Center"
+          VerticalAlignment="Center"
+          MinWidth="400">
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="Auto"/>
+        <ColumnDefinition Width="Auto"/>
+        <ColumnDefinition Width="Auto"/>
+      </Grid.ColumnDefinitions>
+      <Button Grid.Column="0"
+              Command="{Binding TagButton}"
+              Content="Tags"
+              x:CompileBindings="False"
+              HorizontalAlignment="Center"/>
+      <Button Grid.Column="1"
+              Command="{Binding IngredientButton}"
+              Content="Ingredients"
+              x:CompileBindings="False"
+              HorizontalAlignment="Center"/>
+      <Button Grid.Column="2"
+              Command="{Binding InstructionButton}"
+              Content="Instructions"
+              x:CompileBindings="False"
+              HorizontalAlignment="Center"/>
+    </Grid>
 
     <StackPanel DockPanel.Dock="Bottom">
       <TextBlock Text="{Binding ErrorMessage}"/>

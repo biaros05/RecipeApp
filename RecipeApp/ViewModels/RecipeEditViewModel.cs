@@ -95,7 +95,6 @@ public class RecipeEditViewModel : ViewModelBase
             {
                 try{
                     RecipeController.CreateRecipe(this.Recipe);
-                    // navigates elsewhere
                 }
                 catch(Exception e)
                 {

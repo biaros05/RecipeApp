@@ -168,7 +168,7 @@ public class Recipe
 
     }
 
-    public List<Tag> Tags { get; set; }
+    public List<Tag> Tags { get; set; } = new();
     public string Budget { get; set;}
 
     // allows user to add rating with necessary validation
@@ -224,7 +224,6 @@ public class Recipe
 
         var context = RecipesContext.Instance;
         Recipe recipe = context.RecipeManager_Recipes.First(r => r.Id == Id);
-        //FIXME - cant get tags
         if (!recipe.Tags.Contains(t))
         {
             recipe.Tags.Add(t);

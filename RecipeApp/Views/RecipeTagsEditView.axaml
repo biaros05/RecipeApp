@@ -6,5 +6,54 @@
              x:Class="App.Views.RecipeTagsEditView"
              xmlns:vm="using:App.ViewModels"
              x:DataType="vm:RecipeTagsEditViewModel">
-  Welcome to Avalonia!
+  <DockPanel Margin="10,10,10,10">
+    <StackPanel DockPanel.Dock="Left"
+    HorizontalAlignment="Center"
+    VerticalAlignment="Center"
+    MinWidth="500">
+      <ListBox
+              ItemsSource="{Binding Tags}"
+              SelectedItem="{Binding SelectedTag}"
+              BorderThickness="1"
+              BorderBrush="Gray"
+              SelectionMode="Single,Toggle"
+              ScrollViewer.VerticalScrollBarVisibility="Visible">
+      </ListBox>
+      <Button Command="{Binding Remove}"
+                Content="Remove"
+                x:CompileBindings="False"/>
+    </StackPanel>
+
+    <Grid DockPanel.Dock="Bottom"
+    HorizontalAlignment="Center"
+    VerticalAlignment="Center">
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="Auto"/>
+        <ColumnDefinition Width="Auto"/>
+      </Grid.ColumnDefinitions>
+      <Button Command="{Binding Cancel}"
+                Content="Cancel"
+                x:CompileBindings="False"
+                HorizontalAlignment="Center"
+                Grid.Column="0"/>
+      <Button Command="{Binding Save}"
+                Content="Save"
+                x:CompileBindings="False"
+                HorizontalAlignment="Center"
+                Grid.Column="1"/>
+    </Grid>
+
+    <StackPanel
+    HorizontalAlignment="Center"
+    VerticalAlignment="Center"
+    MinWidth="500">
+      <TextBlock>
+        Add Tag:
+      </TextBlock>
+      <TextBox Text="{Binding NewTag}"/>
+      <Button Command="{Binding Add}"
+                Content="Add"
+                x:CompileBindings="False"/>
+    </StackPanel>
+  </DockPanel>
 </UserControl>

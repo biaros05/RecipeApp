@@ -61,11 +61,7 @@ public class RecipeInstructionEditViewModel : ViewModelBase
             }, isSelected
         );
 
-        IObservable<bool> atLeastOneInstruction = this.WhenAnyValue(
-        recipeViewModel => recipeViewModel.Instructions,
-        (instr) =>
-            instr != null && instr.Count > 0
-        );
+        IObservable<bool> atLeastOneInstruction = this.WhenAnyValue(vm => vm.Instructions.Count).Select(count => count > 0);
 
         Save = ReactiveCommand.Create(() =>
         {

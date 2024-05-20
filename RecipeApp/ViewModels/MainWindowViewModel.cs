@@ -19,14 +19,8 @@ public class MainWindowViewModel : ViewModelBase
     public void NavigateToEditInstructions(Recipe? recipe = null)
     {
         RecipeInstructionEditViewModel instructionViewModel = new(recipe);
-        instructionViewModel.Save.Subscribe(newRecipe => 
-        {
-            NavigateToEditRecipe(newRecipe);
-        });
-        instructionViewModel.Cancel.Subscribe(oldRecipe =>
-        {
-            NavigateToEditRecipe(oldRecipe);
-        });
+        instructionViewModel.Save.Subscribe(newRecipe => NavigateToEditRecipe(newRecipe));
+        instructionViewModel.Cancel.Subscribe(oldRecipe => NavigateToEditRecipe(oldRecipe));
         ContentViewModel = instructionViewModel;
     }
 
@@ -50,11 +44,20 @@ public class MainWindowViewModel : ViewModelBase
         });
 
         recipeViewModel.TagButton.Subscribe(r => {
-            //NavigateToEditTags(r);
+            NavigateToEditTags(r);
         });
 
         // ADD FOR SAVE AND CANCEL HERE TOO
+
         ContentViewModel = recipeViewModel;
+    }
+
+    public void NavigateToEditTags(Recipe? recipe = null)
+    {
+        RecipeTagsEditViewModel recipeTagsEditView = new(recipe);
+        recipeTagsEditView.Cancel.Subscribe((r) => NavigateToEditRecipe(r));
+        recipeTagsEditView.Save.Subscribe((r) => NavigateToEditRecipe(r));
+        ContentViewModel = recipeTagsEditView;
     }
 
     // TO BE CHANGED

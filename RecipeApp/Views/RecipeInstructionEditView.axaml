@@ -6,7 +6,7 @@
              x:Class="App.Views.RecipeInstructionEditView"
              xmlns:vm="using:App.ViewModels"
              x:DataType="vm:RecipeInstructionEditViewModel">
-  <DockPanel>
+  <DockPanel Margin="10,10,10,10">
   <!-- this datagrid will show all existing Instructions in the DB -->
     <StackPanel DockPanel.Dock="Left"
     HorizontalAlignment="Center"
@@ -25,16 +25,24 @@
                 Content="Remove"
                 x:CompileBindings="False"/>
     </StackPanel>
-    <StackPanel DockPanel.Dock="Bottom"
+    <Grid DockPanel.Dock="Bottom"
     HorizontalAlignment="Center"
     VerticalAlignment="Center">
-      <Button Command="{Binding $parent[Window].DataContext.NavigateToEditRecipe}"
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="Auto"/>
+        <ColumnDefinition Width="Auto"/>
+      </Grid.ColumnDefinitions>
+      <Button Command="{Binding Cancel}"
                 Content="Cancel"
-                x:CompileBindings="False"/>
+                x:CompileBindings="False"
+                HorizontalAlignment="Center"
+                Grid.Column="0"/>
       <Button Command="{Binding Save}"
                 Content="Save"
-                x:CompileBindings="False"/>
-    </StackPanel>
+                x:CompileBindings="False"
+                HorizontalAlignment="Center"
+                Grid.Column="1"/>
+    </Grid>
     <StackPanel
     HorizontalAlignment="Center"
     VerticalAlignment="Center">

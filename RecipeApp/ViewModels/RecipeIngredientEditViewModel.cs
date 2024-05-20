@@ -18,7 +18,7 @@ public class RecipeIngredientEditViewModel : ViewModelBase
     private Recipe Recipe {get; set;} = new();
 
     // User ingredients
-    private ObservableCollection<MeasuredIngredient> _measuredIngredients;
+    private ObservableCollection<MeasuredIngredient> _measuredIngredients = new();
 
     public ObservableCollection<MeasuredIngredient> MeasuredIngredients
     {
@@ -107,7 +107,7 @@ public class RecipeIngredientEditViewModel : ViewModelBase
         IObservable<bool> notEmpty = this.WhenAnyValue(
             recipeViewModel => recipeViewModel.SelectedIngredient,
             recipeViewModel => recipeViewModel.Quantity,
-            (ingr, quantity) => ingr != null && quantity != null
+            (ingr, quantity) => ingr != null && quantity != null && quantity > 0
         );
         
         Add = ReactiveCommand.Create(() => 
@@ -156,12 +156,8 @@ public class RecipeIngredientEditViewModel : ViewModelBase
             }
         }, newIngredientFieldsValid);
 
-        IObservable<bool> ingredientsAvailable = this.WhenAnyValue(
-            recipeViewModel => recipeViewModel.MeasuredIngredients,
-            (ObservableCollection<MeasuredIngredient> ingr) => ingr.ToList().Count > 0
-        );
-
         // save and cancel functionalities
+        IObservable<bool> ingredientsAvailable = this.WhenAnyValue(vm => vm.MeasuredIngredients.Count).Select(count => count > 0);
 
         Save = ReactiveCommand.Create(() => 
         {

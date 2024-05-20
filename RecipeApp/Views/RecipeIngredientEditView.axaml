@@ -6,7 +6,7 @@
              x:Class="App.Views.RecipeIngredientEditView"
              xmlns:vm="using:App.ViewModels"
              x:DataType="vm:RecipeIngredientEditViewModel">
-  <DockPanel>
+  <DockPanel Margin="10,10,10,10">
     <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal">
       <!-- Contains the code to add Ingredient to DB -->
       <StackPanel DockPanel.Dock="Left"
