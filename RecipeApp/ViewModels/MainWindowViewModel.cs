@@ -16,4 +16,13 @@ public class MainWindowViewModel : ViewModelBase
     public MainWindowViewModel(){
         _contentViewModel = new RecipeListViewModel(RecipeController.Instance.AllRecipes);
     }
+
+    public void NavigateToRecipe(){
+        _contentViewModel = new RecipeListViewModel(RecipeController.Instance.AllRecipes);
+    }
+
+    public void CancelButton() {
+        //NOTE - back to welcome page
+        _contentViewModel = new MainWindowViewModel();
+    }
 }   

@@ -82,6 +82,12 @@ public class RecipeListViewModel : ViewModelBase
         get => _maxTime;
         set => this.RaiseAndSetIfChanged(ref _maxTime, value);
     }
+    private string? _errorMessage;
+    public string? ErrorMessagae
+    {
+        get => _errorMessage;
+        set => this.RaiseAndSetIfChanged(ref _errorMessage, value);
+    }
     public ReactiveCommand<Unit, ObservableCollection<IFilterBy>> AddFilterCommand { get; }
     public ReactiveCommand<Unit, ObservableCollection<Recipe>> SearchCommand { get; }
     public ReactiveCommand<Unit, Unit> ClearFilterCommand { get; }

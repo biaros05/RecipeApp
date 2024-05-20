@@ -31,7 +31,6 @@ public class RecipeController
                 .Include(recipe => recipe.UserFavourite)
                 .ToList();
             allRecipes = retrieveRecipes;
-            RecipesContext.Instance = null;
             return allRecipes;
         }
     }

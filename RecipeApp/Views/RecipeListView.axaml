@@ -32,6 +32,7 @@
         <Label FontSize="14" FontWeight="Bold" VerticalAlignment="Center">Rating</Label>
         <NumericUpDown Minimum="0" Maximum="5"
           Increment="0.5"
+          FormatString="0.0"
           VerticalAlignment="Center"
           Watermark="Enter Rating from 0-5" Value="{Binding Rating}" />
       </StackPanel>
@@ -41,11 +42,13 @@
         <Label FontSize="14" VerticalAlignment="Center">min:</Label>
         <NumericUpDown Minimum="0"
           Increment="1"
+          FormatString="0"
           VerticalAlignment="Center"
           Value="{Binding MinServing}" />
         <Label FontSize="14" VerticalAlignment="Center">max:</Label>
         <NumericUpDown Minimum="0"
           Increment="1"
+          FormatString="0"
           VerticalAlignment="Center"
           Value="{Binding MaxServing}" />
       </StackPanel>
@@ -63,11 +66,13 @@
         <Label FontSize="14" VerticalAlignment="Center">Min:</Label>
         <NumericUpDown Minimum="0" Maximum="420"
           Increment="1"
+          FormatString="0"
           VerticalAlignment="Center"
           Value="{Binding MinTime}"/>
           <Label FontSize="14" VerticalAlignment="Center">Max:</Label>
         <NumericUpDown Minimum="0" Maximum="420"
           Increment="1"
+          FormatString="0"
           VerticalAlignment="Center"
           Value="{Binding MaxTime}"/>
       </StackPanel>
