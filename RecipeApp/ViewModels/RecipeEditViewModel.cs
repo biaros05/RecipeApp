@@ -79,30 +79,44 @@ public class RecipeEditViewModel : ViewModelBase
 
     public RecipeEditViewModel(Recipe recipe)
     {
-        UserController.Instance.AuthenticateUser("Bianca", "Rossetti");
         this.Recipe = recipe;
-        this.Recipe.Owner = UserController.Instance.ActiveUser!;
         this.OldRecipe = this.Recipe;
 
         // validates that name textbox is filled (FIXME: ADD INGREDIENTS AND INSTRUCTIONS)
         IObservable<bool> areFieldsFilled = this.WhenAnyValue(
         recipeViewModel => recipeViewModel.Name,
         (name) =>
-            !(string.IsNullOrEmpty(name))
+            !string.IsNullOrEmpty(name)
+        );
+        IObservable<bool> atLeastOneInstruction = this.WhenAnyValue(vm => vm.Instructions.Count).Select(count => count > 0);
+        IObservable<bool> atLeastOneIngredient = this.WhenAnyValue(vm => vm.Ingredients.Count).Select(count => count > 0);
+
+        IObservable<bool> allConditionsMet = Observable.CombineLatest(
+            areFieldsFilled,
+            atLeastOneInstruction,
+            atLeastOneIngredient,
+            (fieldsFilled, hasInstruction, hasIngredient) => fieldsFilled && hasInstruction && hasIngredient
         );
 
         Save = ReactiveCommand.Create(() =>
             {
                 try{
-                    var context = RecipesContext.Instance;
-                    context.RecipeManager_Recipes.Update(Recipe);
-                    context.SaveChanges();
+                    if (Recipe.Owner.Equals(UserController.Instance.ActiveUser))
+                    {
+                        var context = RecipesContext.Instance;
+                        context.RecipeManager_Recipes.Update(Recipe);
+                        context.SaveChanges();
+                    }
+                    else
+                    {
+                        ErrorMessage = "You do not have permission to edit this";
+                    }
                 }
                 catch(Exception e)
                 {
                     ErrorMessage = e.Message;
                 }
-            }, areFieldsFilled
+            }, allConditionsMet
         );
 
         InstructionButton = ReactiveCommand.Create(() =>

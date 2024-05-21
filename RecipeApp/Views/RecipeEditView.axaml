@@ -15,7 +15,7 @@
         <ColumnDefinition Width="Auto"/>
         <ColumnDefinition Width="Auto"/>
       </Grid.ColumnDefinitions>
-      <Button Command="{Binding  $parent[Window].DataContext.NavigateToWelcome}"
+      <Button Command="{Binding  $parent[Window].DataContext.NavigateToLoggedIn}"
                 Content="Cancel"
                 x:CompileBindings="False"
                 HorizontalAlignment="Center"

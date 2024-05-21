@@ -6,6 +6,7 @@ using recipes;
 using System.Globalization;
 using System;
 using System.Linq;
+using Microsoft.EntityFrameworkCore;
 
 public class UserController
 {
@@ -66,7 +67,21 @@ public class UserController
     public bool AuthenticateUser(string username, string password)
     {
         var context = RecipesContext.Instance;
-        IQueryable<User> userQuery = context.RecipeManager_Users;
+        IQueryable<User> userQuery = context.RecipeManager_Users
+        .Include(recipe => recipe.UserCreatedRecipies)
+            .ThenInclude(recipe => recipe.Tags)
+        .Include(recipe => recipe.UserCreatedRecipies)
+            .ThenInclude(recipe => recipe._ratings)
+        .Include(recipe => recipe.UserCreatedRecipies)
+            .ThenInclude(recipe => recipe._difficulties)
+        .Include(recipe => recipe.UserCreatedRecipies)
+            .ThenInclude(recipe => recipe.Ingredients)
+            .ThenInclude(ingr => ingr.Ingredient)
+        .Include(recipe => recipe.UserCreatedRecipies)
+            .ThenInclude(recipe => recipe.Instructions)
+        .Include(recipe => recipe.UserCreatedRecipies)
+            .ThenInclude(recipe => recipe.UserFavourite)
+        .Include(user => user.UserFavoriteRecipies);
         filtering = new(userQuery);
         User result = filtering.FilterUsers(username);
         if (result == null)

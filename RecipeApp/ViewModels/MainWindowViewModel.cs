@@ -78,6 +78,11 @@ public class MainWindowViewModel : ViewModelBase
 
         // ADD FOR SAVE AND CANCEL HERE TOO
 
+        recipeViewModel.Save.Subscribe(r => 
+        {
+            NavigateToLoggedIn();
+        });
+
         ContentViewModel = recipeViewModel;
     }
 
@@ -126,20 +131,7 @@ public class MainWindowViewModel : ViewModelBase
     public MainWindowViewModel()
     {
         EditingRecipe = false;
-        IFilterBy keyword = new FilterByKeyword("Cookies");
-        List<Recipe> recipes = new(keyword.FilterRecipes(
-            RecipesContext.Instance.RecipeManager_Recipes
-            .Include(recipe => recipe.Tags)
-            .Include(recipe => recipe._ratings)
-            .Include(recipe => recipe._difficulties)
-            .Include(recipe => recipe.Owner)
-            .Include(recipe => recipe.Ingredients)
-            .Include(recipe => recipe.Instructions)
-            .Include(recipe => recipe.UserFavourite)));
-        FilterByUsername user = new(RecipesContext.Instance.RecipeManager_Users);
-        User login = user.FilterUsers("Bianca");
-        UserController.Instance.ActiveUser = login;
-        ContentViewModel = new LoggedInViewModel();
+        ContentViewModel = new WelcomeViewModel();
     }
     public void NavigateToWelcome()
     {
@@ -181,6 +173,8 @@ public class MainWindowViewModel : ViewModelBase
     LoggedInViewModel viewModel = new();
 
     viewModel.Logout.Subscribe(_ => NavigateToWelcome());
+    viewModel.CreateRecipe.Subscribe(_ => NavigateToCreateRecipe(null));
+    viewModel.EditRecipe.Subscribe(r => NavigateToEditRecipe(r));
 
     ContentViewModel = viewModel;
     }

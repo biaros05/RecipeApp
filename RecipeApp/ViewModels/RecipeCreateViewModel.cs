@@ -76,7 +76,6 @@ public class RecipeCreateViewModel : ViewModelBase
 
     public RecipeCreateViewModel(Recipe? recipe=null)
     {
-        UserController.Instance.AuthenticateUser("Bianca", "Rossetti");
         this.Recipe = new(){Budget = ""};
         this.Recipe.Owner = UserController.Instance.ActiveUser!;
         if (recipe != null)

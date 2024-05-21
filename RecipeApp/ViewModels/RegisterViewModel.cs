@@ -9,10 +9,10 @@ namespace App.ViewModels;
 
 public class RegisterViewModel : ViewModelBase
 {
-//   /// <summary>
-//   /// This is the user we are in the process of creating, its prperties are also
-//   /// used to perform validation.
-//   /// </summary>
+  /// <summary>
+  /// This is the user we are in the process of creating, its prperties are also
+  /// used to perform validation.
+  /// </summary>
   private User UserToRegister { get; } = new();
 
   private string? _username;
