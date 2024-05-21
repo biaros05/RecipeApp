@@ -19,10 +19,9 @@
               Content="Confirm"
               x:CompileBindings="False"/>
     </StackPanel>
-    <TextBlock DockPanel.Dock="Bottom"
-                Text="{Binding ErrorMessage}"/>
     <StackPanel HorizontalAlignment="Center"
                 VerticalAlignment="Center">
+      <TextBlock FontSize="18" FontWeight="Bold">User Update</TextBlock>
       <TextBlock Margin="0 5">
         Username:
       </TextBlock>
@@ -35,29 +34,15 @@
                 Watermark="Enter your password"
                 PasswordChar="*"/>
       <TextBlock Margin="0 5">
-        Password:
+        Description:
       </TextBlock>
-      <TextBox Text="{Binding Password}"
-                Watermark="Enter your password"
-                PasswordChar="*"/>
-      <TextBlock Margin="0 5">
-        Password:
+      <TextBox Text="{Binding Description}"
+                Watermark="Enter your Description"/>
+      <!-- <TextBlock Margin="0 5">
+        Image:
       </TextBlock>
-      <TextBox Text="{Binding Password}"
-                Watermark="Enter your password"
-                PasswordChar="*"/>
-      <TextBlock Margin="0 5">
-        Password:
-      </TextBlock>
-      <TextBox Text="{Binding Password}"
-                Watermark="Enter your password"
-                PasswordChar="*"/>
-      <TextBlock Margin="0 5">
-        Password:
-      </TextBlock>
-      <TextBox Text="{Binding Password}"
-                Watermark="Enter your password"
-                PasswordChar="*"/>
+      <TextBox Text="{Binding Image}"
+                Watermark="Enter your Image"/> -->
     </StackPanel>
   </DockPanel>
 </UserControl>

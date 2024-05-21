@@ -24,56 +24,38 @@ public class UserDetailsViewModel : ViewModelBase
 
     readonly User currentUser=UserController.Instance.ActiveUser;
 
-    public string DisplayList()
+    public string loopThroughList(List<Recipe> listOfRecipies)
     {
         string print="";
-        try
-        {
-            foreach (Recipe recipe in this.currentUser.UserCreatedRecipies)
-            {
-                print+=$"{recipe} /n";
-            }
-            return print;
-        }
-        catch (NullReferenceException ex)
-        {
-            Console.WriteLine("A NullReferenceException was caught!");
-            Console.WriteLine($"Exception message: {ex.Message}");
-            if (ex.Message.Contains("Object reference not set to an instance of an object"))
-            {
-                print = "No recipes created yet.";
-            }
-        }
-        return print;
-    }
-
-    public string DisplayFavoritList()
-    {
-        string print="";
-        try
-        {
-            foreach (Recipe recipe in this.currentUser.UserFavoriteRecipies)
-            {
-                if (this.currentUser.UserFavoriteRecipies == null || this.currentUser.UserFavoriteRecipies.Count == 0)
+        if (listOfRecipies == null || listOfRecipies.Count == 0)
                 {
                     print = "No recipes favorited yet.";
                     return print;
                 }
+        foreach (Recipe recipe in listOfRecipies)
+            {
                 print+=$"{recipe} /n";
             }
             return print;
-        }
-        catch (NullReferenceException ex)
-        {
-            Console.WriteLine("A NullReferenceException was caught!");
-            Console.WriteLine($"Exception message: {ex.Message}");
-            if (ex.Message.Contains("Object reference not set to an instance of an object"))
-            {
-                print = "No recipes favorited yet.";
-            }
-        }
-        return print;
     }
+
+    public string DisplayList()
+    {
+        List<Recipe> listOfRecipes= this.currentUser.UserCreatedRecipies;
+        string list=loopThroughList(listOfRecipes);
+
+        return list;
+    }
+
+    public string DisplayFavoritList()
+    {
+        List<Recipe> listOfRecipes=this.currentUser.UserFavoriteRecipies.ToList();
+        string list=loopThroughList(listOfRecipes);
+
+        return list;
+    }
+
+    
     public UserDetailsViewModel()
     {
         Update = ReactiveCommand.Create(() =>

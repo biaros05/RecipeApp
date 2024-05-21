@@ -75,6 +75,10 @@ public class MainWindowViewModel : ViewModelBase
 
     public void NavigateToUserUpdate()
     {
-        ContentViewModel = new UserUpdateViewModel();
+        UserUpdateViewModel viewModel= new();
+
+        viewModel.Confirm.Subscribe(_ => NavigateToUserDetail());
+
+        ContentViewModel = viewModel;
     }
 }
