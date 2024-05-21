@@ -18,9 +18,22 @@ public class MainWindowViewModel : ViewModelBase
         private set => this.RaiseAndSetIfChanged(ref _contentViewModel, value);
     }
 
+    public void NavigateToRecipeList()
+    {
+        RecipeListViewModel viewModel = new();
+
+        viewModel.ViewRecipeCommand.Subscribe(recipe =>
+        {
+            if (recipe != null)
+            {
+                NavigateToRecipe(recipe);
+            }
+        });
+        ContentViewModel = viewModel;
+    }
     public void NavigateToWelcome()
     {
-    ContentViewModel = new WelcomeViewModel();
+        ContentViewModel = new WelcomeViewModel();
     }
 
     public void NavigateToRegister()
@@ -33,7 +46,7 @@ public class MainWindowViewModel : ViewModelBase
             {
                 NavigateToWelcome();
             }
-            });
+        });
 
         ContentViewModel = viewModel;
     }
@@ -57,13 +70,14 @@ public class MainWindowViewModel : ViewModelBase
     {
         ContentViewModel = new RecipeViewModel(recipe);
     }
+
     public void NavigateToLoggedIn()
     {
-    LoggedInViewModel viewModel = new();
+        LoggedInViewModel viewModel = new();
 
-    viewModel.Logout.Subscribe(_ => NavigateToWelcome());
+        viewModel.Logout.Subscribe(_ => NavigateToWelcome());
 
-    ContentViewModel = viewModel;
+        ContentViewModel = viewModel;
     }
 
 

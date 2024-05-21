@@ -1,14 +1,11 @@
-using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Drawing.Printing;
 using System.Reactive;
-using App.Views;
-using DynamicData.Kernel;
 using filtering;
 using ReactiveUI;
 using recipes;
 using users;
+using Avalonia.Controls;
 
 namespace App.ViewModels;
 
@@ -93,13 +90,18 @@ public class RecipeListViewModel : ViewModelBase
     public Recipe? SelectedRecipe
     {
         get => _selectedRecipe;
-        set => this.RaiseAndSetIfChanged(ref _selectedRecipe, value);
+        set 
+        {
+            //NOTE - can we change faovirte button display by getting it 
+            this.RaiseAndSetIfChanged(ref _selectedRecipe, value);
+        }
     }
     public ReactiveCommand<Unit, ObservableCollection<IFilterBy>> AddFilterCommand { get; }
     public ReactiveCommand<Unit, ObservableCollection<Recipe>> SearchCommand { get; }
     public ReactiveCommand<Unit, Unit> ClearFilterCommand { get; }
     public ReactiveCommand<Unit, Recipe?> ViewRecipeCommand { get; }
-    public RecipeListViewModel(IEnumerable<Recipe> recipeList)
+    public ReactiveCommand<Unit, Unit> FavoriteCommand { get; }
+    public RecipeListViewModel()
     {
         AddFilterCommand = ReactiveCommand.Create(() =>
         {
@@ -181,6 +183,24 @@ public class RecipeListViewModel : ViewModelBase
             }
             return SelectedRecipe;
         });
-        RecipeList = new ObservableCollection<Recipe>(RecipeController.Instance.AllRecipes);
+        FavoriteCommand = ReactiveCommand.Create(() =>
+        {
+            if (SelectedRecipe == null)
+            {
+                ErrorMessage = "Select a recipe";
+            }
+            else
+            {
+                if (UserController.Instance.ActiveUser.UserFavoriteRecipies.Contains(SelectedRecipe))
+                {
+                    UserController.Instance.ActiveUser.RemoveFromFavourites(SelectedRecipe);
+                }
+                else
+                {
+                    UserController.Instance.ActiveUser.AddToFavourites(SelectedRecipe);
+                }
+            }
+        });
+        recipeList = new ObservableCollection<Recipe>();
     }
 }

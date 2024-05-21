@@ -8,7 +8,8 @@
   x:DataType="vm:RecipeListViewModel">
   <DockPanel LastChildFill="False">
     <StackPanel Orientation="Horizontal" DockPanel.Dock="Bottom" HorizontalAlignment="Center">
-      <Button>
+      <Button Command="{Binding $parent[Window].DataContext.NavigateToLoggedIn}"
+        x:CompileBindings="False">
         Cancel
       </Button>
       <Button Command="{Binding SearchCommand}">
@@ -104,9 +105,7 @@
       <Button Command="{Binding ViewRecipeCommand}">
         View
       </Button>
-      <Button>
-        Add to Favorites
-      </Button>
+      <Button x:Name="FavoriteButton" Command="{Binding FavoriteCommand}" Content="Add to Favorites" />
     </StackPanel>
     <StackPanel>
       <!-- doesn't work we tried fixing it in class -->
