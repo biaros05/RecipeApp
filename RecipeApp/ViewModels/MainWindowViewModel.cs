@@ -47,7 +47,7 @@ public class MainWindowViewModel : ViewModelBase
         {
             if (user != null)
             {
-                NavigateToLoggedIn();
+            NavigateToUserDetail();
             }
         });
 
@@ -56,12 +56,25 @@ public class MainWindowViewModel : ViewModelBase
 
     public void NavigateToLoggedIn()
     {
-    LoggedInViewModel viewModel = new();
+        LoggedInViewModel viewModel = new();
 
-    viewModel.Logout.Subscribe(_ => NavigateToWelcome());
+        viewModel.Logout.Subscribe(_ => NavigateToWelcome());
 
-    ContentViewModel = viewModel;
+        ContentViewModel = viewModel;
     }
 
 
+    public void NavigateToUserDetail()
+    {
+        UserDetailsViewModel viewModel= new();
+
+        viewModel.Update.Subscribe(_ => NavigateToUserUpdate());
+
+        ContentViewModel = viewModel;
+    }
+
+    public void NavigateToUserUpdate()
+    {
+        ContentViewModel = new UserUpdateViewModel();
+    }
 }
