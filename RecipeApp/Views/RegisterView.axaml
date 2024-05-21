@@ -1,0 +1,50 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="App.Views.RegisterView"
+             xmlns:vm="using:App.ViewModels"
+             x:DataType="vm:RegisterViewModel">
+    <DockPanel>
+    <StackPanel DockPanel.Dock="Bottom"
+                Orientation="Horizontal"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Spacing="25">
+      <Button Command="{Binding $parent[Window].DataContext.NavigateToWelcome}"
+              Content="Cancel"
+              x:CompileBindings="False"/>
+      <Button Command="{Binding Register}"
+              Content="Register"
+              x:CompileBindings="False"/>
+    </StackPanel>
+    <TextBlock DockPanel.Dock="Bottom"
+                Text="{Binding ErrorMessage}"/>
+    <StackPanel HorizontalAlignment="Center"
+                VerticalAlignment="Center">
+      <TextBlock Margin="0 5">
+        Username:
+      </TextBlock>
+      <TextBox Text="{Binding Username}"
+                Watermark="Enter your username"/>
+      <TextBlock Margin="0 5">
+        Password:
+      </TextBlock>
+      <TextBox Text="{Binding Password}"
+                Watermark="Enter your password"
+                PasswordChar="*"/>
+      <TextBlock Margin="0 5">
+        Confirm Password:
+      </TextBlock>
+      <TextBox Text="{Binding ConfirmPassword}"
+                Watermark="Confirm your password"
+                PasswordChar="*"/>
+      <TextBlock Margin="0 5">
+        Profile Description:
+      </TextBlock>
+      <TextBox Text="{Binding Description}"
+                Watermark="Enter your Description"/>
+    </StackPanel>
+  </DockPanel>
+</UserControl>

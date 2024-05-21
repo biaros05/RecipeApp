@@ -1,7 +1,6 @@
-using App.Views;
+using System;
 using ReactiveUI;
 using recipes;
-using System;
 using System.Reactive.Linq;
 
 namespace App.ViewModels;
@@ -9,27 +8,45 @@ namespace App.ViewModels;
 public class MainWindowViewModel : ViewModelBase
 {
     private ViewModelBase _contentViewModel;
+    public MainWindowViewModel()
+    {
+        _contentViewModel = new WelcomeViewModel();
+    }
     public ViewModelBase ContentViewModel
     {
         get => _contentViewModel;
         private set => this.RaiseAndSetIfChanged(ref _contentViewModel, value);
     }
 
-    public MainWindowViewModel()
+    public void NavigateToWelcome()
     {
-        _contentViewModel = new();
-        NavigateToRecipeList();
+    ContentViewModel = new WelcomeViewModel();
     }
 
-    public void NavigateToRecipeList()
+    public void NavigateToRegister()
     {
-        RecipeListViewModel viewModel = new(RecipeController.Instance.AllRecipes);
+        RegisterViewModel viewModel = new();
 
-        viewModel.ViewRecipeCommand.Subscribe(recipe =>
+        viewModel.Register.Subscribe(user =>
         {
-            if (recipe != null)
+            if (user != null)
             {
-                NavigateToRecipe(recipe);
+                NavigateToWelcome();
+            }
+            });
+
+        ContentViewModel = viewModel;
+    }
+
+    public void NavigateToLogin()
+    {
+        LoginViewModel viewModel = new();
+
+        viewModel.Login.Subscribe(user =>
+        {
+            if (user != null)
+            {
+                NavigateToLoggedIn();
             }
         });
 
@@ -40,10 +57,14 @@ public class MainWindowViewModel : ViewModelBase
     {
         ContentViewModel = new RecipeViewModel(recipe);
     }
-
-    public void NavigateToWelcome()
+    public void NavigateToLoggedIn()
     {
-        //NOTE - back to welcome page
-        ContentViewModel = new MainWindowViewModel();
+    LoggedInViewModel viewModel = new();
+
+    viewModel.Logout.Subscribe(_ => NavigateToWelcome());
+
+    ContentViewModel = viewModel;
     }
+
+
 }
