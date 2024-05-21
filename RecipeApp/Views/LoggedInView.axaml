@@ -6,7 +6,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="App.Views.LoggedInView">
-             
+  <DockPanel>
   <StackPanel HorizontalAlignment="Center"
               VerticalAlignment="Center"
               Spacing="25">
@@ -16,5 +16,27 @@
             Content="Log Out"
             x:CompileBindings="False"/>
   </StackPanel>
+
+  <ListBox ItemsSource="{Binding UserRecipes}">
+    <ListBox.ItemTemplate>
+        <DataTemplate>
+            <StackPanel>
+                <TextBlock>
+                    <TextBlock.Text>
+                        <MultiBinding StringFormat="{}{0} by {1}">
+                            <Binding Path="Name"/>
+                            <Binding Path="Owner.Username"/>
+                        </MultiBinding>
+                    </TextBlock.Text>
+                </TextBlock>
+                <Button Content="View Details" 
+                        Command="{Binding $parent[ListBox].((vm:LoggedInViewModel)DataContext).RemoveRecipe}"
+                        CommandParameter="{Binding}"/>
+            </StackPanel>
+        </DataTemplate>
+    </ListBox.ItemTemplate>
+
+  </ListBox>
+  </DockPanel>
 
 </UserControl>

@@ -139,7 +139,7 @@ public class MainWindowViewModel : ViewModelBase
         FilterByUsername user = new(RecipesContext.Instance.RecipeManager_Users);
         User login = user.FilterUsers("Bianca");
         UserController.Instance.ActiveUser = login;
-        NavigateToEditRecipe(recipes[0]);
+        ContentViewModel = new LoggedInViewModel();
     }
     public void NavigateToWelcome()
     {
