@@ -11,6 +11,7 @@ public class UserUpdateViewModel : ViewModelBase
 {
     public ReactiveCommand<Unit, User?> Confirm { get; }
 
+    // public ReactiveCommand Back;
     private string? _username;
     public string? Username
     {
@@ -22,6 +23,12 @@ public class UserUpdateViewModel : ViewModelBase
     public string? Password{
         get => _password;
         set => this.RaiseAndSetIfChanged(ref _password, value);
+    }
+
+    private string? _newPassword;
+    public string? NewPassword{
+        get => _newPassword;
+        set => this.RaiseAndSetIfChanged(ref _newPassword, value);
     }
 
     private string? _description;
@@ -36,6 +43,12 @@ public class UserUpdateViewModel : ViewModelBase
         set => this.RaiseAndSetIfChanged(ref _image, value);
     }
     
+    private string _errorMessage;
+    public string ErrorMessage{
+        get=>_errorMessage;
+        set => this.RaiseAndSetIfChanged(ref _errorMessage, value);
+    }
+
     public UserUpdateViewModel()
     {
         IObservable<bool> areAllFilledIn = this.WhenAnyValue(
@@ -47,17 +60,24 @@ public class UserUpdateViewModel : ViewModelBase
             (username, password) =>
             !(string.IsNullOrEmpty(username) || string.IsNullOrWhiteSpace(password))
         );
+        User currentLoggedIn=UserController.Instance.ActiveUser;
+        this.Description=currentLoggedIn.Description;
+        this.Username=currentLoggedIn.Username;
+        this.Image=currentLoggedIn.Image;
+
 
         Confirm = ReactiveCommand.Create(() =>
         {
         // we know both values are not null, because of `areBothFilledIn`
-        
-            UserController.Instance.UpdateUser(Username, Description, Image=null,Password);
+            User? user = null;
+            bool result= UserController.Instance.AuthenticateUser(UserController.Instance.ActiveUser.Username,Password);
+            if (result == false)
+            {
+                ErrorMessage = "Invalid Current password";
+                return null;
+            }
+            UserController.Instance.UpdateUser(Username, Description, Image=null,NewPassword);
 
-            // if (loggedIn == false)
-            // {
-            //     ErrorMessage = "Invalid username or password";
-            // }
             User currentLoggedIn=UserController.Instance.ActiveUser;
             return currentLoggedIn;
         }, areAllFilledIn);

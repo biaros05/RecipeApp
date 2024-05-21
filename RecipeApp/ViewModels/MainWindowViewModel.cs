@@ -77,8 +77,14 @@ public class MainWindowViewModel : ViewModelBase
     {
         UserUpdateViewModel viewModel= new();
 
-        viewModel.Confirm.Subscribe(_ => NavigateToUserDetail());
-
+        viewModel.Confirm.Subscribe((user) => 
+        {
+            if (user!=null)
+            {
+                NavigateToUserDetail();
+            }
+            
+        });
         ContentViewModel = viewModel;
     }
 }

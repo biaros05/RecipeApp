@@ -12,7 +12,7 @@
                 HorizontalAlignment="Center"
                 VerticalAlignment="Center"
                 Spacing="25">
-      <Button Command="{Binding $parent[Window].DataContext.NavigateToWelcome}"
+      <Button Command="{Binding $parent[Window].DataContext.NavigateToUserDetail}"
               Content="Cancel"
               x:CompileBindings="False"/>
       <Button Command="{Binding Confirm}"
@@ -21,6 +21,8 @@
     </StackPanel>
     <StackPanel HorizontalAlignment="Center"
                 VerticalAlignment="Center">
+      <TextBlock DockPanel.Dock="Bottom"
+                Text="{Binding ErrorMessage}"/>
       <TextBlock FontSize="18" FontWeight="Bold">User Update</TextBlock>
       <TextBlock Margin="0 5">
         Username:
@@ -28,10 +30,16 @@
       <TextBox Text="{Binding Username}"
                 Watermark="Enter your username"/>
       <TextBlock Margin="0 5">
-        Password:
+        Old Password:
       </TextBlock>
       <TextBox Text="{Binding Password}"
-                Watermark="Enter your password"
+                Watermark="Enter your Current password"
+                PasswordChar="*"/>
+      <TextBlock Margin="0 5">
+        New Password:
+      </TextBlock>
+      <TextBox Text="{Binding NewPassword}"
+                Watermark="Enter New password"
                 PasswordChar="*"/>
       <TextBlock Margin="0 5">
         Description:

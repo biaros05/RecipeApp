@@ -24,12 +24,12 @@ public class UserDetailsViewModel : ViewModelBase
 
     readonly User currentUser=UserController.Instance.ActiveUser;
 
-    public string loopThroughList(List<Recipe> listOfRecipies)
+    public string loopThroughList(List<Recipe> listOfRecipies,string msg)
     {
         string print="";
         if (listOfRecipies == null || listOfRecipies.Count == 0)
                 {
-                    print = "No recipes favorited yet.";
+                    print = msg;
                     return print;
                 }
         foreach (Recipe recipe in listOfRecipies)
@@ -41,16 +41,18 @@ public class UserDetailsViewModel : ViewModelBase
 
     public string DisplayList()
     {
+        string msg="Currently no created recipes";
         List<Recipe> listOfRecipes= this.currentUser.UserCreatedRecipies;
-        string list=loopThroughList(listOfRecipes);
+        string list=loopThroughList(listOfRecipes,msg);
 
         return list;
     }
 
     public string DisplayFavoritList()
-    {
+    {   
+        string msg="Currently no favorited recipes";
         List<Recipe> listOfRecipes=this.currentUser.UserFavoriteRecipies.ToList();
-        string list=loopThroughList(listOfRecipes);
+        string list=loopThroughList(listOfRecipes,msg);
 
         return list;
     }
