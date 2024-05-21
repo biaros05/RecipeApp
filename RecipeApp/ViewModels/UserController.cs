@@ -11,7 +11,9 @@ public class UserController
 {
     // currently logged on user
     public FilterByUsername? filtering;
+    public int MIN_PASSWORD_LENGTH=5;
 
+    public int MAX_PASSWORD_LENGTH=25;
     public User? ActiveUser { get; set; }
     public List<User> AllUsers { get; } = new();
 
@@ -22,7 +24,7 @@ public class UserController
     /// <param name="username">new username</param>
     /// <param name="password">new password</param>
     /// <param name="description">user's description</param>
-    public void CreateAccount(string username, string password, string description)
+    public User CreateAccount(string username, string password, string description)
     {
         if (username == null)
         {
@@ -41,13 +43,16 @@ public class UserController
 
             User user1 = new User(username, password);
             RecipesContext.Instance.Add(user1);
+            RecipesContext.Instance.SaveChanges();
+            return user1;
         }
-        else
-        {
-            User user1 = new User(username, password, description);
-            RecipesContext.Instance.Add(user1);
-        }
+        // else
+        // {
+        User user2 = new User(username, password, description);
+        RecipesContext.Instance.Add(user2);
+        // }
         RecipesContext.Instance.SaveChanges();
+        return user2;
     }
 
     /// <summary>
@@ -146,5 +151,9 @@ public class UserController
         }
     }
 
+    public void Logout()
+    {
+        this.ActiveUser = null;
+    }
 
 }

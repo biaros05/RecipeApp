@@ -1,4 +1,6 @@
 using App.Views;
+using System;
+using System.Reactive;
 using ReactiveUI;
 using System.Reactive.Linq;
 using System;
@@ -7,6 +9,7 @@ using recipes;
 using filtering;
 using users;
 using Microsoft.EntityFrameworkCore;
+using App.ViewModels;
 
 namespace App.ViewModels;
 
@@ -138,4 +141,49 @@ public class MainWindowViewModel : ViewModelBase
         UserController.Instance.ActiveUser = login;
         NavigateToEditRecipe(recipes[0]);
     }
+    public void NavigateToWelcome()
+    {
+    ContentViewModel = new WelcomeViewModel();
+    }
+
+    public void NavigateToRegister()
+    {
+        RegisterViewModel viewModel = new();
+
+        viewModel.Register.Subscribe(user =>
+        {
+            if (user != null)
+            {
+                NavigateToWelcome();
+            }
+            });
+
+        ContentViewModel = viewModel;
+    }
+
+    public void NavigateToLogin()
+    {
+        LoginViewModel viewModel = new();
+
+        viewModel.Login.Subscribe(user =>
+        {
+            if (user != null)
+            {
+                NavigateToLoggedIn();
+            }
+        });
+
+        ContentViewModel = viewModel;
+    }
+
+    public void NavigateToLoggedIn()
+    {
+    LoggedInViewModel viewModel = new();
+
+    viewModel.Logout.Subscribe(_ => NavigateToWelcome());
+
+    ContentViewModel = viewModel;
+    }
+
+
 }
