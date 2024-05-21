@@ -17,13 +17,8 @@ public class RecipeListViewModel : ViewModelBase
         get => recipeList;
         set => this.RaiseAndSetIfChanged(ref recipeList, value);
     }
-    // private ObservableCollection<IFilterBy> filterList= new();
-    public ObservableCollection<IFilterBy> FilterList 
+    public ObservableCollection<IFilterBy> FilterList
     { get; set; } = new();
-    // {
-    //     get => filterList;
-    //     set => this.RaiseAndSetIfChanged(ref filterList, value);
-    // }
     private string? _keyword;
     public string? Keyword
     {
@@ -31,14 +26,12 @@ public class RecipeListViewModel : ViewModelBase
         set => this.RaiseAndSetIfChanged(ref _keyword, value);
     }
     private string? _ingredients;
-    //NOTE - better way? 
     public string? Ingredients
     {
         get => _ingredients;
         set => this.RaiseAndSetIfChanged(ref _ingredients, value);
     }
     private string? _tags;
-    //NOTE - better way? 
     public string? Tags
     {
         get => _tags;
@@ -86,14 +79,31 @@ public class RecipeListViewModel : ViewModelBase
         get => _errorMessage;
         set => this.RaiseAndSetIfChanged(ref _errorMessage, value);
     }
+    private string? _favoriteText;
+    public string? FavoriteText
+    {
+        get => _favoriteText;
+        set => this.RaiseAndSetIfChanged(ref _favoriteText, value);
+    }
     private Recipe? _selectedRecipe;
     public Recipe? SelectedRecipe
     {
         get => _selectedRecipe;
-        set 
+        set
         {
-            //NOTE - can we change faovirte button display by getting it 
             this.RaiseAndSetIfChanged(ref _selectedRecipe, value);
+            FavoriteText = "Add to Favorites";
+            if (_selectedRecipe != null)
+            {
+                foreach (Recipe r in UserController.Instance.ActiveUser.UserFavoriteRecipies)
+                {
+                    if (r.Name == SelectedRecipe.Name)
+                    {
+                        FavoriteText = "Remove from Favorite";
+                    }
+                }
+            }
+
         }
     }
     public ReactiveCommand<Unit, ObservableCollection<IFilterBy>> AddFilterCommand { get; }
@@ -194,13 +204,18 @@ public class RecipeListViewModel : ViewModelBase
                 if (UserController.Instance.ActiveUser.UserFavoriteRecipies.Contains(SelectedRecipe))
                 {
                     UserController.Instance.ActiveUser.RemoveFromFavourites(SelectedRecipe);
+                    ErrorMessage = "Removed from favorites";
+                    FavoriteText = "Add to Favorites";
                 }
                 else
                 {
                     UserController.Instance.ActiveUser.AddToFavourites(SelectedRecipe);
+                    ErrorMessage = "Added To Favorites";
+                    FavoriteText = "Remove from Favorites";
                 }
             }
         });
         recipeList = new ObservableCollection<Recipe>();
+        FavoriteText = "Add to Favorites";
     }
 }
