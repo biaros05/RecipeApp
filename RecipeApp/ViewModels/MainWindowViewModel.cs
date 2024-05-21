@@ -1,6 +1,8 @@
 using App.Views;
 using ReactiveUI;
 using recipes;
+using System;
+using System.Reactive.Linq;
 
 namespace App.ViewModels;
 
@@ -13,16 +15,35 @@ public class MainWindowViewModel : ViewModelBase
         private set => this.RaiseAndSetIfChanged(ref _contentViewModel, value);
     }
 
-    public MainWindowViewModel(){
-        _contentViewModel = new RecipeListViewModel(RecipeController.Instance.AllRecipes);
+    public MainWindowViewModel()
+    {
+        _contentViewModel = new();
+        NavigateToRecipeList();
     }
 
-    public void NavigateToRecipe(){
-        _contentViewModel = new RecipeListViewModel(RecipeController.Instance.AllRecipes);
+    public void NavigateToRecipeList()
+    {
+        RecipeListViewModel viewModel = new(RecipeController.Instance.AllRecipes);
+
+        viewModel.ViewRecipeCommand.Subscribe(recipe =>
+        {
+            if (recipe != null)
+            {
+                NavigateToRecipe(recipe);
+            }
+        });
+
+        ContentViewModel = viewModel;
     }
 
-    public void CancelButton() {
+    public void NavigateToRecipe(Recipe recipe)
+    {
+        ContentViewModel = new RecipeViewModel(recipe);
+    }
+
+    public void NavigateToWelcome()
+    {
         //NOTE - back to welcome page
-        _contentViewModel = new MainWindowViewModel();
+        ContentViewModel = new MainWindowViewModel();
     }
-}   
+}

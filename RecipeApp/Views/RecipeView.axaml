@@ -1,0 +1,106 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+  mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+  x:Class="App.Views.RecipeView"
+  xmlns:vm="using:App.ViewModels"
+  x:DataType="vm:RecipeViewModel">
+  <DockPanel>
+    <StackPanel Orientation="Horizontal" DockPanel.Dock="Top" HorizontalAlignment="Center" Spacing="150">
+      <TextBlock HorizontalAlignment="Left">
+        <Run FontWeight="Bold" Text="{Binding CurrentRecipe.Name}" />
+        <Run Text=" by " />
+        <Run FontWeight="Bold" Text="{Binding CurrentRecipe.Owner.Username}" />
+      </TextBlock>
+      <StackPanel HorizontalAlignment="Right">
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+          <Label FontSize="12" FontWeight="Bold" VerticalAlignment="Center">Rating:</Label>
+          <TextBlock Text="{Binding Rating}" VerticalAlignment="Center" />
+          <Label FontSize="12" FontWeight="Bold" VerticalAlignment="Center">Your Rating *Full
+            interger MAX-5:</Label>
+          <NumericUpDown Minimum="1" Maximum="5"
+            Increment="1"
+            FormatString="1"
+            VerticalAlignment="Center"
+            Value="{Binding GivenRating}" />
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+          <Label FontSize="12" FontWeight="Bold" VerticalAlignment="Center">Difficulty:</Label>
+          <TextBlock Text="{Binding DifficultyRating}" VerticalAlignment="Center" />
+          <Label FontSize="12" FontWeight="Bold" VerticalAlignment="Center">Your Difficulty *Full
+            integer MAX-10:</Label>
+          <NumericUpDown Minimum="1" Maximum="10"
+            Increment="1"
+            FormatString="1"
+            VerticalAlignment="Center"
+            Value="{Binding GivenDifficultyRating}" />
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+          <Label FontSize="12" FontWeight="Bold" VerticalAlignment="Center">Budget:</Label>
+          <TextBlock Text="{Binding CurrentRecipe.Budget}" VerticalAlignment="Center" />
+        </StackPanel>
+      </StackPanel>
+    </StackPanel>
+
+    <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Center">
+      <StackPanel Orientation="Horizontal">
+        <StackPanel Margin="10">
+          <Label FontSize="14" FontWeight="Bold" VerticalAlignment="Center">Volume</Label>
+          <RadioButton GroupName="Volume" Content="mL" />
+          <RadioButton GroupName="Volume" Content="L" />
+          <RadioButton GroupName="Volume" Content="KL" />
+        </StackPanel>
+        <StackPanel Margin="10">
+          <Label FontSize="14" FontWeight="Bold" VerticalAlignment="Center">Mass</Label>
+          <RadioButton GroupName="Mass" Content="mg" />
+          <RadioButton GroupName="Mass" Content="g" />
+          <RadioButton GroupName="Mass" Content="kg" />
+        </StackPanel>
+      </StackPanel>
+
+      <StackPanel Orientation="Horizontal" Spacing="5">
+        <Button Content="Back" Command="{Binding $parent[Window].DataContext.NavigateToRecipeList}"
+          x:CompileBindings="False" />
+        <Button Content="Add to Favorites" />
+      </StackPanel>
+    </StackPanel>
+
+    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center"
+      Spacing="2">
+      <StackPanel HorizontalAlignment="Left" Spacing="1">
+        <DataGrid ItemsSource="{Binding Ingredients}"
+          IsReadOnly="true"
+          BorderBrush="Gray">
+          <DataGrid.Columns>
+            <DataGridTextColumn Header="Ingredient" Binding="{Binding Ingredient.Name}" />
+            <DataGridTextColumn Header="Quanity" Binding="{Binding Quantity}" />
+            <DataGridTextColumn Header="Unit" Binding="{Binding Ingredient.Unit}" />
+          </DataGrid.Columns>
+        </DataGrid>
+      </StackPanel>
+
+      <StackPanel Margin="5">
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="1">
+          <Label FontWeight="Bold" VerticalAlignment="Center">Prep *min:</Label>
+          <TextBlock Text="{Binding CurrentRecipe.PrepTimeMins}" VerticalAlignment="Center" />
+          <Label FontWeight="Bold" VerticalAlignment="Center">Cook *min:</Label>
+          <TextBlock Text="{Binding CurrentRecipe.CookTimeMins}" VerticalAlignment="Center" />
+          <Label FontWeight="Bold" VerticalAlignment="Center">Total:</Label>
+          <TextBlock Text="{Binding CurrentRecipe.TotalTime}" VerticalAlignment="Center" />
+        </StackPanel>
+
+        <StackPanel Margin="5">
+          <DataGrid ItemsSource="{Binding Instructions}"
+            IsReadOnly="true"
+            BorderBrush="Gray">
+            <DataGrid.Columns>
+              <DataGridTextColumn Header="#" Binding="{Binding Index}" />
+              <DataGridTextColumn Header="Instruction" Binding="{Binding Text}" />
+            </DataGrid.Columns>
+          </DataGrid>
+        </StackPanel>
+      </StackPanel>
+    </StackPanel>
+  </DockPanel>
+</UserControl>

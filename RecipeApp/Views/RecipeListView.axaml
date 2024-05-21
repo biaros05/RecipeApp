@@ -68,13 +68,13 @@
           Increment="1"
           FormatString="0"
           VerticalAlignment="Center"
-          Value="{Binding MinTime}"/>
-          <Label FontSize="14" VerticalAlignment="Center">Max:</Label>
+          Value="{Binding MinTime}" />
+        <Label FontSize="14" VerticalAlignment="Center">Max:</Label>
         <NumericUpDown Minimum="0" Maximum="420"
           Increment="1"
           FormatString="0"
           VerticalAlignment="Center"
-          Value="{Binding MaxTime}"/>
+          Value="{Binding MaxTime}" />
       </StackPanel>
       <Button Command="{Binding ClearFilterCommand}">
         Clear All
@@ -86,7 +86,8 @@
 
     <StackPanel HorizontalAlignment="Center" DockPanel.Dock="Right">
       <Label FontSize="14" FontWeight="Bold" VerticalAlignment="Center">Recipes</Label>
-      <ListBox x:Name="Recipes" ItemsSource="{Binding RecipeList}" SelectionMode="Single">
+      <ListBox x:Name="Recipes" ItemsSource="{Binding RecipeList}" SelectionMode="Single"
+        SelectedItem="{Binding SelectedRecipe}">
         <ListBox.ItemTemplate>
           <DataTemplate>
             <Border BorderBrush="Blue" BorderThickness="1" Padding="4">
@@ -99,7 +100,8 @@
           </DataTemplate>
         </ListBox.ItemTemplate>
       </ListBox>
-      <Button>
+      <TextBlock Text="{Binding ErrorMessage}" />
+      <Button Command="{Binding ViewRecipeCommand}">
         View
       </Button>
       <Button>
@@ -108,7 +110,8 @@
     </StackPanel>
     <StackPanel>
       <!-- doesn't work we tried fixing it in class -->
-      <Label FontSize="14" FontWeight="Bold" VerticalAlignment="Stretch">Applied Filters *Scroll after adding</Label>
+      <Label FontSize="14" FontWeight="Bold" VerticalAlignment="Stretch">Applied Filters *Scroll
+        after adding</Label>
       <DataGrid Margin="20" ItemsSource="{Binding FilterList}"
         IsReadOnly="True"
         BorderThickness="1"

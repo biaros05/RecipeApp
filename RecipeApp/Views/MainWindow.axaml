@@ -10,10 +10,4 @@
         Title="App"
         Content="{Binding ContentViewModel}"
         xmlns:views="clr-namespace:App.Views">
-
-        <Design.DataContext>
-                <vm:MainWindowViewModel />
-        </Design.DataContext>
-
-        <views:RecipeListView />
 </Window>

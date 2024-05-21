@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Drawing.Printing;
 using System.Reactive;
 using App.Views;
+using DynamicData.Kernel;
 using filtering;
 using ReactiveUI;
 using recipes;
@@ -83,14 +84,21 @@ public class RecipeListViewModel : ViewModelBase
         set => this.RaiseAndSetIfChanged(ref _maxTime, value);
     }
     private string? _errorMessage;
-    public string? ErrorMessagae
+    public string? ErrorMessage
     {
         get => _errorMessage;
         set => this.RaiseAndSetIfChanged(ref _errorMessage, value);
     }
+    private Recipe? _selectedRecipe;
+    public Recipe? SelectedRecipe
+    {
+        get => _selectedRecipe;
+        set => this.RaiseAndSetIfChanged(ref _selectedRecipe, value);
+    }
     public ReactiveCommand<Unit, ObservableCollection<IFilterBy>> AddFilterCommand { get; }
     public ReactiveCommand<Unit, ObservableCollection<Recipe>> SearchCommand { get; }
     public ReactiveCommand<Unit, Unit> ClearFilterCommand { get; }
+    public ReactiveCommand<Unit, Recipe?> ViewRecipeCommand { get; }
     public RecipeListViewModel(IEnumerable<Recipe> recipeList)
     {
         AddFilterCommand = ReactiveCommand.Create(() =>
@@ -163,6 +171,15 @@ public class RecipeListViewModel : ViewModelBase
         {
             RecipeList = new ObservableCollection<Recipe>(RecipeController.Instance.FilterBy());
             return RecipeList;
+        });
+        ViewRecipeCommand = ReactiveCommand.Create(() =>
+        {
+            if (SelectedRecipe == null)
+            {
+                ErrorMessage = "Select a recipe";
+                return null;
+            }
+            return SelectedRecipe;
         });
         RecipeList = new ObservableCollection<Recipe>(RecipeController.Instance.AllRecipes);
     }
