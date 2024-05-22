@@ -14,9 +14,16 @@ public class FilterByServings : IFilterBy
         }
         MinServings = min;
         MaxServings = max;
+        Value = "min: " + MinServings.ToString() + ", max: " + MaxServings.ToString();
     }
     private int MinServings;
     private int MaxServings;
+
+    private string value;
+    public string Value { get => value; set => this.value = value; }
+
+    public string Name => "Servings";
+
     /// <summary>
     /// Filters a given list of recipes by its serving
     /// </summary>

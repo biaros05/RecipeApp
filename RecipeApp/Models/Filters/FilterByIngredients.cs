@@ -14,8 +14,19 @@ public class FilterByIngredients : IFilterBy
             throw new InvalidOperationException("ingredient list is null or empty");
         }
         Ingredients = ingredients;
+        foreach (Ingredient i in ingredients)
+        {
+            Value += i.Name + ", ";
+        }
+        //NOTE - Removes last ', ' added
+        Value = Value[..Value.LastIndexOf(", ")];
     }
     private List<Ingredient> Ingredients;
+    private string value;
+
+    public string Value { get => value; set => this.value = value; }
+
+    public string Name => "Ingredients";
 
     /// <summary>
     /// Taken a list of Ingredients, compares and returns true if one ingredient matches with one ingredient in given list

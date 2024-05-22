@@ -13,9 +13,16 @@ public class FilterByTime : IFilterBy
         }
         MinTimeMins = min;
         MaxTimeMins = max;
+        value = "min: " + min.ToString() + ", max: " + max.ToString();
     }
     private int MinTimeMins;
     private int MaxTimeMins;
+
+    private string value;
+    public string Value { get => value; set => this.value = value; }
+
+    public string Name => "Time";
+
     /// <summary>
     /// Filters a given list of recipes using the specified min and max time
     /// </summary>

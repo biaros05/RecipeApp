@@ -14,6 +14,10 @@ public class MeasuredIngredient : INotifyPropertyChanged
         this.Quantity = quantity;
     }
 
+    public MeasuredIngredient Clone() {
+        return new MeasuredIngredient {Ingredient = this.Ingredient, Quantity = this.Quantity};
+    }
+
     public MeasuredIngredient(){}
 
     public override bool Equals(object? obj)

@@ -14,8 +14,13 @@ public class FilterByKeyword : IFilterBy
             throw new InvalidOperationException("keyword must not be null or empty");
         }
         Keyword = keyword;
+        value = keyword;
     }
     private string Keyword;
+    private string value;
+    public string Value { get => value; set => this.value = value; }
+    public string Name => "Keyword";
+
     /// <summary>
     /// Filteres the given recipes list depending on the keyword specified
     /// </summary>

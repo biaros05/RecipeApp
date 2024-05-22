@@ -1,6 +1,4 @@
-using App.Views;
 using System;
-using System.Reactive;
 using ReactiveUI;
 using System.Reactive.Linq;
 using System;
@@ -10,6 +8,8 @@ using filtering;
 using users;
 using Microsoft.EntityFrameworkCore;
 using App.ViewModels;
+using recipes;
+using System.Reactive.Linq;
 
 namespace App.ViewModels;
 
@@ -132,10 +132,24 @@ public class MainWindowViewModel : ViewModelBase
     {
         EditingRecipe = false;
         ContentViewModel = new WelcomeViewModel();
+
+    }
+    public void NavigateToRecipeList()
+    {
+        RecipeListViewModel viewModel = new();
+
+        viewModel.ViewRecipeCommand.Subscribe(recipe =>
+        {
+            if (recipe != null)
+            {
+                NavigateToRecipe(recipe);
+            }
+        });
+        ContentViewModel = viewModel;
     }
     public void NavigateToWelcome()
     {
-    ContentViewModel = new WelcomeViewModel();
+        ContentViewModel = new WelcomeViewModel();
     }
 
     public void NavigateToRegister()
@@ -148,7 +162,7 @@ public class MainWindowViewModel : ViewModelBase
             {
                 NavigateToWelcome();
             }
-            });
+        });
 
         ContentViewModel = viewModel;
     }
@@ -168,15 +182,20 @@ public class MainWindowViewModel : ViewModelBase
         ContentViewModel = viewModel;
     }
 
+    public void NavigateToRecipe(Recipe recipe)
+    {
+        ContentViewModel = new RecipeViewModel(recipe);
+    }
+
     public void NavigateToLoggedIn()
     {
-    LoggedInViewModel viewModel = new();
+        LoggedInViewModel viewModel = new();
 
-    viewModel.Logout.Subscribe(_ => NavigateToWelcome());
-    viewModel.CreateRecipe.Subscribe(_ => NavigateToCreateRecipe(null));
-    viewModel.EditRecipe.Subscribe(r => NavigateToEditRecipe(r));
+        viewModel.Logout.Subscribe(_ => NavigateToWelcome());
+        viewModel.CreateRecipe.Subscribe(_ => NavigateToCreateRecipe(null));
+        viewModel.EditRecipe.Subscribe(r => NavigateToEditRecipe(r));
 
-    ContentViewModel = viewModel;
+        ContentViewModel = viewModel;
     }
 
 
