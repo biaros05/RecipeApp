@@ -62,9 +62,9 @@ public class RecipeEditViewModel : ViewModelBase
         set => this.RaiseAndSetIfChanged(ref _errorMessage, value);
     } 
 
-    public ObservableCollection<Instruction> Instructions = new();
+    public ObservableCollection<Instruction> Instructions {get; set;}= new();
 
-    public ObservableCollection<MeasuredIngredient> Ingredients = new();
+    public ObservableCollection<MeasuredIngredient> Ingredients {get; set;}= new();
     public ObservableCollection<Tag> Tags = new();
 
     // reactive command for the Save button
@@ -82,20 +82,18 @@ public class RecipeEditViewModel : ViewModelBase
         this.Recipe = recipe;
         this.OldRecipe = this.Recipe;
 
+        this.Ingredients = new(this.Recipe.Ingredients);
+        this.Instructions = new(this.Recipe.Instructions);
+        this.Tags = new(this.Recipe.Tags);
+
         // validates that name textbox is filled (FIXME: ADD INGREDIENTS AND INSTRUCTIONS)
-        IObservable<bool> areFieldsFilled = this.WhenAnyValue(
-        recipeViewModel => recipeViewModel.Name,
-        (name) =>
-            !string.IsNullOrEmpty(name)
-        );
         IObservable<bool> atLeastOneInstruction = this.WhenAnyValue(vm => vm.Instructions.Count).Select(count => count > 0);
         IObservable<bool> atLeastOneIngredient = this.WhenAnyValue(vm => vm.Ingredients.Count).Select(count => count > 0);
 
         IObservable<bool> allConditionsMet = Observable.CombineLatest(
-            areFieldsFilled,
             atLeastOneInstruction,
             atLeastOneIngredient,
-            (fieldsFilled, hasInstruction, hasIngredient) => fieldsFilled && hasInstruction && hasIngredient
+            (hasInstruction, hasIngredient) => hasInstruction && hasIngredient
         );
 
         Save = ReactiveCommand.Create(() =>
@@ -105,6 +103,7 @@ public class RecipeEditViewModel : ViewModelBase
                     {
                         var context = RecipesContext.Instance;
                         context.RecipeManager_Recipes.Update(Recipe);
+                        //context.RecipeManager_Users.Update();
                         context.SaveChanges();
                     }
                     else

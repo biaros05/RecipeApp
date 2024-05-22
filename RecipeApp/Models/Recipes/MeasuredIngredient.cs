@@ -1,4 +1,8 @@
 using System.ComponentModel;
+using System;
+using System.Diagnostics.CodeAnalysis;
+using System.Reflection.Metadata.Ecma335;
+using Microsoft.EntityFrameworkCore.Metadata.Conventions.Infrastructure;
 
 namespace recipes;
 public class MeasuredIngredient : INotifyPropertyChanged
@@ -24,7 +28,11 @@ public class MeasuredIngredient : INotifyPropertyChanged
     {
         if (obj == null || !(obj is MeasuredIngredient))
             return false;
-        return ((MeasuredIngredient)obj).Ingredient.Equals(this.Ingredient) && ((MeasuredIngredient)obj).Quantity == this.Quantity;
+        return ((MeasuredIngredient)obj).Ingredient.Equals(this.Ingredient);
+    }
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(this.Ingredient);
     }
 
     public override string ToString()

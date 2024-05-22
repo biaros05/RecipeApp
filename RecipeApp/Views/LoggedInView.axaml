@@ -24,11 +24,8 @@
     <Button
             Content="Edit Profile"
             x:CompileBindings="False"/>
-    <Button 
-            Content="Search Recipes"
-            x:CompileBindings="False"/>
     <Button Command="{Binding $parent[Window].DataContext.NavigateToRecipeList}"
-            Content="Show All Recipes"
+            Content="Search Recipes"
             x:CompileBindings="False"/>
     </StackPanel>
     <ScrollViewer ScrollViewer.VerticalScrollBarVisibility="Visible">

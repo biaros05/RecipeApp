@@ -103,6 +103,10 @@ public class MainWindowViewModel : ViewModelBase
         });
 
         // ADD FOR SAVE AND CANCEL HERE TOO
+        recipeViewModel.Save.Subscribe((r) => 
+        {
+            NavigateToLoggedIn();
+        });
 
         ContentViewModel = recipeViewModel;
     }
