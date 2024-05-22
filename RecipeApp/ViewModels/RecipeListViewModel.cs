@@ -6,6 +6,7 @@ using ReactiveUI;
 using recipes;
 using users;
 using Avalonia.Controls;
+using System;
 
 namespace App.ViewModels;
 
@@ -23,7 +24,17 @@ public class RecipeListViewModel : ViewModelBase
     public string? Keyword
     {
         get => _keyword;
-        set => this.RaiseAndSetIfChanged(ref _keyword, value);
+        set
+        {
+            try{
+                this.RaiseAndSetIfChanged(ref _keyword, value);
+            }
+            catch (Exception)
+            {
+                FilterErrorMessage = "Keyword Error";
+            }
+            
+        }
     }
     private string? _ingredients;
     public string? Ingredients
@@ -79,6 +90,12 @@ public class RecipeListViewModel : ViewModelBase
         get => _errorMessage;
         set => this.RaiseAndSetIfChanged(ref _errorMessage, value);
     }
+    private string? _filterErrorMessage;
+    public string? FilterErrorMessage
+    {
+        get => _filterErrorMessage;
+        set => this.RaiseAndSetIfChanged(ref _filterErrorMessage, value);
+    }
     private string? _favoriteText;
     public string? FavoriteText
     {
@@ -103,7 +120,6 @@ public class RecipeListViewModel : ViewModelBase
                     }
                 }
             }
-
         }
     }
     public ReactiveCommand<Unit, ObservableCollection<IFilterBy>> AddFilterCommand { get; }

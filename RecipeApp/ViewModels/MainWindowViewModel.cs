@@ -2,6 +2,7 @@ using System;
 using ReactiveUI;
 using recipes;
 using System.Reactive.Linq;
+using App.Views;
 
 namespace App.ViewModels;
 
@@ -80,5 +81,19 @@ public class MainWindowViewModel : ViewModelBase
         ContentViewModel = viewModel;
     }
 
+    public void NavigateToFavorites()
+    {
+        EditFavoriteViewModel viewModel = new();
+
+        viewModel.ViewRecipeCommand.Subscribe(recipe =>
+        {
+            if (recipe != null)
+            {
+                NavigateToRecipe(recipe);
+            }
+        });
+
+        ContentViewModel = viewModel;
+    }
 
 }
