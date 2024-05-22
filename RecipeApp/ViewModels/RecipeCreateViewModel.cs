@@ -83,11 +83,20 @@ public class RecipeCreateViewModel : ViewModelBase
             this.Recipe = recipe;
         }
 
-        // validates that name textbox is filled (FIXME: ADD INGREDIENTS AND INSTRUCTIONS)
+        // validates that name textbox is filled
         IObservable<bool> areFieldsFilled = this.WhenAnyValue(
         recipeViewModel => recipeViewModel.Name,
         (name) =>
             !(string.IsNullOrEmpty(name))
+        );
+        IObservable<bool> atLeastOneInstruction = this.WhenAnyValue(vm => vm.Instructions.Count).Select(count => count > 0);
+        IObservable<bool> atLeastOneIngredient = this.WhenAnyValue(vm => vm.Ingredients.Count).Select(count => count > 0);
+
+        IObservable<bool> allConditionsMet = Observable.CombineLatest(
+            areFieldsFilled,
+            atLeastOneInstruction,
+            atLeastOneIngredient,
+            (hasFields, hasInstruction, hasIngredient) => hasFields && hasInstruction && hasIngredient
         );
 
         Save = ReactiveCommand.Create(() =>
@@ -99,7 +108,7 @@ public class RecipeCreateViewModel : ViewModelBase
                 {
                     ErrorMessage = e.Message;
                 }
-            }, areFieldsFilled
+            }, allConditionsMet
         );
 
         InstructionButton = ReactiveCommand.Create(() =>
