@@ -14,6 +14,7 @@ public class FilterByRating : IFilterBy
             throw new InvalidOperationException("rating must not be negative or zero or bigger than 5");
         }
         Rating = rating;
+        Value = rating.ToString() + " stars";
     }
 
     private double? GetRecipeRating(Recipe r)
@@ -22,6 +23,12 @@ public class FilterByRating : IFilterBy
     }
 
     private int Rating;
+
+    private string value;
+    public string Value { get => value; set => this.value = value; }
+
+    public string Name => "Rating";
+
     /// <summary>
     /// Filters a given list of recipes depending on the rating given
     /// </summary>

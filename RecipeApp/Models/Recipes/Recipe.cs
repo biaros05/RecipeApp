@@ -167,7 +167,6 @@ public class Recipe
         }
 
     }
-
     public List<Tag> Tags { get; set; }
     public string Budget { get; set;}
 

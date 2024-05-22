@@ -15,6 +15,9 @@
     <Button Command="{Binding Logout}"
             Content="Log Out"
             x:CompileBindings="False"/>
+    <Button Command="{Binding $parent[Window].DataContext.NavigateToRecipeList}"
+            Content="Show All Recipes"
+            x:CompileBindings="False"/>
   </StackPanel>
 
 </UserControl>

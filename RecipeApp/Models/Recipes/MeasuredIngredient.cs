@@ -12,6 +12,10 @@ public class MeasuredIngredient
         this.Quantity = quantity;
     }
 
+    public MeasuredIngredient Clone() {
+        return new MeasuredIngredient {Ingredient = this.Ingredient, Quantity = this.Quantity};
+    }
+
     public MeasuredIngredient(){}
 
     public override bool Equals(object? obj)
