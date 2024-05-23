@@ -49,7 +49,7 @@ public class UserDetailsViewModel : ViewModelBase
                 }
         foreach (Recipe recipe in listOfRecipies)
             {
-                print+=$"{recipe} /n";
+                print+=$"{recipe} \n";
             }
             return print;
     }
