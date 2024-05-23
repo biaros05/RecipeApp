@@ -129,10 +129,7 @@
             <DockPanel HorizontalAlignment="Center">
               <StackPanel DockPanel.Dock="Top" HorizontalAlignment="Center" VerticalAlignment="Top"
                 Spacing="25">
-                <!-- doesn't work we tried fixing it in class -->
-                <Label FontSize="14" FontWeight="Bold" VerticalAlignment="Stretch">Applied Filters
-                  *Scroll
-                  after adding</Label>
+                <Label FontSize="14" FontWeight="Bold" VerticalAlignment="Stretch">Applied Filters</Label>
               </StackPanel>
               <DataGrid Margin="20" ItemsSource="{Binding FilterList}"
                 IsReadOnly="True"
