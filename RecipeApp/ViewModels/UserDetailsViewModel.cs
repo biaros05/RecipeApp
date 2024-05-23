@@ -84,7 +84,7 @@ public class UserDetailsViewModel : ViewModelBase
         return list;
     }
 
-    public ReactiveCommand<Unit, bool> DeleteUser;
+    public ReactiveCommand<Unit, bool> DeleteUser {get;}
 
     
     public UserDetailsViewModel()
