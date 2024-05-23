@@ -16,6 +16,12 @@ namespace App.ViewModels;
 
 public class UserDetailsViewModel : ViewModelBase
 {
+    private string? _errorMessage;
+    public string? ErrorMessage
+    {
+        get => _errorMessage;
+        set => this.RaiseAndSetIfChanged(ref _errorMessage, value);
+    } 
     public ReactiveCommand<Unit, Unit> Update { get; }
     public string DUsername{get;}
 
@@ -77,11 +83,8 @@ public class UserDetailsViewModel : ViewModelBase
     {
         Update = ReactiveCommand.Create(() =>
         {
-    // we know both values are not null, because of `areBothFilledIn`
-        // UserController.Instance.UpdateUser();
+
         });
-    // .CurrentlyLoggedInUser.DisplayName
-    // User u=UserController.Instance.ActiveUser;
         DUsername=$"Username: {this.currentUser.Username}";
         DDescription=$"Description: {this.currentUser.Description}";
         DUserRecipes=DisplayList();

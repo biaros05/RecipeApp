@@ -15,6 +15,7 @@ namespace App.ViewModels;
 
 public class UserUpdateViewModel : ViewModelBase
 {
+    
     public ReactiveCommand<Unit, User?> Confirm { get; }
 
     // public ReactiveCommand Back;
@@ -60,9 +61,7 @@ public class UserUpdateViewModel : ViewModelBase
         IObservable<bool> areAllFilledIn = this.WhenAnyValue(
             loginViewModel => loginViewModel.Username,
             loginViewModel => loginViewModel.Password,
-            // loginViewModel => loginViewModel.Image,
-            //need to chjange this bec if a a field is empty or null it shjould leave those fields as the current info
-            //or i should do that the textboxes are already filled with current info.
+            
             (username, password) =>
             !(string.IsNullOrEmpty(username) || string.IsNullOrWhiteSpace(password))
         );
@@ -75,8 +74,6 @@ public class UserUpdateViewModel : ViewModelBase
 
         Confirm = ReactiveCommand.Create(() =>
         {
-        // we know both values are not null, because of `areBothFilledIn`
-            // User? user = null;
             bool result= UserController.Instance.AuthenticateUser(UserController.Instance.ActiveUser.Username,Password);
             if (result == false)
             {
