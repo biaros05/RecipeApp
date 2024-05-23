@@ -122,14 +122,18 @@ public class UserController
         this.ActiveUser.Description = description == null ? this.ActiveUser.Description : description;
         this.ActiveUser.Image = image;
         this.ActiveUser.Username = username == null ? this.ActiveUser.Username : username;
-        this.ActiveUser.HashPass = hashpass == null ? this.ActiveUser.HashPass : hashpass;
+        // this.ActiveUser.HashPass = hashpass == null ? this.ActiveUser.HashPass : hashpass;
+        if (hashpass!=null)
+        {
+            this.ActiveUser.HashPass=hashpass;
+        }
 
-        user.Description = description == null ? this.ActiveUser.Description : description;
-        user.Image = image;
-        user.Username = username == null ? this.ActiveUser.Username : username;
-        user.HashPass = hashpass == null ? this.ActiveUser.HashPass : hashpass;
+        // user.Description = description == null ? this.ActiveUser.Description : description;
+        // user.Image = image;
+        // user.Username = username == null ? this.ActiveUser.Username : username;
+        // user.HashPass = hashpass == null ? this.ActiveUser.HashPass : hashpass;
 
-        context.Update(user);
+        // context.Update(user);
         context.SaveChanges();
         }
         else{
