@@ -3,6 +3,7 @@ using System;
 using System.Reactive;
 using ReactiveUI;
 using App.ViewModels;
+using Avalonia.Win32.Interop.Automation;
 
 namespace App.ViewModels;
 
@@ -85,4 +86,14 @@ public class MainWindowViewModel : ViewModelBase
         });
         ContentViewModel = viewModel;
     }
+
+    public void NavigateToImageUpdate()
+    {
+        // _contentViewModel= new UpdateImageViewModel();
+        UpdateImageViewModel viewModel= new();
+        viewModel.Okay.Subscribe(_ => NavigateToUserUpdate());
+        ContentViewModel= viewModel;
+
+    }
+    
 }

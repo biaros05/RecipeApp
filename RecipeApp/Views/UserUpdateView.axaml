@@ -46,6 +46,9 @@
       </TextBlock>
       <TextBox Text="{Binding Description}"
                 Watermark="Enter your Description"/>
+      <Button Command="{Binding $parent[Window].DataContext.NavigateToImageUpdate}"
+              Content="Select Image"
+              x:CompileBindings="False"/>
       <!-- <TextBlock Margin="0 5">
         Image:
       </TextBlock>

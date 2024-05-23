@@ -1,0 +1,32 @@
+<UserControl xmlns:vm="using:App.ViewModels"
+             x:DataType="vm:UpdateImageViewModel"
+             xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="App.Views.UpdateImageView">
+  <StackPanel>
+    <StackPanel>
+      <Button Command="{Binding $parent[Window].DataContext.NavigateToUserUpdate}"
+              Content="Back"
+              x:CompileBindings="False"/>
+    </StackPanel>
+    <StackPanel HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Spacing="50">
+      <!-- https://github.com/AvaloniaUI/Avalonia/discussions/7924#discussioncomment-2503305 -->
+      <Button Command="{Binding SelectImage}"
+            CommandParameter="{Binding $parent[Window]}"
+              Content="Select Image"
+              x:CompileBindings="False"/>
+      <Button Command="{Binding ClearImage}"
+              Content="ClearImage"
+              x:CompileBindings="False"/>
+      <!-- https://docs.avaloniaui.net/docs/guides/data-binding/how-to-bind-image-files -->
+      <Image Source="{Binding ImageDisplayed}"
+              MaxWidth="300"/>
+    </StackPanel>
+  </StackPanel>
+
+</UserControl>

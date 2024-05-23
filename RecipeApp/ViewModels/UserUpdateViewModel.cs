@@ -1,7 +1,13 @@
 using System;
+using System.Drawing;
+using System.IO;
 using System.Reactive;
+using System.Threading.Tasks;
 using App.ViewModels;
 using App.Views;
+using Avalonia.Controls;
+using Avalonia.Platform;
+using Avalonia.Platform.Storage;
 using ReactiveUI;
 using users;
 
@@ -60,6 +66,7 @@ public class UserUpdateViewModel : ViewModelBase
             (username, password) =>
             !(string.IsNullOrEmpty(username) || string.IsNullOrWhiteSpace(password))
         );
+
         User currentLoggedIn=UserController.Instance.ActiveUser;
         this.Description=currentLoggedIn.Description;
         this.Username=currentLoggedIn.Username;
@@ -69,14 +76,14 @@ public class UserUpdateViewModel : ViewModelBase
         Confirm = ReactiveCommand.Create(() =>
         {
         // we know both values are not null, because of `areBothFilledIn`
-            User? user = null;
+            // User? user = null;
             bool result= UserController.Instance.AuthenticateUser(UserController.Instance.ActiveUser.Username,Password);
             if (result == false)
             {
                 ErrorMessage = "Invalid Current password";
                 return null;
             }
-            UserController.Instance.UpdateUser(Username, Description, Image=null,NewPassword);
+            UserController.Instance.UpdateUser(Username, Description, Image,NewPassword);
 
             User currentLoggedIn=UserController.Instance.ActiveUser;
             return currentLoggedIn;
