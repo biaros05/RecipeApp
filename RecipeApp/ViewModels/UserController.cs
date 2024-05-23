@@ -101,7 +101,7 @@ public class UserController
         }
     }
 
-    public void UpdateUser(string username, string description, byte[] image, string hashpass)
+    public void UpdateUser(string? username, string? description, byte[]? image, string? hashpass)
     {
         var context = RecipesContext.Instance;
 
@@ -109,27 +109,36 @@ public class UserController
                     .Where(u => u.Username == username)
                     .Count();
 
-        if (total != 0)
+        // if (total > 1)
+        // {
+        //     throw new Exception("this username is already taken");
+        // }
+        if (username == ActiveUser.Username || total == 0)
         {
-            throw new Exception("this username is already taken");
-        }
-
-        User user = context.RecipeManager_Users
+            User user = context.RecipeManager_Users
                     .Where(u => u.Username == this.ActiveUser.Username)
                     .First();
 
         this.ActiveUser.Description = description == null ? this.ActiveUser.Description : description;
-        this.ActiveUser.Image = image == null ? this.ActiveUser.Image : image;
+        this.ActiveUser.Image = image;
         this.ActiveUser.Username = username == null ? this.ActiveUser.Username : username;
-        this.ActiveUser.HashPass = hashpass == null ? this.ActiveUser.HashPass : hashpass;
+        // this.ActiveUser.HashPass = hashpass == null ? this.ActiveUser.HashPass : hashpass;
+        if (hashpass!=null)
+        {
+            this.ActiveUser.HashPass=hashpass;
+        }
 
-        user.Description = description == null ? this.ActiveUser.Description : description;
-        user.Image = image == null ? this.ActiveUser.Image : image;
-        user.Username = username == null ? this.ActiveUser.Username : username;
-        user.HashPass = hashpass == null ? this.ActiveUser.HashPass : hashpass;
+        // user.Description = description == null ? this.ActiveUser.Description : description;
+        // user.Image = image;
+        // user.Username = username == null ? this.ActiveUser.Username : username;
+        // user.HashPass = hashpass == null ? this.ActiveUser.HashPass : hashpass;
 
-        context.Update(user);
+        // context.Update(user);
         context.SaveChanges();
+        }
+        else{
+            throw new Exception("this username is already taken");
+        }
     }
 
     private static UserController? _instance;

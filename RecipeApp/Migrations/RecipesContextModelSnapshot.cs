@@ -7,7 +7,7 @@ using Oracle.EntityFrameworkCore.Metadata;
 
 #nullable disable
 
-namespace project.Migrations
+namespace App.Migrations
 {
     [DbContext(typeof(RecipesContext))]
     partial class RecipesContextModelSnapshot : ModelSnapshot
@@ -20,32 +20,6 @@ namespace project.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             OracleModelBuilderExtensions.UseIdentityColumns(modelBuilder);
-
-            modelBuilder.Entity("DifficultyRating", b =>
-                {
-                    b.Property<int?>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("NUMBER(10)");
-
-                    OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<int?>("Id"));
-
-                    b.Property<int>("OwnerUserId")
-                        .HasColumnType("NUMBER(10)");
-
-                    b.Property<int>("RecipeId")
-                        .HasColumnType("NUMBER(10)");
-
-                    b.Property<int>("ScaleRating")
-                        .HasColumnType("NUMBER(10)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("OwnerUserId");
-
-                    b.HasIndex("RecipeId");
-
-                    b.ToTable("RecipeManager_DifficultyRatings");
-                });
 
             modelBuilder.Entity("Rating", b =>
                 {
@@ -108,6 +82,32 @@ namespace project.Migrations
                     b.HasIndex("RecipeId");
 
                     b.ToTable("RecipeManager_Tags");
+                });
+
+            modelBuilder.Entity("recipes.DifficultyRating", b =>
+                {
+                    b.Property<int?>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("NUMBER(10)");
+
+                    OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<int?>("Id"));
+
+                    b.Property<int>("OwnerUserId")
+                        .HasColumnType("NUMBER(10)");
+
+                    b.Property<int>("RecipeId")
+                        .HasColumnType("NUMBER(10)");
+
+                    b.Property<int>("ScaleRating")
+                        .HasColumnType("NUMBER(10)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OwnerUserId");
+
+                    b.HasIndex("RecipeId");
+
+                    b.ToTable("RecipeManager_DifficultyRatings");
                 });
 
             modelBuilder.Entity("recipes.Ingredient", b =>
@@ -236,7 +236,8 @@ namespace project.Migrations
                         .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<byte[]>("Image")
-                        .HasColumnType("RAW(2000)");
+                        .HasMaxLength(3000)
+                        .HasColumnType("BLOB");
 
                     b.Property<byte[]>("Salt")
                         .IsRequired()
@@ -249,25 +250,6 @@ namespace project.Migrations
                     b.HasKey("UserId");
 
                     b.ToTable("RecipeManager_Users");
-                });
-
-            modelBuilder.Entity("DifficultyRating", b =>
-                {
-                    b.HasOne("users.User", "Owner")
-                        .WithMany()
-                        .HasForeignKey("OwnerUserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("recipes.Recipe", "Recipe")
-                        .WithMany("_difficulties")
-                        .HasForeignKey("RecipeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Owner");
-
-                    b.Navigation("Recipe");
                 });
 
             modelBuilder.Entity("Rating", b =>
@@ -311,6 +293,25 @@ namespace project.Migrations
                         .HasForeignKey("RecipeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Recipe");
+                });
+
+            modelBuilder.Entity("recipes.DifficultyRating", b =>
+                {
+                    b.HasOne("users.User", "Owner")
+                        .WithMany()
+                        .HasForeignKey("OwnerUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("recipes.Recipe", "Recipe")
+                        .WithMany("_difficulties")
+                        .HasForeignKey("RecipeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Owner");
 
                     b.Navigation("Recipe");
                 });

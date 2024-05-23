@@ -1,5 +1,8 @@
 using System;
 using ReactiveUI;
+using App.ViewModels;
+using Avalonia.Win32.Interop.Automation;
+using recipes;
 using recipes;
 using System.Reactive.Linq;
 using App.Views;
@@ -60,7 +63,7 @@ public class MainWindowViewModel : ViewModelBase
         {
             if (user != null)
             {
-                NavigateToLoggedIn();
+            NavigateToLoggedIn();
             }
         });
 
@@ -96,4 +99,36 @@ public class MainWindowViewModel : ViewModelBase
         ContentViewModel = viewModel;
     }
 
+    public void NavigateToUserDetail()
+    {
+        UserDetailsViewModel viewModel= new();
+
+        viewModel.Update.Subscribe(_ => NavigateToUserUpdate());
+
+        ContentViewModel = viewModel;
+    }
+
+    public void NavigateToUserUpdate()
+    {
+        UserUpdateViewModel viewModel= new();
+
+        viewModel.Confirm.Subscribe((user) => 
+        {
+            if (user!=null)
+            {
+                NavigateToUserDetail();
+            }
+        });
+        ContentViewModel = viewModel;
+    }
+
+    public void NavigateToImageUpdate()
+    {
+        // _contentViewModel= new UpdateImageViewModel();
+        UpdateImageViewModel viewModel= new();
+        viewModel.Okay.Subscribe(_ => NavigateToUserUpdate());
+        ContentViewModel= viewModel;
+
+    }
+    
 }
