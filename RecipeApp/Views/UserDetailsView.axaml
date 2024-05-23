@@ -15,9 +15,9 @@
       <Button Command="{Binding $parent[Window].DataContext.NavigateToLoggedIn}"
                 Content="Back"
                 x:CompileBindings="False"/>
-          <Button Command="{Binding Update}"
-              Content="Update"
-              x:CompileBindings="False"/>
+      <Button Command="{Binding Update}"
+          Content="Update"
+          x:CompileBindings="False"/>
     </StackPanel>
     <ScrollViewer ScrollViewer.VerticalScrollBarVisibility="Visible">
     <StackPanel HorizontalAlignment="Center"
@@ -30,6 +30,12 @@
       <TextBlock Text="{Binding DDescription}"/>
       <TextBlock Text="{Binding ErrorMessage}"/>
 
+
+      <TextBox Text="{Binding Password}" Watermark="Confirm your password" PasswordChar="*"/>
+      <Button 
+          Command="{Binding DeleteUser}"
+          Content="Delete Account"
+          x:CompileBindings="False"/>
     </StackPanel>
     </ScrollViewer>
   </DockPanel>

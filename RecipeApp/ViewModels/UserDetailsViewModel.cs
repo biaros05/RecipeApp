@@ -39,6 +39,12 @@ public class UserDetailsViewModel : ViewModelBase
     set => this.RaiseAndSetIfChanged(ref _imageDisplayed, value);
     }
 
+    private string? _password;
+    public string? Password{
+        get => _password;
+        set => this.RaiseAndSetIfChanged(ref _password, value);
+    }
+
     private static readonly Bitmap PLACEHOLDER =
     // This shows an example of loading an image from the assets directory.
     new(AssetLoader.Open(new Uri("avares://App/Assets/default.jpg")));
@@ -78,6 +84,8 @@ public class UserDetailsViewModel : ViewModelBase
         return list;
     }
 
+    public ReactiveCommand<Unit, bool> DeleteUser;
+
     
     public UserDetailsViewModel()
     {
@@ -85,17 +93,40 @@ public class UserDetailsViewModel : ViewModelBase
         {
 
         });
+
         DUsername=$"Username: {this.currentUser.Username}";
         DDescription=$"Description: {this.currentUser.Description}";
         DUserRecipes=DisplayList();
         DUserFavoriteRecipes=DisplayFavoritList();
+
         if (currentUser.Image==null)
         {
             ImageDisplayed=PLACEHOLDER;
         }
         
-        else{
+        else
+        {
             ImageDisplayed= new(new MemoryStream(UserController.Instance.ActiveUser.Image));
-        }    
+        }
+
+        IObservable<bool> areFieldsFilled = this.WhenAnyValue(
+        recipeViewModel => recipeViewModel.Password,
+        (name) =>
+            !(string.IsNullOrEmpty(name))
+        );
+
+        DeleteUser = ReactiveCommand.Create(() =>
+        {
+            if (UserController.Instance.AuthenticateUser(UserController.Instance.ActiveUser!.Username, Password!))
+            {
+                UserController.Instance.DeleteAccount(UserController.Instance.ActiveUser!.Username, Password!);
+                return true;
+            }
+            else
+            {
+                ErrorMessage = "Your credentials are incorrect";
+                return false;
+            }
+        }, areFieldsFilled);
     }
 }

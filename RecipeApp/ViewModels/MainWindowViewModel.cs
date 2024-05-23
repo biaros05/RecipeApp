@@ -226,6 +226,13 @@ public class MainWindowViewModel : ViewModelBase
         UserDetailsViewModel viewModel= new();
 
         viewModel.Update.Subscribe(_ => NavigateToUserUpdate());
+        viewModel.DeleteUser.Subscribe(result =>
+        {
+            if (result)
+            {
+                NavigateToWelcome();
+            }
+        });
 
         ContentViewModel = viewModel;
     }
