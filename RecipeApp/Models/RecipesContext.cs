@@ -73,5 +73,9 @@ public class RecipesContext : DbContext
             .HasMany(r => r.UserCreatedRecipies)
             .WithOne( u => u.Owner)
             .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<User>()
+            .Property(user => user.Image)
+            .HasMaxLength(3000);
     }
 }
