@@ -18,7 +18,9 @@
     <Button Command="{Binding $parent[Window].DataContext.NavigateToUserDetail}"
             Content="Show User Page"
             x:CompileBindings="False"/>
-
-        </StackPanel>
+    <Button Command="{Binding $parent[Window].DataContext.NavigateToRecipeList}"
+            Content="Show All Recipes"
+            x:CompileBindings="False"/>
+  </StackPanel>
 
 </UserControl>

@@ -1,9 +1,10 @@
-using App.Views;
 using System;
-using System.Reactive;
 using ReactiveUI;
 using App.ViewModels;
 using Avalonia.Win32.Interop.Automation;
+using recipes;
+using recipes;
+using System.Reactive.Linq;
 
 namespace App.ViewModels;
 
@@ -20,9 +21,22 @@ public class MainWindowViewModel : ViewModelBase
         private set => this.RaiseAndSetIfChanged(ref _contentViewModel, value);
     }
 
+    public void NavigateToRecipeList()
+    {
+        RecipeListViewModel viewModel = new();
+
+        viewModel.ViewRecipeCommand.Subscribe(recipe =>
+        {
+            if (recipe != null)
+            {
+                NavigateToRecipe(recipe);
+            }
+        });
+        ContentViewModel = viewModel;
+    }
     public void NavigateToWelcome()
     {
-    ContentViewModel = new WelcomeViewModel();
+        ContentViewModel = new WelcomeViewModel();
     }
 
     public void NavigateToRegister()
@@ -35,7 +49,7 @@ public class MainWindowViewModel : ViewModelBase
             {
                 NavigateToWelcome();
             }
-            });
+        });
 
         ContentViewModel = viewModel;
     }
@@ -55,11 +69,17 @@ public class MainWindowViewModel : ViewModelBase
         ContentViewModel = viewModel;
     }
 
+    public void NavigateToRecipe(Recipe recipe)
+    {
+        ContentViewModel = new RecipeViewModel(recipe);
+    }
+
     public void NavigateToLoggedIn()
     {
         LoggedInViewModel viewModel = new();
 
         viewModel.Logout.Subscribe(_ => NavigateToWelcome());
+
         ContentViewModel = viewModel;
     }
 
