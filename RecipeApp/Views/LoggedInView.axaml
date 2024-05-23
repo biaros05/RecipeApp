@@ -24,9 +24,6 @@
                 <Button Command="{Binding $parent[Window].DataContext.NavigateToUserDetail}"
                                         Content="Show User Page"
                                         x:CompileBindings="False" />
-                <Button Command="{Binding $parent[Window].DataContext.NavigateToRecipeList}"
-                        Content="Show All Recipes"
-                        x:CompileBindings="False" />
                 <Button Command="{Binding $parent[Window].DataContext.NavigateToFavorites}"
                         Content="Show Favorites"
                         x:CompileBindings="False" />
