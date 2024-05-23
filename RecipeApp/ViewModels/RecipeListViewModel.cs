@@ -6,6 +6,7 @@ using ReactiveUI;
 using recipes;
 using users;
 using Avalonia.Controls;
+using System;
 
 namespace App.ViewModels;
 
@@ -23,7 +24,19 @@ public class RecipeListViewModel : ViewModelBase
     public string? Keyword
     {
         get => _keyword;
-        set => this.RaiseAndSetIfChanged(ref _keyword, value);
+        set
+        {
+            try
+            {
+
+                this.RaiseAndSetIfChanged(ref _keyword, value);
+            }
+            catch (Exception)
+            {
+                FilterErrorMessage = "Keyword Error";
+            }
+
+        }
     }
     private string? _ingredients;
     public string? Ingredients
@@ -41,43 +54,142 @@ public class RecipeListViewModel : ViewModelBase
     public string? Owner
     {
         get => _owner;
-        set => this.RaiseAndSetIfChanged(ref _owner, value);
+        set
+        {
+            this.RaiseAndSetIfChanged(ref _owner, value);
+            if (value != null)
+            {
+                try
+                {
+                    if (value.Length < 5 || value.Length > 50)
+                    {
+                        throw new ArgumentOutOfRangeException();
+                    }
+                    FilterErrorMessage = null;
+                }
+                catch (Exception)
+                {
+                    FilterErrorMessage = "owner must be between 5, 50";
+                }
+            }
+        }
     }
     private int _rating;
     public int Rating
     {
         get => _rating;
-        set => this.RaiseAndSetIfChanged(ref _rating, value);
+        set
+        {
+            try
+            {
+                if (value < 1 || value > 5)
+                {
+                    throw new ArgumentOutOfRangeException();
+                }
+                this.RaiseAndSetIfChanged(ref _rating, value);
+                FilterErrorMessage = null;
+            }
+            catch (Exception)
+            {
+                FilterErrorMessage = "Rating Error";
+            }
+        }
     }
     private int _minServing;
     public int MinServing
     {
         get => _minServing;
-        set => this.RaiseAndSetIfChanged(ref _minServing, value);
+        set
+        {
+            this.RaiseAndSetIfChanged(ref _minServing, value);
+            try
+            {
+                if (value < 0 || value > _maxServing)
+                {
+                    throw new ArgumentOutOfRangeException();
+                }
+                FilterErrorMessage = null;
+            }
+            catch (Exception)
+            {
+                FilterErrorMessage = "min has to be < than max";
+            }
+        }
     }
     private int _maxServing;
     public int MaxServing
     {
         get => _maxServing;
-        set => this.RaiseAndSetIfChanged(ref _maxServing, value);
+        set
+        {
+            this.RaiseAndSetIfChanged(ref _maxServing, value);
+            try
+            {
+                if (value < 0 || value < _minServing)
+                {
+                    throw new ArgumentOutOfRangeException();
+                }
+                FilterErrorMessage = null;
+            }
+            catch (Exception)
+            {
+                FilterErrorMessage = "min has to be < than max";
+            }
+        }
     }
     private int _minTime;
     public int MinTime
     {
         get => _minTime;
-        set => this.RaiseAndSetIfChanged(ref _minTime, value);
+        set
+        {
+            this.RaiseAndSetIfChanged(ref _minTime, value);
+            try
+            {
+                if (value < 0 || value > _maxTime || value > 420)
+                {
+                    throw new ArgumentOutOfRangeException();
+                }
+                FilterErrorMessage = null;
+            }
+            catch (Exception)
+            {
+                FilterErrorMessage = "time has to be between 0 and 420 and min < max";
+            }
+        }
     }
     private int _maxTime;
     public int MaxTime
     {
         get => _maxTime;
-        set => this.RaiseAndSetIfChanged(ref _maxTime, value);
+        set
+        {
+            this.RaiseAndSetIfChanged(ref _maxTime, value);
+            try
+            {
+                if (value < 0 || value < _minTime || value > 420)
+                {
+                    throw new ArgumentOutOfRangeException();
+                }
+                FilterErrorMessage = null;
+            }
+            catch (Exception)
+            {
+                FilterErrorMessage = "time has to be between 0 and 420 and min < max";
+            }
+        }
     }
     private string? _errorMessage;
     public string? ErrorMessage
     {
         get => _errorMessage;
         set => this.RaiseAndSetIfChanged(ref _errorMessage, value);
+    }
+    private string? _filterErrorMessage;
+    public string? FilterErrorMessage
+    {
+        get => _filterErrorMessage;
+        set => this.RaiseAndSetIfChanged(ref _filterErrorMessage, value);
     }
     private string? _favoriteText;
     public string? FavoriteText
@@ -103,7 +215,6 @@ public class RecipeListViewModel : ViewModelBase
                     }
                 }
             }
-
         }
     }
     public ReactiveCommand<Unit, ObservableCollection<IFilterBy>> AddFilterCommand { get; }
@@ -217,5 +328,6 @@ public class RecipeListViewModel : ViewModelBase
         });
         recipeList = new ObservableCollection<Recipe>();
         FavoriteText = "Add to Favorites";
+        RecipeController.Instance.RemoveAllFilters();
     }
 }

@@ -71,7 +71,7 @@
 
           <StackPanel Orientation="Horizontal" Spacing="5">
             <Button Content="Back"
-              Command="{Binding $parent[Window].DataContext.NavigateToRecipeList}"
+              Command="{Binding $parent[Window].DataContext.NavigateToLoggedIn}"
               x:CompileBindings="False" />
             <Button Content="{Binding FavoriteText}" Command="{Binding FavoriteCommand}" />
           </StackPanel>

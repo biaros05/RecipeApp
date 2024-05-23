@@ -85,6 +85,7 @@
                   VerticalAlignment="Center"
                   Value="{Binding MaxTime}" />
               </StackPanel>
+              <TextBlock Text="{Binding FilterErrorMessage}" />
               <Button Command="{Binding ClearFilterCommand}">
                 Clear All
               </Button>
