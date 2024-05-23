@@ -32,7 +32,7 @@ public class User
 
 
     [InverseProperty("Owner")]
-    public List<Recipe> UserCreatedRecipies { get; set; }
+    public List<Recipe> UserCreatedRecipies { get; set; } = new();
 
     public ICollection<Recipe> UserFavoriteRecipies { get; set; } = new List<Recipe>();
     private string username;

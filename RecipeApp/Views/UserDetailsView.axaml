@@ -12,24 +12,29 @@
                 HorizontalAlignment="Center"
                 VerticalAlignment="Center"
                 Spacing="25">
-    <Button Command="{Binding $parent[Window].DataContext.NavigateToLoggedIn}"
-              Content="Back"
-              x:CompileBindings="False"/>
-        <Button Command="{Binding Update}"
-            Content="Update"
-            x:CompileBindings="False"/>
+      <Button Command="{Binding $parent[Window].DataContext.NavigateToLoggedIn}"
+                Content="Back"
+                x:CompileBindings="False"/>
+      <Button Command="{Binding Update}"
+          Content="Update"
+          x:CompileBindings="False"/>
     </StackPanel>
-  <StackPanel HorizontalAlignment="Center"
-              VerticalAlignment="Center"
-              Spacing="25">
-    <TextBlock FontSize="18" FontWeight="Bold">User Page</TextBlock>
-    <Image Source="{Binding ImageDisplayed}"
-              MaxWidth="300"/>
-    <TextBlock Text="{Binding DUsername}"/>
-    <TextBlock Text="{Binding DDescription}"/>
-    <TextBlock Text="{Binding DUserRecipes}"/>
-    <TextBlock Text="{Binding DUserFavoriteRecipes}"/>
+    <ScrollViewer ScrollViewer.VerticalScrollBarVisibility="Visible">
+    <StackPanel HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Spacing="25">
+      <TextBlock FontSize="18" FontWeight="Bold">User Page</TextBlock>
+      <Image Source="{Binding ImageDisplayed}"
+                MaxHeight="300"/>
+      <TextBlock Text="{Binding DUsername}"/>
+      <TextBlock Text="{Binding DDescription}"/>
+      <TextBlock Text="{Binding ErrorMessage}"/>
 
-  </StackPanel>
+      <TextBox Text="{Binding Password}" Watermark="Confirm your password" PasswordChar="*"/>
+      <Button 
+          Command="{Binding DeleteUser}"
+          Content="Delete Account"/>
+    </StackPanel>
+    </ScrollViewer>
   </DockPanel>
 </UserControl>

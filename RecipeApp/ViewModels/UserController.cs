@@ -6,6 +6,7 @@ using recipes;
 using System.Globalization;
 using System;
 using System.Linq;
+using Microsoft.EntityFrameworkCore;
 
 public class UserController
 {
@@ -66,7 +67,21 @@ public class UserController
     public bool AuthenticateUser(string username, string password)
     {
         var context = RecipesContext.Instance;
-        IQueryable<User> userQuery = context.RecipeManager_Users;
+        IQueryable<User> userQuery = context.RecipeManager_Users
+        .Include(recipe => recipe.UserCreatedRecipies)
+            .ThenInclude(recipe => recipe.Tags)
+        .Include(recipe => recipe.UserCreatedRecipies)
+            .ThenInclude(recipe => recipe._ratings)
+        .Include(recipe => recipe.UserCreatedRecipies)
+            .ThenInclude(recipe => recipe._difficulties)
+        .Include(recipe => recipe.UserCreatedRecipies)
+            .ThenInclude(recipe => recipe.Ingredients)
+            .ThenInclude(ingr => ingr.Ingredient)
+        .Include(recipe => recipe.UserCreatedRecipies)
+            .ThenInclude(recipe => recipe.Instructions)
+        .Include(recipe => recipe.UserCreatedRecipies)
+            .ThenInclude(recipe => recipe.UserFavourite)
+        .Include(user => user.UserFavoriteRecipies);
         filtering = new(userQuery);
         User result = filtering.FilterUsers(username);
         if (result == null)
@@ -104,39 +119,26 @@ public class UserController
     public void UpdateUser(string? username, string? description, byte[]? image, string? hashpass)
     {
         var context = RecipesContext.Instance;
-
         int total = context.RecipeManager_Users
                     .Where(u => u.Username == username)
                     .Count();
-
-        // if (total > 1)
-        // {
-        //     throw new Exception("this username is already taken");
-        // }
         if (username == ActiveUser.Username || total == 0)
         {
             User user = context.RecipeManager_Users
                     .Where(u => u.Username == this.ActiveUser.Username)
                     .First();
 
-        this.ActiveUser.Description = description == null ? this.ActiveUser.Description : description;
-        this.ActiveUser.Image = image;
-        this.ActiveUser.Username = username == null ? this.ActiveUser.Username : username;
-        // this.ActiveUser.HashPass = hashpass == null ? this.ActiveUser.HashPass : hashpass;
-        if (hashpass!=null)
+            this.ActiveUser.Description = description == null ? this.ActiveUser.Description : description;
+            this.ActiveUser.Image = image;
+            this.ActiveUser.Username = username == null ? this.ActiveUser.Username : username;
+            if (hashpass!=null)
+            {
+                this.ActiveUser.HashPass=hashpass;
+            }
+            context.SaveChanges();
+        }
+        else
         {
-            this.ActiveUser.HashPass=hashpass;
-        }
-
-        // user.Description = description == null ? this.ActiveUser.Description : description;
-        // user.Image = image;
-        // user.Username = username == null ? this.ActiveUser.Username : username;
-        // user.HashPass = hashpass == null ? this.ActiveUser.HashPass : hashpass;
-
-        // context.Update(user);
-        context.SaveChanges();
-        }
-        else{
             throw new Exception("this username is already taken");
         }
     }

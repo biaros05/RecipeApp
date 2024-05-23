@@ -16,6 +16,12 @@ namespace App.ViewModels;
 
 public class UserDetailsViewModel : ViewModelBase
 {
+    private string? _errorMessage;
+    public string? ErrorMessage
+    {
+        get => _errorMessage;
+        set => this.RaiseAndSetIfChanged(ref _errorMessage, value);
+    } 
     public ReactiveCommand<Unit, Unit> Update { get; }
     public string DUsername{get;}
 
@@ -31,6 +37,12 @@ public class UserDetailsViewModel : ViewModelBase
     {
     get => _imageDisplayed;
     set => this.RaiseAndSetIfChanged(ref _imageDisplayed, value);
+    }
+
+    private string? _password;
+    public string? Password{
+        get => _password;
+        set => this.RaiseAndSetIfChanged(ref _password, value);
     }
 
     private static readonly Bitmap PLACEHOLDER =
@@ -72,27 +84,49 @@ public class UserDetailsViewModel : ViewModelBase
         return list;
     }
 
+    public ReactiveCommand<Unit, bool> DeleteUser {get;}
+
     
     public UserDetailsViewModel()
     {
         Update = ReactiveCommand.Create(() =>
         {
-    // we know both values are not null, because of `areBothFilledIn`
-        // UserController.Instance.UpdateUser();
+
         });
-    // .CurrentlyLoggedInUser.DisplayName
-    // User u=UserController.Instance.ActiveUser;
+
         DUsername=$"Username: {this.currentUser.Username}";
         DDescription=$"Description: {this.currentUser.Description}";
         DUserRecipes=DisplayList();
         DUserFavoriteRecipes=DisplayFavoritList();
+
         if (currentUser.Image==null)
         {
             ImageDisplayed=PLACEHOLDER;
         }
         
-        else{
+        else
+        {
             ImageDisplayed= new(new MemoryStream(UserController.Instance.ActiveUser.Image));
-        }    
+        }
+
+        IObservable<bool> areFieldsFilled = this.WhenAnyValue(
+        recipeViewModel => recipeViewModel.Password,
+        (name) =>
+            !(string.IsNullOrEmpty(name))
+        );
+
+        DeleteUser = ReactiveCommand.Create(() =>
+        {
+            if (UserController.Instance.AuthenticateUser(UserController.Instance.ActiveUser!.Username, Password!))
+            {
+                UserController.Instance.DeleteAccount(UserController.Instance.ActiveUser!.Username, Password!);
+                return true;
+            }
+            else
+            {
+                ErrorMessage = "Your credentials are incorrect";
+                return false;
+            }
+        }, areFieldsFilled);
     }
 }

@@ -130,7 +130,7 @@ public class Recipe
     }
 
     public int NumberOfServings { get; set; }
-    public List<Instruction> Instructions { get; } = new();
+    public List<Instruction> Instructions { get; set;} = new();
     // contains the ingredient and its quantity for specified unit 
     public List<MeasuredIngredient> Ingredients { get; set; } = new();
     public List<Rating> _ratings {get; set;}= new(); // all the ratings given by users OUT OF FIVE STARS
@@ -167,7 +167,8 @@ public class Recipe
         }
 
     }
-    public List<Tag> Tags { get; set; }
+
+    public List<Tag> Tags { get; set; } = new();
     public string Budget { get; set;}
 
     // allows user to add rating with necessary validation
@@ -223,7 +224,6 @@ public class Recipe
 
         var context = RecipesContext.Instance;
         Recipe recipe = context.RecipeManager_Recipes.First(r => r.Id == Id);
-        //FIXME - cant get tags
         if (!recipe.Tags.Contains(t))
         {
             recipe.Tags.Add(t);
@@ -264,7 +264,7 @@ public class Recipe
 
     // helper method that updates the list of ingredients in the recipe and also updates them in 
     // the system if they do not already exist
-    private void UpdateIngredients(List<MeasuredIngredient> ingredients)
+    public void UpdateIngredients(List<MeasuredIngredient> ingredients)
     {
 
         List<MeasuredIngredient> newIngredients = new();
