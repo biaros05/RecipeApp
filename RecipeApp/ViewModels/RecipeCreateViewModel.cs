@@ -78,6 +78,9 @@ public class RecipeCreateViewModel : ViewModelBase
     {
         this.Recipe = new(){Budget = ""};
         this.Recipe.Owner = UserController.Instance.ActiveUser!;
+        this.Instructions = this.Recipe.Instructions;
+        this.Ingredients = this.Recipe.Ingredients;
+        this.Tags = this.Recipe.Tags;
         if (recipe != null)
         {
             this.Recipe = recipe;

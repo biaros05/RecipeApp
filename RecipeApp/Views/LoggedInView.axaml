@@ -1,82 +1,87 @@
 <UserControl xmlns:vm="using:App.ViewModels"
-             x:DataType="vm:LoggedInViewModel"
-             xmlns="https://github.com/avaloniaui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-             x:Class="App.Views.LoggedInView">
-  <DockPanel Margin="10,10,10,10">
-    <StackPanel HorizontalAlignment="Center"
-                Spacing="5"
-                Margin="10">
-    <TextBlock FontSize="18" FontWeight="Bold">Logged In!</TextBlock>
-    <TextBlock Text="{Binding Greeting}"/>
-    <Button Command="{Binding Logout}"
-            Content="Log Out"
-            x:CompileBindings="False"/>
-    <Button Command="{Binding CreateRecipe}"
-            Content="Create Recipe"
-            x:CompileBindings="False"/>
-    <Button
-            Content="View Favourites"
-            x:CompileBindings="False"/>
-    <Button
-            Content="Edit Profile"
-            x:CompileBindings="False"/>
-    <Button Command="{Binding $parent[Window].DataContext.NavigateToRecipeList}"
-            Content="Search Recipes"
-            x:CompileBindings="False"/>
-    </StackPanel>
-    <ScrollViewer ScrollViewer.VerticalScrollBarVisibility="Visible">
-    <StackPanel>
-        <TextBlock FontSize="18" FontWeight="Bold" Text="Your Recipes"/>
-        <ListBox ItemsSource="{Binding UserRecipes}">
-            <ListBox.ItemTemplate>
-                <DataTemplate>
-                <Border Background="Gainsboro"
-                BorderBrush="Black"
-                BorderThickness="2"
-                CornerRadius="3"
-                Padding="10" Margin="10">
-                    <StackPanel Spacing="10">
-                        <Grid
-                        HorizontalAlignment="Stretch"
-                        VerticalAlignment="Center">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="Auto"/>
-                        </Grid.ColumnDefinitions>
-                        <TextBlock FontSize="18" FontWeight="Bold" Grid.Column="0"> 
-                            <TextBlock.Text>
-                                <MultiBinding StringFormat="{}{0} by {1} | {2}">
-                                    <Binding Path="Name"/>
-                                    <Binding Path="Owner.Username"/>
-                                    <Binding Path="Budget"/>
-                                </MultiBinding>
-                            </TextBlock.Text>
-                        </TextBlock>
-                        <StackPanel Orientation="Horizontal" Grid.Column="1">
-                            <TextBlock Text="{Binding Rating}" Margin="0,0,5,0"/>
-                            <Image MaxWidth="20" Source="/Assets/star.ico"/>
+        x:DataType="vm:LoggedInViewModel"
+        xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="App.Views.LoggedInView">
+        <DockPanel Margin="10,10,10,10">
+                <StackPanel HorizontalAlignment="Center"
+                                Spacing="5"
+                                Margin="10">
+                <TextBlock FontSize="18" FontWeight="Bold">Logged In!</TextBlock>
+                <TextBlock Text="{Binding Greeting}"/>
+                <Button Command="{Binding Logout}"
+                        Content="Log Out"
+                        x:CompileBindings="False"/>
+                <Button Command="{Binding CreateRecipe}"
+                        Content="Create Recipe"
+                        x:CompileBindings="False"/>
+                <Button
+                        Content="Edit Profile"
+                        x:CompileBindings="False"/>
+                <Button Command="{Binding $parent[Window].DataContext.NavigateToRecipeList}"
+                        Content="Search Recipes"
+                        x:CompileBindings="False"/>
+                <Button Command="{Binding $parent[Window].DataContext.NavigateToUserDetail}"
+                                        Content="Show User Page"
+                                        x:CompileBindings="False" />
+                <Button Command="{Binding $parent[Window].DataContext.NavigateToRecipeList}"
+                        Content="Show All Recipes"
+                        x:CompileBindings="False" />
+                <Button Command="{Binding $parent[Window].DataContext.NavigateToFavorites}"
+                        Content="Show Favorites"
+                        x:CompileBindings="False" />
+        </StackPanel>
+        <ScrollViewer ScrollViewer.VerticalScrollBarVisibility="Visible">
+        <StackPanel>
+                <TextBlock FontSize="18" FontWeight="Bold" Text="Your Recipes"/>
+                <ListBox ItemsSource="{Binding UserRecipes}">
+                <ListBox.ItemTemplate>
+                        <DataTemplate>
+                        <Border Background="Gainsboro"
+                        BorderBrush="Black"
+                        BorderThickness="2"
+                        CornerRadius="3"
+                        Padding="10" Margin="10">
+                        <StackPanel Spacing="10">
+                                <Grid
+                                HorizontalAlignment="Stretch"
+                                VerticalAlignment="Center">
+                                <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock FontSize="18" FontWeight="Bold" Grid.Column="0"> 
+                                <TextBlock.Text>
+                                        <MultiBinding StringFormat="{}{0} by {1} | {2}">
+                                        <Binding Path="Name"/>
+                                        <Binding Path="Owner.Username"/>
+                                        <Binding Path="Budget"/>
+                                        </MultiBinding>
+                                </TextBlock.Text>
+                                </TextBlock>
+                                <StackPanel Orientation="Horizontal" Grid.Column="1">
+                                <TextBlock Text="{Binding Rating}" Margin="0,0,5,0"/>
+                                <Image MaxWidth="20" Source="/Assets/star.ico"/>
+                                </StackPanel>
+                                </Grid>
+                                <TextBlock Text="{Binding PrepTimeMins, StringFormat='Preperation Time: {0} minutes'}"/>
+                                <TextBlock Text="{Binding CookTimeMins, StringFormat='Cook Time: {0} minutes'}"/>
+                                <TextBlock Text="{Binding TotalTime, StringFormat='Total Time: {0}'}"/>
+                                <Button Content="Remove Recipe" 
+                                        Command="{Binding $parent[ListBox].((vm:LoggedInViewModel)DataContext).RemoveRecipe}"
+                                        CommandParameter="{Binding}"/>
+                                <Button Content="Edit Recipe" 
+                                        Command="{Binding $parent[ListBox].((vm:LoggedInViewModel)DataContext).EditRecipe}"
+                                        CommandParameter="{Binding}"/>
                         </StackPanel>
-                        </Grid>
-                        <TextBlock Text="{Binding PrepTimeMins, StringFormat='Preperation Time: {0} minutes'}"/>
-                        <TextBlock Text="{Binding CookTimeMins, StringFormat='Cook Time: {0} minutes'}"/>
-                        <TextBlock Text="{Binding TotalTime, StringFormat='Total Time: {0}'}"/>
-                        <Button Content="Remove Recipe" 
-                                Command="{Binding $parent[ListBox].((vm:LoggedInViewModel)DataContext).RemoveRecipe}"
-                                CommandParameter="{Binding}"/>
-                        <Button Content="Edit Recipe" 
-                                Command="{Binding $parent[ListBox].((vm:LoggedInViewModel)DataContext).EditRecipe}"
-                                CommandParameter="{Binding}"/>
-                    </StackPanel>
-                    </Border>
-                </DataTemplate>
-            </ListBox.ItemTemplate>
-        </ListBox>
-    </StackPanel>
-    </ScrollViewer>
-  </DockPanel>
-
+                        </Border>
+                        </DataTemplate>
+                </ListBox.ItemTemplate>
+                </ListBox>
+        </StackPanel>
+        </ScrollViewer>
+        </DockPanel>
 </UserControl>

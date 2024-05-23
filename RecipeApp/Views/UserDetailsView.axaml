@@ -1,0 +1,35 @@
+<UserControl xmlns:vm="using:App.ViewModels"
+             x:DataType="vm:UserDetailsViewModel"
+             xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="App.Views.UserDetailsView">
+  <DockPanel>
+    <StackPanel DockPanel.Dock="Bottom"
+                Orientation="Horizontal"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Spacing="25">
+    <Button Command="{Binding $parent[Window].DataContext.NavigateToLoggedIn}"
+              Content="Back"
+              x:CompileBindings="False"/>
+        <Button Command="{Binding Update}"
+            Content="Update"
+            x:CompileBindings="False"/>
+    </StackPanel>
+  <StackPanel HorizontalAlignment="Center"
+              VerticalAlignment="Center"
+              Spacing="25">
+    <TextBlock FontSize="18" FontWeight="Bold">User Page</TextBlock>
+    <Image Source="{Binding ImageDisplayed}"
+              MaxWidth="300"/>
+    <TextBlock Text="{Binding DUsername}"/>
+    <TextBlock Text="{Binding DDescription}"/>
+    <TextBlock Text="{Binding DUserRecipes}"/>
+    <TextBlock Text="{Binding DUserFavoriteRecipes}"/>
+
+  </StackPanel>
+  </DockPanel>
+</UserControl>
