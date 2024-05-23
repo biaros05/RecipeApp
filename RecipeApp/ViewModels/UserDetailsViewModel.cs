@@ -8,6 +8,9 @@ using System.Collections.Generic;
 using recipes;
 using System.Linq;
 using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
+using Avalonia.Media.Imaging;
+using Avalonia.Platform;
+using System.IO;
 
 namespace App.ViewModels;
 
@@ -21,6 +24,18 @@ public class UserDetailsViewModel : ViewModelBase
     public string DUserRecipes{get;}
 
     public string DUserFavoriteRecipes{get;}
+
+    private Bitmap _imageDisplayed;
+
+    public Bitmap ImageDisplayed
+    {
+    get => _imageDisplayed;
+    set => this.RaiseAndSetIfChanged(ref _imageDisplayed, value);
+    }
+
+    private static readonly Bitmap PLACEHOLDER =
+    // This shows an example of loading an image from the assets directory.
+    new(AssetLoader.Open(new Uri("avares://App/Assets/default.jpg")));
 
     readonly User currentUser=UserController.Instance.ActiveUser;
 
@@ -71,6 +86,13 @@ public class UserDetailsViewModel : ViewModelBase
         DDescription=$"Description: {this.currentUser.Description}";
         DUserRecipes=DisplayList();
         DUserFavoriteRecipes=DisplayFavoritList();
-    
+        if (currentUser.Image==null)
+        {
+            ImageDisplayed=PLACEHOLDER;
+        }
+        
+        else{
+            ImageDisplayed= new(new MemoryStream(UserController.Instance.ActiveUser.Image));
+        }    
     }
 }

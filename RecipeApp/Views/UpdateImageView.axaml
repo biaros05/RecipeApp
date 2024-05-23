@@ -6,8 +6,12 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="App.Views.UpdateImageView">
-  <StackPanel>
-    <StackPanel>
+  <DockPanel>
+    <StackPanel DockPanel.Dock="Bottom"
+                Orientation="Horizontal"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Spacing="25">
       <Button Command="{Binding $parent[Window].DataContext.NavigateToUserUpdate}"
               Content="Back"
               x:CompileBindings="False"/>
@@ -27,6 +31,6 @@
       <Image Source="{Binding ImageDisplayed}"
               MaxWidth="300"/>
     </StackPanel>
-  </StackPanel>
+  </DockPanel>
 
 </UserControl>

@@ -38,7 +38,7 @@ public class UpdateImageViewModel : ViewModelBase
             ImageDisplayed=PLACEHOLDER;
         }
         else{
-           ImageDisplayed= new(new MemoryStream(UserController.Instance.ActiveUser.Image));
+            ImageDisplayed= new(new MemoryStream(UserController.Instance.ActiveUser.Image));
         }
         
         Okay = ReactiveCommand.Create(() => { });
@@ -69,7 +69,10 @@ public class UpdateImageViewModel : ViewModelBase
 
         // Here I could save the image into a user object:
         // myUser.ProfilePicture = image;
-            UserController.Instance.UpdateUser(null,null,image,null);
+        string username =null;
+        string description=null;
+        string password=null;
+            UserController.Instance.UpdateUser(username,description,image,password);
             return image;
         });
 
@@ -87,8 +90,11 @@ public class UpdateImageViewModel : ViewModelBase
         {
             // Byte[] array = new Byte[64]
             // UserController.Instance.UpdateUser(null,null,empty,null);
+            string username =null;
+            string description=null;
+            string password=null;
             ImageDisplayed = PLACEHOLDER;
-            UserController.Instance.UpdateUser(null,null,null,null);
+            UserController.Instance.UpdateUser(username,description,null,password);
 
         });
     }
