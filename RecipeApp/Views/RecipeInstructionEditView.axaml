@@ -1,0 +1,58 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="App.Views.RecipeInstructionEditView"
+             xmlns:vm="using:App.ViewModels"
+             x:DataType="vm:RecipeInstructionEditViewModel">
+  <DockPanel Margin="10,10,10,10">
+  <!-- this datagrid will show all existing Instructions in the DB -->
+    <StackPanel DockPanel.Dock="Left"
+    HorizontalAlignment="Center"
+    VerticalAlignment="Center"
+    MinWidth="500">
+      <ListBox
+              ItemsSource="{Binding Instructions}"
+              SelectedItem="{Binding SelectedInstruction}"
+              BorderThickness="1"
+              BorderBrush="Gray"
+              SelectionMode="Single,Toggle"
+              ScrollViewer.VerticalScrollBarVisibility="Visible">
+        
+      </ListBox>
+      <Button Command="{Binding Remove}"
+                Content="Remove"
+                x:CompileBindings="False"/>
+    </StackPanel>
+    <Grid DockPanel.Dock="Bottom"
+    HorizontalAlignment="Center"
+    VerticalAlignment="Center">
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="Auto"/>
+        <ColumnDefinition Width="Auto"/>
+      </Grid.ColumnDefinitions>
+      <Button Command="{Binding Cancel}"
+                Content="Cancel"
+                x:CompileBindings="False"
+                HorizontalAlignment="Center"
+                Grid.Column="0"/>
+      <Button Command="{Binding Save}"
+                Content="Save"
+                x:CompileBindings="False"
+                HorizontalAlignment="Center"
+                Grid.Column="1"/>
+    </Grid>
+    <StackPanel
+    HorizontalAlignment="Center"
+    VerticalAlignment="Center">
+      <TextBlock>
+        Add instruction:
+      </TextBlock>
+      <TextBox Text="{Binding ToAdd}"/>
+      <Button Command="{Binding Add}"
+                Content="Add"
+                x:CompileBindings="False"/>
+    </StackPanel>
+  </DockPanel>
+</UserControl>

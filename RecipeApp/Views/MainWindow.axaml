@@ -8,5 +8,6 @@
         x:DataType="vm:MainWindowViewModel"
         Icon="/Assets/avalonia-logo.ico"
         Title="App"
-        Content="{Binding ContentViewModel}">
+        Content="{Binding ContentViewModel}"
+        xmlns:views="clr-namespace:App.Views">
 </Window>

@@ -17,7 +17,7 @@ public class Tag
         if (obj == null || !(obj is Tag))
             return false;
 
-        return ((Tag)obj).TagName.Equals(this.TagName);
+        return ((Tag)obj).TagName.ToLower().Equals(this.TagName.ToLower());
     }
 
     public override int GetHashCode()
@@ -26,5 +26,10 @@ public class Tag
     }
 
     public Tag(){}
+
+    public override string ToString()
+    {
+        return $"{TagName}";
+    }
 
 }

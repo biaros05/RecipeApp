@@ -1,0 +1,109 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="App.Views.RecipeCreateView"
+             xmlns:vm="using:App.ViewModels"
+             x:DataType="vm:RecipeCreateViewModel">
+  <DockPanel Margin="10,10,10,10">
+
+    <Grid DockPanel.Dock="Bottom"
+    HorizontalAlignment="Center"
+    VerticalAlignment="Center" Margin="10,10,10,10">
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="Auto"/>
+        <ColumnDefinition Width="Auto"/>
+      </Grid.ColumnDefinitions>
+      <Button Command="{Binding  $parent[Window].DataContext.NavigateToLoggedIn}"
+                Content="Cancel"
+                x:CompileBindings="False"
+                HorizontalAlignment="Center"
+                Grid.Column="0"/>
+      <Button Command="{Binding Save}"
+                Content="Save"
+                x:CompileBindings="False"
+                HorizontalAlignment="Center"
+                Grid.Column="1"/>
+    </Grid>
+
+    <Grid DockPanel.Dock="Right"
+          HorizontalAlignment="Center"
+          VerticalAlignment="Center"
+          MinWidth="400">
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="Auto"/>
+        <ColumnDefinition Width="Auto"/>
+        <ColumnDefinition Width="Auto"/>
+      </Grid.ColumnDefinitions>
+      <Button Grid.Column="0"
+              Command="{Binding TagButton}"
+              Content="Tags"
+              x:CompileBindings="False"
+              HorizontalAlignment="Center"/>
+      <Button Grid.Column="1"
+              Command="{Binding IngredientButton}"
+              Content="Ingredients"
+              x:CompileBindings="False"
+              HorizontalAlignment="Center"/>
+      <Button Grid.Column="2"
+              Command="{Binding InstructionButton}"
+              Content="Instructions"
+              x:CompileBindings="False"
+              HorizontalAlignment="Center"/>
+    </Grid>
+
+    <StackPanel DockPanel.Dock="Bottom">
+      <TextBlock Text="{Binding ErrorMessage}"/>
+    </StackPanel>
+
+    <StackPanel
+    HorizontalAlignment="Center"
+    VerticalAlignment="Center">
+      <TextBlock>
+        Name:
+      </TextBlock>
+      <TextBox Text="{Binding Name}"/>
+      <TextBlock>
+        Description:
+      </TextBlock>
+      <TextBox Text="{Binding Description}"/>
+      <TextBlock>
+        Preperation Time in minutes:
+      </TextBlock>
+      <NumericUpDown 
+      Value="{Binding PrepTime}"
+      Minimum="0"
+      Maximum="240"
+      Increment="1"
+      />
+      <TextBlock>
+        Cook Time in minutes:
+      </TextBlock>
+      <NumericUpDown 
+      Value="{Binding CookTime}"
+      Minimum="0"
+      Maximum="240"
+      Increment="1"
+      />
+      <TextBlock>
+        Number of servings:
+      </TextBlock>
+      <NumericUpDown 
+      Value="{Binding NumServings}"
+      Minimum="1"
+      Increment="1"
+      />
+      <TextBlock>
+        Budget:
+      </TextBlock>
+      <NumericUpDown 
+      Value="{Binding Budget}"
+      Minimum="1"
+      Maximum="3"
+      Increment="1"
+      />
+    </StackPanel>
+
+  </DockPanel>
+</UserControl>

@@ -6,12 +6,15 @@ using recipes;
 using System.Globalization;
 using System;
 using System.Linq;
+using Microsoft.EntityFrameworkCore;
 
 public class UserController
 {
     // currently logged on user
     public FilterByUsername? filtering;
+    public int MIN_PASSWORD_LENGTH=5;
 
+    public int MAX_PASSWORD_LENGTH=25;
     public User? ActiveUser { get; set; }
     public List<User> AllUsers { get; } = new();
 
@@ -22,7 +25,7 @@ public class UserController
     /// <param name="username">new username</param>
     /// <param name="password">new password</param>
     /// <param name="description">user's description</param>
-    public void CreateAccount(string username, string password, string description)
+    public User CreateAccount(string username, string password, string description)
     {
         if (username == null)
         {
@@ -41,13 +44,16 @@ public class UserController
 
             User user1 = new User(username, password);
             RecipesContext.Instance.Add(user1);
+            RecipesContext.Instance.SaveChanges();
+            return user1;
         }
-        else
-        {
-            User user1 = new User(username, password, description);
-            RecipesContext.Instance.Add(user1);
-        }
+        // else
+        // {
+        User user2 = new User(username, password, description);
+        RecipesContext.Instance.Add(user2);
+        // }
         RecipesContext.Instance.SaveChanges();
+        return user2;
     }
 
     /// <summary>
@@ -61,7 +67,21 @@ public class UserController
     public bool AuthenticateUser(string username, string password)
     {
         var context = RecipesContext.Instance;
-        IQueryable<User> userQuery = context.RecipeManager_Users;
+        IQueryable<User> userQuery = context.RecipeManager_Users
+        .Include(recipe => recipe.UserCreatedRecipies)
+            .ThenInclude(recipe => recipe.Tags)
+        .Include(recipe => recipe.UserCreatedRecipies)
+            .ThenInclude(recipe => recipe._ratings)
+        .Include(recipe => recipe.UserCreatedRecipies)
+            .ThenInclude(recipe => recipe._difficulties)
+        .Include(recipe => recipe.UserCreatedRecipies)
+            .ThenInclude(recipe => recipe.Ingredients)
+            .ThenInclude(ingr => ingr.Ingredient)
+        .Include(recipe => recipe.UserCreatedRecipies)
+            .ThenInclude(recipe => recipe.Instructions)
+        .Include(recipe => recipe.UserCreatedRecipies)
+            .ThenInclude(recipe => recipe.UserFavourite)
+        .Include(user => user.UserFavoriteRecipies);
         filtering = new(userQuery);
         User result = filtering.FilterUsers(username);
         if (result == null)
@@ -96,35 +116,31 @@ public class UserController
         }
     }
 
-    public void UpdateUser(string username, string description, byte[] image, string hashpass)
+    public void UpdateUser(string? username, string? description, byte[]? image, string? hashpass)
     {
         var context = RecipesContext.Instance;
-
         int total = context.RecipeManager_Users
                     .Where(u => u.Username == username)
                     .Count();
-
-        if (total != 0)
+        if (username == ActiveUser.Username || total == 0)
         {
-            throw new Exception("this username is already taken");
-        }
-
-        User user = context.RecipeManager_Users
+            User user = context.RecipeManager_Users
                     .Where(u => u.Username == this.ActiveUser.Username)
                     .First();
 
-        this.ActiveUser.Description = description == null ? this.ActiveUser.Description : description;
-        this.ActiveUser.Image = image == null ? this.ActiveUser.Image : image;
-        this.ActiveUser.Username = username == null ? this.ActiveUser.Username : username;
-        this.ActiveUser.HashPass = hashpass == null ? this.ActiveUser.HashPass : hashpass;
-
-        user.Description = description == null ? this.ActiveUser.Description : description;
-        user.Image = image == null ? this.ActiveUser.Image : image;
-        user.Username = username == null ? this.ActiveUser.Username : username;
-        user.HashPass = hashpass == null ? this.ActiveUser.HashPass : hashpass;
-
-        context.Update(user);
-        context.SaveChanges();
+            this.ActiveUser.Description = description == null ? this.ActiveUser.Description : description;
+            this.ActiveUser.Image = image;
+            this.ActiveUser.Username = username == null ? this.ActiveUser.Username : username;
+            if (hashpass!=null)
+            {
+                this.ActiveUser.HashPass=hashpass;
+            }
+            context.SaveChanges();
+        }
+        else
+        {
+            throw new Exception("this username is already taken");
+        }
     }
 
     private static UserController? _instance;
@@ -146,5 +162,9 @@ public class UserController
         }
     }
 
+    public void Logout()
+    {
+        this.ActiveUser = null;
+    }
 
 }

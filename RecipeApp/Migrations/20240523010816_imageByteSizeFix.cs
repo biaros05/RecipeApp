@@ -2,10 +2,10 @@
 
 #nullable disable
 
-namespace project.Migrations
+namespace App.Migrations
 {
     /// <inheritdoc />
-    public partial class FixedPreviousMigration : Migration
+    public partial class imageByteSizeFix : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -33,7 +33,7 @@ namespace project.Migrations
                     HashPass = table.Column<string>(type: "NVARCHAR2(2000)", nullable: false),
                     Salt = table.Column<byte[]>(type: "RAW(2000)", nullable: false),
                     Username = table.Column<string>(type: "NVARCHAR2(2000)", nullable: false),
-                    Image = table.Column<byte[]>(type: "RAW(2000)", nullable: true),
+                    Image = table.Column<byte[]>(type: "BLOB", maxLength: 3000, nullable: true),
                     Description = table.Column<string>(type: "NVARCHAR2(2000)", nullable: true)
                 },
                 constraints: table =>
@@ -101,7 +101,7 @@ namespace project.Migrations
                         .Annotation("Oracle:Identity", "START WITH 1 INCREMENT BY 1"),
                     Index = table.Column<int>(type: "NUMBER(10)", nullable: false),
                     Text = table.Column<string>(type: "NVARCHAR2(2000)", nullable: false),
-                    RecipeId = table.Column<int>(type: "NUMBER(10)", nullable: true)
+                    RecipeId = table.Column<int>(type: "NUMBER(10)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -110,7 +110,8 @@ namespace project.Migrations
                         name: "FK_RecipeManager_Instructions_RecipeManager_Recipes_RecipeId",
                         column: x => x.RecipeId,
                         principalTable: "RecipeManager_Recipes",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -121,7 +122,7 @@ namespace project.Migrations
                         .Annotation("Oracle:Identity", "START WITH 1 INCREMENT BY 1"),
                     IngredientId = table.Column<int>(type: "NUMBER(10)", nullable: false),
                     Quantity = table.Column<double>(type: "BINARY_DOUBLE", nullable: false),
-                    RecipeId = table.Column<int>(type: "NUMBER(10)", nullable: true)
+                    RecipeId = table.Column<int>(type: "NUMBER(10)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -136,7 +137,8 @@ namespace project.Migrations
                         name: "FK_RecipeManager_MeasuredIngredients_RecipeManager_Recipes_RecipeId",
                         column: x => x.RecipeId,
                         principalTable: "RecipeManager_Recipes",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
